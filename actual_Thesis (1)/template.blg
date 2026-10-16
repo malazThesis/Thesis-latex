@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2025)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: template.aux
+The style file: lni.bst
+Database file #1: references.bib
+Repeated entry---line 182 of file references.bib
+ : @inproceedings{zhao2020pairnorm
+ :                                ,
+I'm skipping whatever remains of this entry
+Warning--can't use both volume and number fields in li2018oversmoothing
+You've used 13 entries,
+            2541 wiz_defined-function locations,
+            624 strings with 7070 characters,
+and the built_in function-call counts, 6461 in all, are:
+= -- 625
+> -- 355
+< -- 13
++ -- 129
+- -- 127
+* -- 467
+:= -- 1026
+add.period$ -- 42
+call.type$ -- 13
+change.case$ -- 86
+chr.to.int$ -- 13
+cite$ -- 14
+duplicate$ -- 271
+empty$ -- 463
+format.name$ -- 136
+if$ -- 1359
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 12
+newline$ -- 69
+num.names$ -- 39
+pop$ -- 115
+preamble$ -- 1
+purify$ -- 112
+quote$ -- 0
+skip$ -- 228
+stack$ -- 0
+substring$ -- 293
+swap$ -- 89
+text.length$ -- 13
+text.prefix$ -- 1
+top$ -- 0
+type$ -- 104
+warning$ -- 1
+while$ -- 53
+width$ -- 17
+write$ -- 174
+(There was 1 error message)

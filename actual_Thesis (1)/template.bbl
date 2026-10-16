@@ -1,0 +1,90 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{DGGB{\etalchar{+}}23}
+
+\bibitem[ARE26]{arnaiz2026demystifying}
+Adrian Arnaiz-Rodriguez and Federico Errica.
+\newblock Oversmoothing, ``Oversquashing'', Heterophily, Long-Range, and More:
+  Demystifying Common Beliefs in Graph Machine Learning.
+\newblock In {\em International Conference on Learning Representations}, 2026.
+
+\bibitem[DGGB{\etalchar{+}}23]{digiovanni2023oversquashing}
+Francesco Di~Giovanni, Lorenzo Giusti, Federico Barbero, Giulia Luise, Pietro
+  Lio, and Michael~M. Bronstein.
+\newblock On Over-Squashing in Message Passing Neural Networks: The Impact of
+  Width, Depth, and Topology.
+\newblock In {\em Proceedings of the 40th International Conference on Machine
+  Learning}, volume 202 of {\em Proceedings of Machine Learning Research},
+  pages 7865--7885. PMLR, 2023.
+
+\bibitem[GSR{\etalchar{+}}17]{gilmer2017mpnn}
+Justin Gilmer, Samuel~S. Schoenholz, Patrick~F. Riley, Oriol Vinyals, and
+  George~E. Dahl.
+\newblock Neural Message Passing for Quantum Chemistry.
+\newblock In {\em Proceedings of the 34th International Conference on Machine
+  Learning}, volume~70 of {\em Proceedings of Machine Learning Research}, pages
+  1263--1272. PMLR, 2017.
+
+\bibitem[HYL17]{hamilton2017graphsage}
+William~L. Hamilton, Rex Ying, and Jure Leskovec.
+\newblock Inductive Representation Learning on Large Graphs.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~30, pages 1024--1034, 2017.
+
+\bibitem[KDL26]{kormann2026position}
+Niklas Kormann, Benjamin Doerr, and Johannes~F. Lutzeyer.
+\newblock Position: Don't be Afraid of Over-Smoothing And Over-Squashing.
+\newblock {\em arXiv preprint arXiv:2601.07419}, 2026.
+
+\bibitem[LHW18]{li2018oversmoothing}
+Qimai Li, Zhichao Han, and Xiao-Ming Wu.
+\newblock Deeper Insights Into Graph Convolutional Networks for Semi-Supervised
+  Learning.
+\newblock In {\em Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~32, pages 3538--3545, 2018.
+
+\bibitem[Lou20]{loukas2020depthwidth}
+Andreas Loukas.
+\newblock What Graph Neural Networks Cannot Learn: Depth vs Width.
+\newblock In {\em International Conference on Learning Representations}, 2020.
+
+\bibitem[OS20]{oono2020oversmoothing}
+Kenta Oono and Taiji Suzuki.
+\newblock Graph Neural Networks Exponentially Lose Expressive Power for Node
+  Classification.
+\newblock In {\em International Conference on Learning Representations}, 2020.
+
+\bibitem[PKD{\etalchar{+}}23]{platonov2023critical}
+Oleg Platonov, Denis Kuznedelev, Michael Diskin, Artem Babenko, and Liudmila
+  Prokhorenkova.
+\newblock A Critical Look at the Evaluation of GNNs Under Heterophily: Are We
+  Really Making Progress?
+\newblock In {\em International Conference on Learning Representations}, 2023.
+
+\bibitem[RBM23]{rusch2023oversmoothing}
+T.~Konstantin Rusch, Michael~M. Bronstein, and Siddhartha Mishra.
+\newblock A Survey on Oversmoothing in Graph Neural Networks.
+\newblock Technical Report 2023-17, Seminar for Applied Mathematics, ETH
+  Zurich, 2023.
+
+\bibitem[XLT{\etalchar{+}}18]{xu2018jk}
+Keyulu Xu, Chengtao Li, Yonglong Tian, Tomohiro Sonobe, Ken-ichi Kawarabayashi,
+  and Stefanie Jegelka.
+\newblock Representation Learning on Graphs with Jumping Knowledge Networks.
+\newblock In {\em Proceedings of the 35th International Conference on Machine
+  Learning}, volume~80 of {\em Proceedings of Machine Learning Research}, pages
+  5453--5462. PMLR, 2018.
+
+\bibitem[ZA20]{zhao2020pairnorm}
+Lingxiao Zhao and Leman Akoglu.
+\newblock PairNorm: Tackling Oversmoothing in GNNs.
+\newblock In {\em International Conference on Learning Representations}, 2020.
+
+\bibitem[ZYZ{\etalchar{+}}20]{zhu2020heterophily}
+Jiong Zhu, Yujun Yan, Lingxiao Zhao, Mark Heimann, Leman Akoglu, and Danai
+  Koutra.
+\newblock Beyond Homophily in Graph Neural Networks: Current Limitations and
+  Effective Designs.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~33, 2020.
+
+\end{thebibliography}

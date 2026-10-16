@@ -1,0 +1,15 @@
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Motivation}{3}{}%
+\contentsline {subsection}{\numberline {1.2}Research Questions}{3}{}%
+\contentsline {section}{\numberline {2}Background}{3}{}%
+\contentsline {subsection}{\numberline {2.1}Message Passing and Receptive Fields}{3}{}%
+\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Homophily and Heterophily}{6}{}%
+\contentsline {subsection}{\numberline {2.4}Oversmoothing}{8}{}%
+\contentsline {subsection}{\numberline {2.5}PairNorm}{10}{}%
+\contentsline {section}{\numberline {3}Experimental Methodology}{12}{}%
+\contentsline {subsection}{\numberline {3.1}Real-World Datasets}{12}{}%
+\contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{12}{}%
+\contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{12}{}%
