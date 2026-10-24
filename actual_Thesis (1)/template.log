@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  16 OCT 2026 18:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  24 OCT 2026 20:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -463,7 +463,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: figures/fig01_receptive_field.png Graphic file (type png)
 <use figures/fig01_receptive_field.png>
 Package pdftex.def Info: figures/fig01_receptive_field.png  used on input line 
-282.
+238.
 (pdftex.def)             Requested size: 397.3397pt x 154.47852pt.
 
 
@@ -471,13 +471,13 @@ Package pdftex.def Info: figures/fig01_receptive_field.png  used on input line
 <figures/fig02_depth_vs_width.png, id=32, 646.0938pt x 323.7696pt>
 File: figures/fig02_depth_vs_width.png Graphic file (type png)
 <use figures/fig02_depth_vs_width.png>
-Package pdftex.def Info: figures/fig02_depth_vs_width.png  used on input line 4
-21.
+Package pdftex.def Info: figures/fig02_depth_vs_width.png  used on input line 3
+52.
 (pdftex.def)             Requested size: 397.3397pt x 199.1196pt.
 
 
 [5]
-Overfull \hbox (5.0324pt too wide) in paragraph at lines 442--450
+Overfull \hbox (5.0324pt too wide) in paragraph at lines 373--381
 \OT1/ptm/m/n/10 depth and hid-den di-men-sion de-ter-mine dif-fer-ent ar-chi-te
 c-tural re-sources of a graph neu-ral net-work. Whether
  []
@@ -489,7 +489,7 @@ c-tural re-sources of a graph neu-ral net-work. Whether
 File: figures/fig03_homophily_heterophily.png Graphic file (type png)
 <use figures/fig03_homophily_heterophily.png>
 Package pdftex.def Info: figures/fig03_homophily_heterophily.png  used on input
- line 521.
+ line 452.
 (pdftex.def)             Requested size: 397.3397pt x 181.3345pt.
 
 
@@ -499,8 +499,8 @@ Package pdftex.def Info: figures/fig03_homophily_heterophily.png  used on input
 <figures/fig04_oversmoothing.png, id=51, 637.6623pt x 201.3924pt>
 File: figures/fig04_oversmoothing.png Graphic file (type png)
 <use figures/fig04_oversmoothing.png>
-Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 72
-6.
+Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 65
+7.
 (pdftex.def)             Requested size: 397.3397pt x 125.49194pt.
 
 
@@ -510,7 +510,7 @@ Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 72
 <figures/fig05_pairnorm.png, id=59, 595.023pt x 215.8464pt>
 File: figures/fig05_pairnorm.png Graphic file (type png)
 <use figures/fig05_pairnorm.png>
-Package pdftex.def Info: figures/fig05_pairnorm.png  used on input line 912.
+Package pdftex.def Info: figures/fig05_pairnorm.png  used on input line 843.
 (pdftex.def)             Requested size: 397.3397pt x 144.13876pt.
 
 
@@ -533,7 +533,7 @@ Here is how much of TeX's memory you used:
  30001 multiletter control sequences out of 15000+600000
  582967 words of font info for 85 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 66i,8n,68p,534b,305s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 66i,8n,68p,1013b,305s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
@@ -548,7 +548,7 @@ l/texlive/2025/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texliv
 e/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/tex
 mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fo
 nts/type1/urw/times/utmri8a.pfb>
-Output written on template.pdf (14 pages, 687872 bytes).
+Output written on template.pdf (14 pages, 687895 bytes).
 PDF statistics:
  132 PDF objects out of 1000 (max. 8388607)
  77 compressed objects within 1 object stream

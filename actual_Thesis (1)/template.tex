@@ -183,25 +183,12 @@
 \subsection{Message Passing and Receptive Fields}
 \label{sec:message-passing}
 
-A graph can be represented as $G=(V,E)$, where $V$ denotes the
-set of nodes and $E$ the set of edges connecting pairs of nodes.
-In the graph-learning setting considered in this thesis, each node
-$v\in V$ is additionally associated with an input feature vector
-$\mathbf{x}_v$. A graph neural network (GNN) uses both these node
-features and the graph structure to construct learned node
-representations. A widely used class of GNNs follows the
-\emph{message-passing} principle, in which information is exchanged
-between adjacent nodes over a sequence of neural-network layers
-\cite{gilmer2017mpnn}.
+A graph can be represented as $G=(V,E)$, where $V$ is the set of nodes and $E$ is the set of edges
+connecting pairs of nodes. In the graph-learning setting considered in this thesis, each node $v\in V$ also has an input feature vector $\mathbf{x}_v$. A graph neural network (GNN) uses these node features and the graph structure to create learned representations of the nodes. A widely used class of GNNs follows the \emph{message-passing} principle, in which information is exchanged between adjacent nodes over a sequence of neural-network layers \cite{gilmer2017mpnn}.
 
 Let $\mathbf{h}_v^{(l)}$ denote the representation of node $v$ after
-layer $l$, with $\mathbf{h}_v^{(0)}=\mathbf{x}_v$. In a generic
-message-passing layer, node $v$ first receives information from its
-neighborhood $\mathcal{N}(v)$. Messages generated from neighboring
-nodes are combined by an aggregation operation and subsequently used
-to update the representation of $v$. Following the general
-message-passing framework of Gilmer et al.\ \cite{gilmer2017mpnn},
-this process can be written in the form
+layer $l$, where $\mathbf{h}_v^{(0)}=\mathbf{x}_v$. In a message-passing layer, node $v$ first receives information from the neighboring nodes in
+$\mathcal{N}(v)$. Messages generated from neighboring nodes are then combined using an aggregation operation. The result is then used to update the representation of node $v$. Following the message-passing framework of Gilmer et al.\ \cite{gilmer2017mpnn}, this process can be written in the form
 
 \begin{equation}
     \mathbf{m}_v^{(l+1)}
@@ -235,43 +222,12 @@ followed by
     \label{eq:message-update}
 \end{equation}
 
-Here, $M^{(l)}$ denotes the message function of layer $l$,
-$\operatorname{AGG}^{(l)}$ combines the messages arriving from the
-neighbors of $v$, and $U^{(l)}$ updates the representation of the
-target node. The optional vector $\mathbf{e}_{vu}$ represents
-features associated with the edge between nodes $v$ and $u$.
-Because a node's neighbors form an unordered set, the aggregation
-should not depend on the order in which these neighbors are presented.
-Common examples are sum, mean, or maximum aggregation. Different GNN
-architectures instantiate these components in different ways
-\cite{gilmer2017mpnn,hamilton2017graphsage}.
+Here, $M^{(l)}$ is the message function of layer $l$, $\operatorname{AGG}^{(l)}$ combines the messages arriving from the
+neighbors of $v$, and $U^{(l)}$ updates the representation of the target node. The optional vector $\mathbf{e}_{vu}$ represents features associated with the edge between nodes $v$ and $u$. Since the neighbors of a node do not have a fixed order, the aggregation should not depend on the order in which these neighbors are presented. Common examples are sum, mean or maximum aggregation. The way these functions are used may differ depending on the GNN architecture \cite{gilmer2017mpnn,hamilton2017graphsage}.
 
-GraphSAGE, which is used extensively in the experiments of this
-thesis, provides a concrete example of this procedure. At every
-layer, GraphSAGE aggregates the representations of nodes in the
-immediate neighborhood and combines the resulting neighborhood
-representation with the current representation of the target node
-\cite{hamilton2017graphsage}. Since the neighborhood representations
-used at one layer were themselves constructed in the preceding
-layer, information can propagate recursively through the graph. Thus,
-the first message-passing layer can incorporate information from
-direct neighbors, the second layer can additionally incorporate
-information originating two edges away, and this process continues
-with increasing depth.
+One such GNN model is GraphSAGE, which is extensively used in the experiments of this thesis and provides a concrete example of this procedure. At each layer, GraphSAGE first aggregates information from the immediate neighborhood of a node. The aggregated information is then combined with the node's own representation to obtain an updated node representation \cite{hamilton2017graphsage}. Since the neighborhood representations used at one layer were themselves constructed in the preceding layer, information can propagate recursively through the graph. Thus, the first message-passing layer can incorporate information from direct neighbors. The second layer can additionally incorporate information from two edges away, and this process continues with increasing depth. 
 
-This recursive expansion motivates the notion of a
-\emph{receptive field}. For a target node, the theoretical receptive
-field describes the set of nodes whose input information can
-potentially contribute to its representation after a given number of
-message-passing layers. With local one-hop message passing, an
-$L$-layer network can in principle depend on nodes whose graph
-distance from the target is at most $L$. Equivalently, stacking more
-message-passing layers increases the maximum graph distance over
-which information can be propagated. Xu et al.\ describe the same
-principle through neighborhood aggregation: after $k$ iterations, the
-representation can use graph structure rooted at the target node up
-to depth $k$ \cite{xu2018jk}. Figure~\ref{fig:receptive-field}
-illustrates this expansion for successive message-passing layers.
+This recursive expansion motivates the notion of a \emph{receptive field}. For a target node, the theoretical receptive field includes all nodes whose input information may influence its representation after a given number of message-passing layers. An $L$-layer network in which messages are passed between directly connected nodes can in principle incorporate information from nodes that are at most $L$ edges away from the target node. Therefore, adding more message-passing layers allows information to travel over a larger graph distance. Xu et al.\ describe the same principle through neighborhood aggregation. After $k$ iterations, the representation can use structural information rooted at the target node up to depth $k$ \cite{xu2018jk}. Figure~\ref{fig:receptive-field} illustrates this expansion for successive message-passing layers.
 
 \begin{figure}[H]
     \centering
@@ -291,34 +247,9 @@ illustrates this expansion for successive message-passing layers.
     \label{fig:receptive-field}
 \end{figure}
 
-The theoretical receptive field should, however, be distinguished
-from the amount of information that actually influences a learned
-representation. Membership in the $L$-hop neighborhood only means
-that a computational path from a node to the target exists within
-$L$ message-passing steps. It does not imply that all nodes inside
-this neighborhood contribute equally. The learned parameters,
-aggregation operation, nonlinearities, graph structure, and, where
-applicable, neighborhood sampling determine how strongly information
-from different nodes affects the final representation. Xu et al.\
-formalize this distinction by studying the sensitivity of a target
-representation to features at other nodes and show that the effective
-range of influence depends strongly on the local graph structure
-\cite{xu2018jk}. Consequently, two target nodes processed by networks
-of the same depth can have the same maximum hop range while exhibiting
-substantially different effective information propagation.
+The theoretical receptive field should, however, be distinguished from the amount of information that actually influences a learned representation. For example, a node can be inside the $L$-hop neighborhood because a path to the target exists within $L$ message-passing steps. However, this does not mean that all nodes in this neighborhood have the same influence. The learned parameters, aggregation operation, nonlinearities, graph structure and possible neighborhood sampling determine the strength of the influence from different nodes on the final representation. Xu et al.\ formalize this distinction by studying the sensitivity of a target representation to features at other nodes and show that the effective range of influence depends strongly on the local graph structure \cite{xu2018jk}. Therefore, two target nodes processed by networks of the same depth can have the same maximum hop range while exhibiting substantially different effective information propagation.
 
-This distinction is central to the remainder of this thesis.
-Increasing depth provides a larger theoretical receptive field and
-therefore creates the possibility of incorporating information from
-more distant parts of a graph. It does not, by itself, guarantee that
-this information is preserved or used effectively. The following
-sections therefore separate the number of propagation steps from the
-capacity of the intermediate representations and subsequently examine
-how repeated message passing can affect the geometry and usefulness of
-node representations.
-
-
-
+This distinction is central to the remainder of this thesis. Increasing depth provides a larger theoretical receptive field and therefore creates the possibility of incorporating information from more distant parts of a graph. It does not, by itself, guarantee that this information is preserved or used effectively. The following sections therefore separate the number of propagation steps from the capacity of the intermediate representations and subsequently examine how repeated message passing can affect the geometry and usefulness of node representations.
 
 % ============================================================
 % 2.2 Depth versus Hidden Dimension
