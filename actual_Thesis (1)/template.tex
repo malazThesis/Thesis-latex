@@ -258,90 +258,24 @@ This distinction is central to the remainder of this thesis. Increasing depth pr
 \subsection{Depth versus Hidden Dimension}
 \label{sec:depth-width}
 
-The previous section established that stacking message-passing
-layers increases the maximum graph distance over which information
-can potentially reach a target node. Network depth is therefore
-directly connected to the number of successive propagation steps.
-However, depth is not the only architectural quantity that determines
-what information a graph neural network can represent. A second
-important quantity is the dimensionality of the intermediate node
-representations, commonly referred to as the \emph{hidden dimension}
-or network width.
+The previous section established that stacking message-passing layers increases the maximum graph distance over which information can potentially reach a target node. Network depth therefore determines how many propagation steps are possible. Nevertheless, the information that a graph neural network can represent is not determined by its depth alone. Another key architectural factor is the dimensionality of the intermediate node representations, often referred to as the \emph{hidden dimension} or network width.
 
-Using the notation introduced in Section~\ref{sec:message-passing},
-let the representation of node $v$ at layer $l$ be
-$\mathbf{h}_v^{(l)}$. If the hidden representation contains $p$
-components, then
+Using the notation from Section ~\ref{sec:message-passing}, let the representation of node $v$ at layer $l$ be $\mathbf{h}_v^{(l)}$. If the hidden representation contains $p$ components, then
 
 \begin{equation}
     \mathbf{h}_v^{(l)} \in \mathbb{R}^{p}.
     \label{eq:hidden-dimension}
 \end{equation}
 
-The depth $L$ and hidden dimension $p$ describe two different aspects
-of the network. Depth specifies how many consecutive
-message-passing transformations are applied. With local one-hop
-message passing, increasing $L$ extends the maximum propagation
-distance and therefore enlarges the theoretical receptive field.
-The hidden dimension $p$, in contrast, specifies the size of the
-vector used to store and transform a node's intermediate
-representation. Increasing $p$ does not add another propagation step
-and therefore does not, by itself, extend the receptive field
-\cite{loukas2020depthwidth}.
+Network depth $L$ and hidden dimension $p$ describe two different aspects of the network. Depth specifies how many successive message-passing steps are applied. In architectures based on local one-hop message passing, greater depth means information can propagate over larger distances, thereby expanding the theoretical receptive field. Hidden dimension, on the other hand, specifies the size of the vector used to store and transform a node’s intermediate representation. Therefore, increasing $p$ does not add another propagation step, which means it does not extend the receptive field \cite{loukas2020depthwidth}.
 
-This distinction is illustrated in
-Figure~\ref{fig:depth-width}. Increasing depth adds further
-message-passing layers and consequently allows information to pass
-through additional edges before the final representation is obtained.
-Increasing the hidden dimension instead enlarges the intermediate
-representation available at each layer. The two changes can therefore
-increase the resources of a model in different ways: one changes the
-number of communication steps through the graph, whereas the other
-changes the dimensionality of the state carried through those steps.
-For the experiments in this thesis, the term \emph{hidden dimension}
-refers to the common dimensionality assigned to the intermediate
-hidden representations.
+This difference is illustrated in Figure~\ref{fig:depth-width}. Increasing depth adds further message-passing layers, resulting in information passing through additional edges before the final representation is obtained. By contrast, increasing the hidden dimension enlarges the intermediate representation available at each layer. The two changes can therefore influence the model in different ways. One changes the number of communication steps through the graph, whereas the other changes the dimensionality of the state carried through those steps. Throughout this thesis, the term \emph{hidden dimension} refers to the common dimensionality assigned to the intermediate hidden representations.
 
-The distinction between these quantities is also relevant from an
-expressive-power perspective. Loukas studies message-passing graph
-neural networks under explicit restrictions on depth and width and
-shows that, for several graph problems in the considered theoretical
-setting, restricting these quantities limits what the network can
-compute \cite{loukas2020depthwidth}. The resulting bounds reveal a
-trade-off between depth and width for these problems. This result
-should not be interpreted as stating that additional depth and
-additional width are generally interchangeable. The analysis provides
-worst-case lower bounds under a particular computational model, and
-the two quantities retain different structural roles: depth determines
-how many rounds of graph-local communication are available, while
-width determines the dimensionality of the state communicated between
-layers.
+The distinction between these quantities is also relevant from an expressive-power perspective. Loukas studies message-passing graph neural networks under explicit restrictions on depth and width and shows that, for several graph problems in the considered theoretical setting, restricting these parameters limits the computational power of the network \cite{loukas2020depthwidth}. The resulting bounds reveal a trade-off between depth and width for these problems, but they do not imply that the two architectural parameters are generally interchangeable. The theoretical analysis derives worst-case lower bounds under a defined computational model. Despite the identified trade-off, depth and width remain distinct architectural properties. While depth specifies the number of graph-local communication rounds, width governs the dimensionality of the intermediate representations.
 
-This difference becomes particularly important when information from
-distant nodes has to be preserved across several message-passing
-steps. A wider hidden representation can provide a larger
-intermediate state without reducing the graph distance that the
-information must traverse. Conversely, adding layers can make more
-distant nodes theoretically reachable without increasing the
-dimension of the representation through which their information is
-processed. Di Giovanni et al.\ analyze these effects separately in
-the context of long-range information propagation and show that
-increasing width and increasing depth can have fundamentally different
-effects on the sensitivity of message-passing neural networks to
-distant node information \cite{digiovanni2023oversquashing}. Their
-analysis further demonstrates why model depth alone should not be
-treated as a general substitute for representation width.
+This difference is especially relevant when information from distant nodes must be preserved across several message-passing steps. Increasing the hidden dimension provides more space for intermediate representations but does not shorten the paths along which information travels. Conversely, increasing depth enables the network to gather information from nodes that are further away without changing the size of the hidden representations. Di Giovanni et al.\ analyze these effects separately in the context of long-range information propagation and show that increasing width and increasing depth can have fundamentally different effects on the sensitivity of message-passing neural networks to distant node information \cite{digiovanni2023oversquashing}. Their findings also highlight that increasing network depth cannot generally compensate for a limited representation width. Therefore, when comparing shallow and deep graph neural networks, it is important to distinguish between the impact of additional message-passing steps and changes in the dimensionality of node representations.
 
-Consequently, comparisons between shallow and deep graph neural
-networks must distinguish the effect of adding propagation steps from
-the effect of changing representation size. This thesis follows that
-distinction throughout the empirical analysis. Depth is varied to
-study the consequences of repeated message passing, while the hidden
-dimension is recorded or controlled separately. Establishing this
-separation is necessary before examining whether performance changes
-at greater depth are related to graph structure, representation
-geometry, or other properties of the learning problem.
-
+This thesis follows that distinction throughout the empirical analysis. Network depth is varied to investigate the effects of successive message-passing steps, whereas the hidden dimension is recorded or controlled independently. Separating these two architectural factors is necessary for understanding whether performance differences in deeper networks can be attributed to graph structure, representation geometry, or other characteristics of the learning task.
 
 \begin{figure}[H]
     \centering
@@ -370,26 +304,9 @@ geometry, or other properties of the learning problem.
 \subsection{Homophily and Heterophily}
 \label{sec:homophily-heterophily}
 
-The previous sections described how message passing propagates
-information through a graph and how depth and hidden dimension
-determine different architectural resources of a graph neural
-network. Whether the information obtained from neighboring nodes is
-useful, however, also depends on the relation between the graph
-topology and the learning task. In node classification, this relation
-is frequently discussed in terms of \emph{homophily} and
-\emph{heterophily}.
+The previous sections provided an overview of how message passing enables information to propagate between nodes in a graph and how network depth and hidden dimension influence different aspects of the GNN architecture. However, the usefulness of information aggregated from neighboring nodes also depends on the relation between the graph topology and the learning task. In node classification, this relation is often described in terms of \emph{homophily} and \emph{heterophily}.
 
-In general, homophily describes a tendency of connected nodes to be
-similar, whereas heterophily describes a tendency of connected nodes
-to be dissimilar. The notion of similarity must be specified
-explicitly, since it may refer to class labels, node features, or
-other node attributes. In the graph-learning literature, and in the
-experiments of this thesis, the term is primarily used with respect
-to class labels \cite{zhu2020heterophily,arnaiz2026demystifying}.
-Accordingly, a graph is considered more class-homophilous when edges
-frequently connect nodes belonging to the same class, and more
-class-heterophilous when edges frequently connect nodes belonging to
-different classes.
+In general, homophily describes a tendency of connected nodes to be similar, whereas heterophily describes a tendency of connected nodes to be dissimilar. The notion of similarity must be specified explicitly, since it may refer to class labels, node features, or other node attributes. In the graph-learning literature and in the experiments of this thesis, the term is primarily used with respect to class labels \cite{zhu2020heterophily,arnaiz2026demystifying}. Accordingly, a graph is more class-homophilous if connections frequently occur between nodes of the same class. In contrast, it is more class-heterophilous when edges frequently connect nodes belonging to different classes.
 
 A simple measure of this property is the \emph{edge homophily ratio}.
 For a graph $G=(V,E)$ with class label $y_v$ assigned to each node
@@ -418,30 +335,14 @@ zero indicate that most edges connect nodes from different classes.
 Unless stated otherwise, the symbol $h$ in this thesis refers to this
 raw class-label edge homophily measure.
 
-The relation to message passing becomes intuitive when considering
-the aggregation mechanism introduced in
-Section~\ref{sec:message-passing}. In a strongly homophilous graph, a
-node frequently receives messages from nodes belonging to the same
-class. If their features also contain class-relevant information,
-local aggregation can reinforce information that is useful for the
-classification task. In a heterophilous graph, the immediate
-neighborhood may instead contain many nodes from different classes.
-Under some feature and task conditions, directly mixing these
-representations can make class-relevant information more difficult to
-separate. This observation motivates why many graph neural network
-architectures and benchmarks have historically been associated with a
-homophily assumption and why several methods have been developed
-specifically for heterophilous settings
-\cite{zhu2020heterophily}.
+The relation to message passing becomes intuitive when considering the aggregation mechanism introduced in
+Section~\ref{sec:message-passing}. In a strongly homophilous graph, nodes typically aggregate information from neighbors that share the same class label. If their features also contain class-relevant information, the aggregation process can strengthen the signals relevant to the classification task.
+In a heterophilous graph, nodes often have neighbors belonging to different classes. Depending on the node features and task conditions, directly mixing these representations can make class-relevant information harder to separate. This observation helps explain why many graph neural network architectures and benchmarks have historically been associated with a homophily assumption and why specialized methods have been developed to address heterophilous graphs \cite{zhu2020heterophily}.
 
-Figure~\ref{fig:homophily-heterophily} illustrates this distinction
-at the level of class labels. In the homophilous example, most edges
-connect nodes with the same class, whereas the heterophilous example
-contains a larger proportion of cross-class edges. The figure should
-be interpreted as an illustration of label--topology alignment rather
-than as a statement about task difficulty. In particular, the fact
-that neighboring nodes often belong to different classes does not
-imply that their relation is uninformative.
+Figure~\ref{fig:homophily-heterophily} illustrates this distinction at the level of class labels. In the homophilous example, most edges
+connect nodes with the same class, whereas the heterophilous example contains a larger proportion of cross-class edges. The figure should
+be interpreted as an illustration of label--topology alignment rather than as a statement about task difficulty. In particular, the fact
+that neighboring nodes often belong to different classes does not imply that their relation is uninformative.
 
 \begin{figure}[H]
     \centering
@@ -464,46 +365,11 @@ imply that their relation is uninformative.
     \label{fig:homophily-heterophily}
 \end{figure}
 
-This qualification is important because homophily is a graph--task
-property rather than a direct measure of how well a graph neural
-network will perform. Empirical studies have shown that standard GNNs
-can achieve strong predictive performance on some heterophilous
-graphs, while high homophily alone does not guarantee that a
-particular node-classification task is easy
-\cite{platonov2023critical,arnaiz2026demystifying}. The usefulness of
-neighborhood aggregation depends on additional factors, including the
-node features, the relationship between features and labels, the
-specific connectivity pattern, the learning objective, and the
-architecture used to process the graph.
+This distinction is important because homophily describes the relationship between graph structure and the learning task rather than directly measuring how well a graph neural network will perform. Empirical studies have shown that standard GNNs can achieve strong predictive performance on some heterophilous graphs, while high homophily alone does not guarantee that a particular node-classification task is easy \cite{platonov2023critical,arnaiz2026demystifying}. The usefulness of neighborhood aggregation depends on additional factors, including the node features, the relationship between features and labels, the specific connectivity pattern, the learning objective, and the architecture used to process the graph.
 
-A further limitation is that raw edge homophily should not be treated
-as an absolute measure that is directly comparable across arbitrary
-datasets. In particular, the fraction of same-class edges is affected
-by the number and relative sizes of the classes. Platonov et al.\
-therefore distinguish raw edge homophily from adjusted measures that
-account for the amount of same-class connectivity expected from the
-class and degree distribution
-\cite{platonov2023critical}. This thesis nevertheless uses raw edge
-homophily when a direct and interpretable fraction of same-label edges
-is required, especially in the controlled experiments where target
-values of $h$ are imposed explicitly. Adjusted homophily is used as a
-supporting diagnostic where appropriate rather than as a replacement
-for the controlled variable.
+A further limitation is that raw edge homophily should not be treated as an absolute measure that is directly comparable across arbitrary datasets. In particular, the fraction of same-class edges is affected by the number and relative sizes of the classes. Platonov et al. therefore distinguish raw edge homophily from adjusted measures that account for the amount of same-class connectivity expected from the class and degree distribution \cite{platonov2023critical}. This thesis nevertheless uses raw edge homophily when a direct and interpretable fraction of same-label edges is required, especially in the controlled experiments where target values of $h$ are imposed explicitly. Adjusted homophily is used as a supporting diagnostic where appropriate rather than as a replacement for the controlled variable. 
 
-The distinction between homophily and heterophily is therefore used
-in this thesis as a characterization of how labels align with graph
-structure, not as a sufficient explanation for model behavior.
-Arnaiz-Rodriguez and Errica similarly caution against the universal
-claim that homophily is inherently beneficial and heterophily
-inherently detrimental, emphasizing instead the interaction between
-the task, features, labels, and topology
-\cite{arnaiz2026demystifying}. This perspective becomes important
-later in the thesis, where homophily is varied under controlled
-conditions to examine whether changes in label--topology alignment
-systematically alter depth-related degradation and representation
-behavior.
-
-
+In this thesis, homophily and heterophily are therefore used to describe how labels align with graph structure, not as a sufficient explanation for model behavior. Arnaiz-Rodriguez and Errica similarly caution against the universal claim that homophily is inherently beneficial and heterophily inherently detrimental, emphasizing instead the interaction between the task, features, labels, and topology \cite{arnaiz2026demystifying}. This distinction is particularly relevant for the experiments presented later in this thesis, where homophily is varied under controlled conditions to examine whether differences in label–topology alignment are associated with changes in depth-related performance degradation and learned node representations.
 
 % ============================================================
 % 2.4 Oversmoothing
