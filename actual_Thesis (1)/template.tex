@@ -378,27 +378,11 @@ In this thesis, homophily and heterophily are therefore used to describe how lab
 \subsection{Oversmoothing}
 \label{sec:oversmoothing-background}
 
-Repeated message passing does not only enlarge the receptive field of
-a node. It also repeatedly mixes node representations with information
-from their neighborhoods. As discussed in the previous section, this
-mixing can be useful when neighboring nodes contain task-relevant
-information. However, if the aggregation is applied repeatedly, node
-representations can become progressively less distinguishable. This
-phenomenon is commonly referred to as \emph{oversmoothing}
-\cite{li2018oversmoothing,rusch2023oversmoothing}.
+Repeated message passing does not only enlarge the receptive field of a node. It also repeatedly mixes node representations with information from their neighborhoods. As discussed in the previous section, this mixing can be useful when neighboring nodes contain task-relevant information.
+However, repeated aggregation can cause node representations to become gradually similar across multiple layers.
+This phenomenon is commonly referred to as \emph{oversmoothing} \cite{li2018oversmoothing,rusch2023oversmoothing}.
 
-An early explanation of this effect was given by Li et al.\
-\cite{li2018oversmoothing} for graph convolutional networks. They
-show that the propagation operation of a graph convolutional network
-can be interpreted as a form of Laplacian smoothing. In this view,
-each propagation step combines the representation of a node with
-representations from its neighborhood. A moderate amount of such
-smoothing can be beneficial because related nodes may obtain more
-similar representations. Repeated smoothing, however, can eventually
-remove distinctions that are necessary for separating nodes in the
-embedding space. Oversmoothing therefore refers to excessive
-representation smoothing rather than to neighborhood aggregation
-itself.
+An early explanation of this effect was given by Li et al.\ \cite{li2018oversmoothing} for graph convolutional networks. They show that the propagation operation of a graph convolutional network can be understood as a form of Laplacian smoothing. Under this interpretation, each propagation operation combines a node's own representation with information from its neighbors. A moderate amount of such smoothing can be beneficial, as it encourages related nodes to develop more similar representations. On the other hand, excessive smoothing can eventually remove distinctions that are necessary for separating nodes, making it difficult to distinguish between them. Oversmoothing therefore refers to excessive representation smoothing rather than to neighborhood aggregation itself.
 
 Let
 \[
@@ -410,10 +394,7 @@ Let
         (\mathbf{h}_{|V|}^{(l)})^\top
     \end{bmatrix}
 \]
-denote the matrix containing all node representations at layer $l$.
-A frequently used way of quantifying how strongly neighboring node
-representations differ is the graph Dirichlet energy. In a simplified
-unnormalized form, it can be written as
+denote the matrix containing all node representations at layer $l$. One way to measure how much the representations of neighboring nodes differ is through the graph Dirichlet energy. In a simplified unnormalized form, it can be written as
 
 \begin{equation}
     E\!\left(H^{(l)}\right)
@@ -428,90 +409,19 @@ unnormalized form, it can be written as
     \label{eq:dirichlet-energy}
 \end{equation}
 
-A large value indicates that neighboring nodes can still have
-substantially different representations, whereas a value approaching
-zero indicates that representations connected by graph edges are
-becoming increasingly similar. Dirichlet-energy-based measures are
-therefore widely used as diagnostics of oversmoothing
-\cite{rusch2023oversmoothing}. The exact normalized Dirichlet energy
-used in the experiments of this thesis is defined later in
-Section~\ref{sec:oversmoothing-diagnostics}, since normalization is
-important when representation magnitudes differ across models or
-training conditions.
+Higher values indicate greater differences between the representations of neighboring nodes, whereas a value approaching zero indicates that representations connected by graph edges are becoming increasingly similar. Therefore, measures based on Dirichlet energy are widely used as diagnostics of oversmoothing \cite{rusch2023oversmoothing}. The exact normalized Dirichlet energy used in the experiments of this thesis is defined in a later section, since normalization is important when representation magnitudes differ across models or training conditions. 
 
-The literature contains several related definitions and measures of
-oversmoothing. Rusch et al.\ \cite{rusch2023oversmoothing} provide a
-unified formulation in which oversmoothing is characterized by the
-layer-wise exponential convergence of a suitable node-similarity
-measure toward its collapsed value. This definition emphasizes that
-oversmoothing is not merely the observation that two neighboring
-representations happen to become slightly more similar. Rather, it
-describes a systematic loss of representation diversity as network
-depth increases. Other analyses characterize the limiting
-representations differently depending on the propagation operator.
-For example, Oono and Suzuki show that, under specific conditions on
-the graph spectrum and weight matrices, deep graph convolutional
-networks approach a restricted subspace at an exponential rate
-\cite{oono2020oversmoothing}. Within that subspace, the remaining
-information can be insufficient for distinguishing nodes that belong
-to the same connected component and have the same degree.
+Several definitions and metrics for oversmoothing have been proposed in the literature. Rusch et al.\ \cite{rusch2023oversmoothing} provide a unified formulation in which oversmoothing is characterized by the layer-wise exponential convergence of a suitable node-similarity measure toward its collapsed value. This definition emphasizes that oversmoothing is not merely the observation that two neighboring representations happen to become slightly more similar. Rather, it describes a systematic loss of representation diversity as network depth increases. Other analyses characterize the limiting representations differently depending on the propagation operator. For example, Oono and Suzuki demonstrate that, under specific conditions on the graph spectrum and weight matrices, the representations in deep graph convolutional networks converge exponentially toward a restricted subspace \cite{oono2020oversmoothing}. In this subspace, the remaining information can be insufficient to differentiate between nodes that belong to the same connected component and have the same degree.
 
-These asymptotic results are useful for understanding the mechanism,
-but they should not be interpreted as stating that every sufficiently
-deep graph neural network must oversmooth in the same way. The
-behavior depends on the propagation operator, graph topology,
-parameterization, normalization, and training dynamics. Recent work
-has further demonstrated that different oversmoothing diagnostics can
-lead to different conclusions for the same representations. In
-particular, Arnaiz-Rodriguez and Errica show that raw Dirichlet energy
-can change substantially under simple rescaling even when the
-underlying separability of the embeddings is not fundamentally
-altered \cite{arnaiz2026demystifying}. This motivates the use of
-multiple, scale-aware representation diagnostics rather than relying
-on a single scalar quantity.
+While these asymptotic results help explain why oversmoothing can occur, they do not suggest that every deep graph neural network will experience oversmoothing in the same way. The behavior depends on the propagation operator, graph topology, parameterization, normalization, and training dynamics. Recent work has further demonstrated that different oversmoothing diagnostics can lead to different conclusions for the same representations. In particular, Arnaiz-Rodriguez and Errica demonstrate that the raw Dirichlet energy can vary significantly due to simple rescaling, even when the separability of node embeddings remains largely unchanged \cite{arnaiz2026demystifying}. This motivates the use of multiple, scale-aware representation diagnostics rather than relying on a single metric.
 
-Figure~\ref{fig:oversmoothing-concept} illustrates the qualitative
-idea considered in this thesis. Node representations that are
-initially separated can move closer together as neighborhood
-information is repeatedly aggregated. The figure is intentionally
-conceptual: it illustrates loss of representation diversity but does
-not imply that every graph, architecture, or training configuration
-must follow the same trajectory.
+Figure~\ref{fig:oversmoothing-concept} illustrates the qualitative idea considered in this thesis. Node representations that are initially separated can move closer together as neighborhood information is repeatedly aggregated. The figure is meant to provide a simplified illustration of how node representations can become less diverse. It does not suggest that this process occurs in the same way for every graph, network architecture, or training setup.
 
-A further distinction is essential for the empirical analysis in this
-thesis. Oversmoothing describes a change in the geometry or
-information content of node representations; it is not itself
-equivalent to a decrease in predictive accuracy. Complete collapse to
-a non-informative representation would clearly prevent a classifier
-from distinguishing nodes that require different predictions.
-Before such a limit is reached, however, smoothing can also remove
-irrelevant variation while preserving or even improving
-class-relevant separation. Conversely, predictive performance can
-decrease for reasons other than oversmoothing, including optimization
-difficulties, an uninformative receptive field, or a mismatch between
-the graph structure and the learning task
-\cite{kormann2026position,arnaiz2026demystifying}.
+A further distinction is essential for the empirical analysis in this thesis. Oversmoothing describes a change in the geometry or information content of node representations, but oversmoothing itself is not equivalent to a decrease in predictive accuracy. If all node representations become indistinguishable and lose their class-relevant information, a classifier can no longer distinguish between nodes that require different predictions. However, before complete representation collapse occurs, smoothing may reduce irrelevant differences between node representations while maintaining or even enhancing their class-related separability. Conversely, predictive performance can decrease for reasons other than oversmoothing, including optimization difficulties, an uninformative receptive field, or a mismatch between the graph structure and the learning task \cite{kormann2026position,arnaiz2026demystifying}.
 
-This distinction has received increasing attention in recent work.
-Kormann et al.\ report that methods designed to mitigate
-oversmoothing can preserve representation diversity without
-consistently producing corresponding improvements in predictive
-performance \cite{kormann2026position}. Arnaiz-Rodriguez and Errica
-similarly argue that performance degradation should not be attributed
-to oversmoothing by default and emphasize the separability of
-task-relevant node representations as the more direct predictive
-quantity \cite{arnaiz2026demystifying}. For this reason, the
-experiments in this thesis evaluate predictive performance and
-representation diagnostics separately. Evidence of representation
-collapse is treated as support for an oversmoothing explanation only
-when it is considered together with the corresponding task behavior.
+This distinction has received increasing attention in recent work. Kormann et al.\ report that methods designed to mitigate oversmoothing can preserve representation diversity without consistently producing corresponding improvements in predictive performance \cite{kormann2026position}. Arnaiz-Rodriguez and Errica similarly argue that performance degradation should not be attributed to oversmoothing by default and emphasize that task-relevant representation separability is more directly linked to predictive performance \cite{arnaiz2026demystifying}. For this reason, the experiments in this thesis evaluate predictive performance and representation diagnostics separately. Evidence of representation collapse is considered an indication of oversmoothing only when it is considered together with the corresponding model performance.
 
-The possibility that repeated message passing removes useful
-representation diversity motivates methods that explicitly constrain
-or restore the geometry of intermediate node representations. One
-such method is PairNorm, which was proposed specifically as a
-normalization-based approach for counteracting oversmoothing and is
-introduced in the following section.
+Since repeated message passing can reduce important differences between node representations, several methods aim to preserve or restore their geometric structure. One such method is PairNorm, which was proposed specifically as a normalization-based approach for counteracting oversmoothing and is introduced in the following section.
 
 
 \begin{figure}[H]
@@ -541,26 +451,16 @@ introduced in the following section.
 \subsection{PairNorm}
 \label{sec:pairnorm-background}
 
-The previous section described oversmoothing as a progressive loss of
-distinction between node representations under repeated message
-passing. This observation motivates normalization methods that do not
-prevent neighborhood aggregation itself, but constrain how strongly
-the geometry of the intermediate representations can contract.
-PairNorm is one such method. It was introduced by Zhao and Akoglu as
-a normalization layer specifically designed to counteract
-oversmoothing in graph neural networks
-\cite{zhao2020pairnorm}.
+The previous section described oversmoothing as a progressive loss of distinction between node representations under repeated message
+passing. This observation motivates normalization methods that do not prevent neighborhood aggregation itself, but constrain how strongly
+the geometry of the intermediate representations can contract. PairNorm is one such method. It was introduced by Zhao and Akoglu as
+a normalization layer specifically designed to counteract oversmoothing in graph neural networks \cite{zhao2020pairnorm}.
 
-The main idea of PairNorm is to control the global spread of the node
-representations after a message-passing layer. Let
-$\widetilde{H}\in\mathbb{R}^{n\times p}$ denote the matrix of
-intermediate representations produced by such a layer, where $n$ is
-the number of nodes and $p$ the hidden dimension. Its $i$-th row,
-$\widetilde{\mathbf{h}}_i$, represents node $i$. Zhao and Akoglu
-motivate PairNorm through the observation that repeated graph
-convolution tends to decrease differences between node
-representations. They therefore propose constraining the total
-pairwise squared distance
+The main idea of PairNorm is to control the global spread of the node representations after a message-passing layer. Let
+$\widetilde{H}\in\mathbb{R}^{n\times p}$ denote the matrix of intermediate representations produced by such a layer, where $n$ is
+the number of nodes and $p$ the hidden dimension. Its $i$-th row, $\widetilde{\mathbf{h}}_i$, represents node $i$. Zhao and Akoglu
+motivate PairNorm through the observation that repeated graph convolution tends to decrease differences between node
+representations. They therefore propose constraining the total pairwise squared distance
 
 \begin{equation}
     \operatorname{TPSD}(H)
@@ -573,15 +473,11 @@ pairwise squared distance
     \label{eq:pairnorm-tpsd}
 \end{equation}
 
-where TPSD denotes the total pairwise squared distance
-\cite{zhao2020pairnorm}. Maintaining a non-vanishing global pairwise
-distance prevents all node representations from simultaneously
-collapsing toward the same point.
+where TPSD denotes the total pairwise squared distance \cite{zhao2020pairnorm}. Maintaining a non-vanishing global pairwise
+distance prevents all node representations from simultaneously collapsing toward the same point.
 
-PairNorm implements this idea using two consecutive operations:
-\emph{centering} and \emph{scaling}. First, the mean representation
-across all nodes is removed. For each node $i$, the centered
-representation is
+PairNorm implements this idea using two consecutive operations: \emph{centering} and \emph{scaling}. First, the mean representation
+across all nodes is removed. For each node $i$, the centered representation is
 
 \begin{equation}
     \widetilde{\mathbf{h}}^{\,c}_i
@@ -594,15 +490,11 @@ representation is
     \label{eq:pairnorm-center}
 \end{equation}
 
-This translation moves the mean of the node representations to the
-origin. Since the same vector is subtracted from every node,
-centering does not change the pairwise differences between node
-representations. Its purpose is instead to provide a common reference
-point from which the overall scale of the representation matrix can
-be controlled efficiently \cite{zhao2020pairnorm}.
+This translation moves the mean of the node representations to the origin. Since the same vector is subtracted from every node,
+centering does not change the pairwise differences between node representations. Its purpose is instead to provide a common reference
+point from which the overall scale of the representation matrix can be controlled efficiently \cite{zhao2020pairnorm}.
 
-The centered representations are then rescaled according to their
-average squared norm. The standard PairNorm transformation can be
+The centered representations are then rescaled according to their average squared norm. The standard PairNorm transformation can be
 written as
 
 \begin{equation}
@@ -623,11 +515,8 @@ written as
     \label{eq:pairnorm-scale}
 \end{equation}
 
-where $s>0$ is a scale hyperparameter
-\cite{zhao2020pairnorm}. After this transformation, the
-representations remain centered and their total pairwise squared
-distance is fixed to a value determined by $n$ and $s$. In
-particular, the original PairNorm derivation gives
+where $s>0$ is a scale hyperparameter \cite{zhao2020pairnorm}. After this transformation, the
+representations remain centered and their total pairwise squared distance is fixed to a value determined by $n$ and $s$. In particular, the original PairNorm derivation gives
 
 \begin{equation}
     \operatorname{TPSD}
