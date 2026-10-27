@@ -528,65 +528,17 @@ representations remain centered and their total pairwise squared distance is fix
     \label{eq:pairnorm-tpsd-constant}
 \end{equation}
 
-PairNorm therefore does not prescribe which individual nodes should
-be close to or distant from one another. Instead, it constrains the
-global geometry of the complete set of node representations. Local
-message passing can still make some representations more similar, but
-a simultaneous collapse of all node representations is prevented by
-maintaining their overall spread. This distinction is important:
-PairNorm does not modify the graph topology, the receptive field, or
-the number of message-passing steps. It acts only on the intermediate
-representations produced by the network.
+PairNorm therefore does not prescribe which individual nodes should be close to or distant from one another. Instead, it constrains the global geometry of the complete set of node representations. Message passing can still make some representations more similar, but a simultaneous collapse of all node representations is prevented by maintaining their overall spread. This is important because PairNorm does not modify the graph topology, the receptive field, or the number of message-passing steps. It only acts on the intermediate representations produced by the network.
 
-Figure~\ref{fig:pairnorm-concept} illustrates this geometric effect.
-Repeated aggregation can move initially distinct node
-representations toward a more concentrated region of the embedding
-space. PairNorm first recenters these representations and then
-rescales their global spread. The schematic should not be interpreted
-as preserving every individual distance or restoring the original
-positions of the nodes. Rather, it visualizes the global constraint
-that prevents the complete representation set from contracting
-without bound.
+This geometric effect is illustrated in Figure~\ref{fig:pairnorm-concept}. Repeated aggregation can initially move distinct node representations toward a more concentrated region of the embedding space. PairNorm first recenters these representations and after that it rescales their global spread. The figure should not be understood as suggesting that all distances between nodes are preserved or that their original positions are recovered. Rather, it visualizes the global constraint that prevents the complete representation set from contracting without bound.
 
-The original formulation is computationally simple and introduces no
-additional learnable parameters. Zhao and Akoglu propose inserting
-the normalization between intermediate graph neural network layers,
-which allows PairNorm to be combined with different message-passing
-architectures \cite{zhao2020pairnorm}. In this thesis, PairNorm is
-primarily combined with GraphSAGE so that the effect of repeated
-message passing can be compared with and without this normalization
-under otherwise matched architectural conditions. The exact model
-placement and experimental settings are specified later in the
-methodology.
+The original formulation is computationally simple and introduces no additional learnable parameters. Zhao and Akoglu propose inserting the normalization between intermediate graph neural network layers, which allows PairNorm to be combined with different message-passing architectures \cite{zhao2020pairnorm}. In this thesis, PairNorm is primarily combined with GraphSAGE so that the effect of repeated message passing can be compared with and without this normalization under otherwise matched architectural conditions. The exact model placement and experimental settings are specified later in the methodology.
 
-Preserving representation diversity, however, should not be equated
-with guaranteeing higher predictive accuracy. Zhao and Akoglu
-already observe that making deeper networks more robust to
-oversmoothing does not necessarily improve absolute test performance
-when additional depth is not useful for the underlying task
-\cite{zhao2020pairnorm}. Rusch et al.\ further demonstrate that a
-method can maintain a non-collapsed representation diagnostic while
-predictive performance still deteriorates with increasing depth
-\cite{rusch2023oversmoothing}. PairNorm is therefore treated in this
-thesis as an intervention on representation geometry rather than as
-an assumed solution to depth-related performance degradation.
+However, it should be said that maintaining diversity among node representations does not necessarily lead to higher predictive accuracy. Zhao and Akoglu already observe that increased robustness against oversmoothing in deep graph neural networks does not necessarily improve absolute test performance when additional depth is not useful for the underlying task \cite{zhao2020pairnorm}. Rusch et al.\ further demonstrate that a method can maintain a non-collapsed representation diagnostic, even as predictive performance declines with increasing network depth \cite{rusch2023oversmoothing}. PairNorm is therefore considered in this thesis as a method for modifying the geometry of node representations rather than a guaranteed solution to depth-related performance degradation. 
 
-This distinction also motivates a later component ablation. Since the
-standard PairNorm transformation consists of both centering and
-scaling, the experiments additionally evaluate a center-only and a
-scale-only operation to determine which component is associated with
-the observed changes in representation geometry and predictive
-performance. These two configurations are diagnostic variants
-introduced for this thesis; they should not be interpreted as
-separate methods proposed in the original PairNorm work.
+This distinction also motivates a later component ablation. Since the standard PairNorm transformation consists of both centering and scaling, the experiments additionally evaluate a center-only and a scale-only operation to determine which component is associated with the observed changes in representation geometry and predictive performance. These two configurations are introduced specifically for the analysis in this thesis and are not presented as distinct methods in the original PairNorm work.
 
-Finally, PairNorm is also reused later in the long-range information
-propagation experiments. Its role there remains that of a
-non-structural normalization intervention: unlike graph rewiring,
-PairNorm does not introduce new edges or shorten graph distances.
-This makes it possible to examine whether changes in long-range
-behavior necessarily require a structural modification of the graph,
-without redefining PairNorm as an oversquashing-specific method.
+Finally, PairNorm is also reused later in the long-range information propagation experiments, where it continues to function as a non-structural normalization mechanism. Unlike graph rewiring, PairNorm does not introduce new edges or shorten graph distances. This makes it possible to examine whether changes in long-range behavior necessarily require a structural modification of the graph, without redefining PairNorm as an oversquashing-specific method.
 
 
 \begin{figure}[H]
