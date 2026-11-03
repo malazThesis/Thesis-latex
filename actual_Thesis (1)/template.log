@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  28 OCT 2026 14:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  3 NOV 2026 13:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -446,20 +446,22 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 4.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-))
+)
+
+[2
+
+])
 \tf@toc=\write3
 \openout3 = `template.toc'.
 
 
 
-[2
+[3]
+
+[4
 
 ]
-
-[3
-
-]
-<figures/fig01_receptive_field.png, id=26, 579.3645pt x 225.2415pt>
+<figures/fig01_receptive_field.png, id=29, 579.3645pt x 225.2415pt>
 File: figures/fig01_receptive_field.png Graphic file (type png)
 <use figures/fig01_receptive_field.png>
 Package pdftex.def Info: figures/fig01_receptive_field.png  used on input line 
@@ -467,8 +469,8 @@ Package pdftex.def Info: figures/fig01_receptive_field.png  used on input line
 (pdftex.def)             Requested size: 397.3397pt x 154.47852pt.
 
 
-[4 <./figures/fig01_receptive_field.png>]
-<figures/fig02_depth_vs_width.png, id=32, 646.0938pt x 323.7696pt>
+[5 <./figures/fig01_receptive_field.png>]
+<figures/fig02_depth_vs_width.png, id=35, 646.0938pt x 323.7696pt>
 File: figures/fig02_depth_vs_width.png Graphic file (type png)
 <use figures/fig02_depth_vs_width.png>
 Package pdftex.def Info: figures/fig02_depth_vs_width.png  used on input line 2
@@ -476,10 +478,10 @@ Package pdftex.def Info: figures/fig02_depth_vs_width.png  used on input line 2
 (pdftex.def)             Requested size: 397.3397pt x 199.1196pt.
 
 
-[5]
+[6]
 
-[6 <./figures/fig02_depth_vs_width.png>]
-<figures/fig03_homophily_heterophily.png, id=42, 529.98pt x 241.8636pt>
+[7 <./figures/fig02_depth_vs_width.png>]
+<figures/fig03_homophily_heterophily.png, id=45, 529.98pt x 241.8636pt>
 File: figures/fig03_homophily_heterophily.png Graphic file (type png)
 <use figures/fig03_homophily_heterophily.png>
 Package pdftex.def Info: figures/fig03_homophily_heterophily.png  used on input
@@ -487,10 +489,10 @@ Package pdftex.def Info: figures/fig03_homophily_heterophily.png  used on input
 (pdftex.def)             Requested size: 397.3397pt x 181.3345pt.
 
 
-[7 <./figures/fig03_homophily_heterophily.png>]
+[8 <./figures/fig03_homophily_heterophily.png>]
 
-[8]
-<figures/fig04_oversmoothing.png, id=51, 637.6623pt x 201.3924pt>
+[9]
+<figures/fig04_oversmoothing.png, id=54, 637.6623pt x 201.3924pt>
 File: figures/fig04_oversmoothing.png Graphic file (type png)
 <use figures/fig04_oversmoothing.png>
 Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 43
@@ -498,54 +500,256 @@ Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 43
 (pdftex.def)             Requested size: 397.3397pt x 125.49194pt.
 
 
-[9]
+[10]
 
-[10 <./figures/fig04_oversmoothing.png>]
+[11 <./figures/fig04_oversmoothing.png>]
 
-[11]
-<figures/fig05_pairnorm.png, id=62, 595.023pt x 215.8464pt>
+[12]
+<figures/fig05_pairnorm.png, id=66, 595.023pt x 215.8464pt>
 File: figures/fig05_pairnorm.png Graphic file (type png)
 <use figures/fig05_pairnorm.png>
 Package pdftex.def Info: figures/fig05_pairnorm.png  used on input line 550.
 (pdftex.def)             Requested size: 397.3397pt x 144.13876pt.
 
 
-[12 <./figures/fig05_pairnorm.png>] (./template.bbl)
+[13 <./figures/fig05_pairnorm.png>]
+Overfull \hbox (4.14194pt too wide) in paragraph at lines 585--586
+[]\OT1/ptm/m/n/10 The dataset col-lec-tion de-lib-er-ately in-cludes both rel-a
+-tively ho-mophilous and strongly het-erophilous graphs.
+ []
 
-[13
 
-] (./template.aux)
+
+[14]
+
+[15]
+Overfull \hbox (4.04156pt too wide) in paragraph at lines 673--674
+\OT1/ptm/m/n/10 validation-selected check-point, whereas sev-eral rep-re-sen-ta
+-tion anal-y-ses eval-u-ate a spec-i-fied train-ing epoch.
+ []
+
+
+
+[16
+
+
+]
+
+[17]
+
+[18]
+
+[19]
+
+[20]
+<figures/fig06a_realworld_performance_depth.png, id=94, 1185.4689pt x 542.9886p
+t>
+File: figures/fig06a_realworld_performance_depth.png Graphic file (type png)
+<use figures/fig06a_realworld_performance_depth.png>
+Package pdftex.def Info: figures/fig06a_realworld_performance_depth.png  used o
+n input line 834.
+(pdftex.def)             Requested size: 418.25368pt x 191.57335pt.
+<figures/fig06b_realworld_pairnorm_effects.png, id=95, 1185.4689pt x 542.9886pt
+>
+File: figures/fig06b_realworld_pairnorm_effects.png Graphic file (type png)
+<use figures/fig06b_realworld_pairnorm_effects.png>
+Package pdftex.def Info: figures/fig06b_realworld_pairnorm_effects.png  used on
+ input line 849.
+(pdftex.def)             Requested size: 418.25368pt x 191.57335pt.
+
+
+[21]
+
+[22 <./figures/fig06a_realworld_performance_depth.png>]
+
+[23 <./figures/fig06b_realworld_pairnorm_effects.png>]
+
+[24]
+Overfull \hbox (12.43205pt too wide) in paragraph at lines 1001--1002
+[]\OT1/ptm/m/n/10 To quan-tify how PairNorm changes this re-la-tion-ship, the e
+x-per-i-ment uses a matched difference-in-differences
+ []
+
+
+
+[25
+
+
+]
+<figures/fig07_selected4_depth_interaction.png, id=114, 794.97pt x 433.62pt>
+File: figures/fig07_selected4_depth_interaction.png Graphic file (type png)
+<use figures/fig07_selected4_depth_interaction.png>
+Package pdftex.def Info: figures/fig07_selected4_depth_interaction.png  used on
+ input line 1030.
+(pdftex.def)             Requested size: 384.7926pt x 209.88861pt.
+
+
+[26]
+
+[27 <./figures/fig07_selected4_depth_interaction.png>]
+<figures/fig08_selected4_representation_ratios.png, id=125, 794.97pt x 433.62pt
+>
+File: figures/fig08_selected4_representation_ratios.png Graphic file (type png)
+
+<use figures/fig08_selected4_representation_ratios.png>
+Package pdftex.def Info: figures/fig08_selected4_representation_ratios.png  use
+d on input line 1090.
+(pdftex.def)             Requested size: 384.7926pt x 209.88861pt.
+
+
+[28]
+Overfull \hbox (8.2127pt too wide) in paragraph at lines 1116--1117
+[]\OT1/ptm/m/n/10 The ex-per-i-ment uses PubMed and Roman-Empire as two con-tra
+st-ing graph-learning en-vi-ron-ments. PubMed
+ []
+
+
+
+[29 <./figures/fig08_selected4_representation_ratios.png>]
+Overfull \hbox (3.14229pt too wide) in paragraph at lines 1135--1136
+[]\OT1/ptm/m/n/10 The ini-tial con-trolled ex-plo-ration eval-u-ates sev-eral n
+et-work depths, in-clud-ing two, four, and eight message-
+ []
+
+
+
+[30]
+<figures/fig09_controlled_homophily_overview.png, id=137, 931.8012pt x 484.209p
+t>
+File: figures/fig09_controlled_homophily_overview.png Graphic file (type png)
+<use figures/fig09_controlled_homophily_overview.png>
+Package pdftex.def Info: figures/fig09_controlled_homophily_overview.png  used 
+on input line 1186.
+(pdftex.def)             Requested size: 418.25368pt x 217.34529pt.
+
+Overfull \hbox (0.90594pt too wide) in paragraph at lines 1193--1194
+[]\OT1/ptm/m/n/10 For PubMed at $\OML/cmm/m/it/10 h \OT1/cmr/m/n/10 = 0\OML/cmm
+/m/it/10 :\OT1/cmr/m/n/10 1$\OT1/ptm/m/n/10 , Graph-SAGE reaches only 39.94% te
+st ac-cu-racy, whereas Graph-SAGE+PairNorm
+ []
+
+
+
+[31 <./figures/fig09_controlled_homophily_overview.png>]
+
+[32]
+
+[33]
+<figures/fig10_temporal_recovery.png, id=153, 721.4955pt x 498.4221pt>
+File: figures/fig10_temporal_recovery.png Graphic file (type png)
+<use figures/fig10_temporal_recovery.png>
+Package pdftex.def Info: figures/fig10_temporal_recovery.png  used on input lin
+e 1269.
+(pdftex.def)             Requested size: 418.25368pt x 288.94052pt.
+
+
+[34
+
+
+]
+
+[35 <./figures/fig10_temporal_recovery.png>]
+
+[36]
+
+[37]
+<figures/fig11_csbm_controlled_summary.png, id=168, 700.5372pt x 291.489pt>
+File: figures/fig11_csbm_controlled_summary.png Graphic file (type png)
+<use figures/fig11_csbm_controlled_summary.png>
+Package pdftex.def Info: figures/fig11_csbm_controlled_summary.png  used on inp
+ut line 1373.
+(pdftex.def)             Requested size: 418.25368pt x 174.03188pt.
+
+
+[38]
+
+[39 <./figures/fig11_csbm_controlled_summary.png>]
+
+[40]
+<figures/fig12_pubmed_roman_lr_sensitivity.png, id=179, 716.50543pt x 297.33943
+pt>
+File: figures/fig12_pubmed_roman_lr_sensitivity.png Graphic file (type png)
+<use figures/fig12_pubmed_roman_lr_sensitivity.png>
+Package pdftex.def Info: figures/fig12_pubmed_roman_lr_sensitivity.png  used on
+ input line 1450.
+(pdftex.def)             Requested size: 418.25368pt x 173.56854pt.
+
+
+[41 <./figures/fig12_pubmed_roman_lr_sensitivity.png>]
+
+[42]
+<figures/fig13_pairnorm_component_ablation.png, id=188, 854.2314pt x 1044.0606p
+t>
+File: figures/fig13_pairnorm_component_ablation.png Graphic file (type png)
+<use figures/fig13_pairnorm_component_ablation.png>
+Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.png  used on
+ input line 1504.
+(pdftex.def)             Requested size: 418.25368pt x 511.1959pt.
+
+
+[43]
+
+[44 <./figures/fig13_pairnorm_component_ablation.png>]
+
+[45]
+Overfull \hbox (1.42224pt too wide) in paragraph at lines 1576--1577
+[]\OT1/ptm/m/n/10 The three con-di-tions re-veal that the con-tri-bu-tion of Pa
+irNorm's cen-ter-ing and scal-ing op-er-a-tions is domain-
+ []
+
+
+
+[46
+
+
+]
+
+[47] (./template.bbl
+
+[48
+
+])
+
+[49] (./template.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 6875 strings out of 473190
- 116493 string characters out of 5715801
- 535449 words of memory out of 5000000
- 30001 multiletter control sequences out of 15000+600000
- 582967 words of font info for 85 fonts, out of 8000000 for 9000
+ 7032 strings out of 473190
+ 121577 string characters out of 5715801
+ 563874 words of memory out of 5000000
+ 30149 multiletter control sequences out of 15000+600000
+ 591357 words of font info for 100 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 66i,8n,68p,1137b,305s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 66i,16n,68p,1137b,367s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></u
-sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/lo
-cal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local
-/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/
-texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/te
-xlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/loca
-l/texlive/2025/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texliv
-e/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/tex
-mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fo
-nts/type1/urw/times/utmri8a.pfb>
-Output written on template.pdf (14 pages, 687792 bytes).
+/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></u
+sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr
+/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/l
+ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/loc
+al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local
+/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/t
+exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive
+/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/20
+25/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2025/texmf-d
+ist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-dist/
+fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type
+1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/time
+s/utmri8a.pfb>
+Output written on template.pdf (50 pages, 3427072 bytes).
 PDF statistics:
- 132 PDF objects out of 1000 (max. 8388607)
- 77 compressed objects within 1 object stream
+ 307 PDF objects out of 1000 (max. 8388607)
+ 181 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 71 words of extra memory for PDF output out of 10000 (max. 10000000)
 

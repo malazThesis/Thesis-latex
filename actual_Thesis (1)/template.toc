@@ -1,15 +1,38 @@
 \babel@toc {english}{}\relax 
 \babel@toc {english}{}\relax 
-\contentsline {section}{\numberline {1}Introduction}{3}{}%
-\contentsline {subsection}{\numberline {1.1}Motivation}{3}{}%
-\contentsline {subsection}{\numberline {1.2}Research Questions}{3}{}%
-\contentsline {section}{\numberline {2}Background}{3}{}%
-\contentsline {subsection}{\numberline {2.1}Message Passing and Receptive Fields}{3}{}%
-\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{4}{}%
-\contentsline {subsection}{\numberline {2.3}Homophily and Heterophily}{6}{}%
-\contentsline {subsection}{\numberline {2.4}Oversmoothing}{8}{}%
-\contentsline {subsection}{\numberline {2.5}PairNorm}{10}{}%
-\contentsline {section}{\numberline {3}Experimental Methodology}{12}{}%
-\contentsline {subsection}{\numberline {3.1}Real-World Datasets}{12}{}%
-\contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{12}{}%
-\contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{12}{}%
+\contentsline {section}{\numberline {1}Introduction}{4}{}%
+\contentsline {subsection}{\numberline {1.1}Motivation}{4}{}%
+\contentsline {subsection}{\numberline {1.2}Research Questions}{4}{}%
+\contentsline {section}{\numberline {2}Background}{4}{}%
+\contentsline {subsection}{\numberline {2.1}Message Passing and Receptive Fields}{4}{}%
+\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{5}{}%
+\contentsline {subsection}{\numberline {2.3}Homophily and Heterophily}{7}{}%
+\contentsline {subsection}{\numberline {2.4}Oversmoothing}{9}{}%
+\contentsline {subsection}{\numberline {2.5}PairNorm}{11}{}%
+\contentsline {section}{\numberline {3}Experimental Methodology}{13}{}%
+\contentsline {subsection}{\numberline {3.1}Real-World Datasets}{14}{}%
+\contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{16}{}%
+\contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{17}{}%
+\contentsline {paragraph}{Normalized Dirichlet energy.}{17}{}%
+\contentsline {paragraph}{Effective rank.}{18}{}%
+\contentsline {paragraph}{Cosine-distance diagnostics.}{19}{}%
+\contentsline {paragraph}{Interpretation of diagnostic evidence.}{19}{}%
+\contentsline {section}{\numberline {4}Broad Real-World Screening}{19}{}%
+\contentsline {subsection}{\numberline {4.1}Experimental Design}{19}{}%
+\contentsline {subsection}{\numberline {4.2}Results}{20}{}%
+\contentsline {section}{\numberline {5}Selected Real-World Cases}{25}{}%
+\contentsline {subsection}{\numberline {5.1}Depth Interaction}{25}{}%
+\contentsline {subsection}{\numberline {5.2}Representation Diagnostics}{28}{}%
+\contentsline {section}{\numberline {6}Controlled Homophily}{29}{}%
+\contentsline {subsection}{\numberline {6.1}Controlled Graph Construction}{29}{}%
+\contentsline {subsection}{\numberline {6.2}Endpoint Results}{31}{}%
+\contentsline {subsection}{\numberline {6.3}Temporal Representation Dynamics}{34}{}%
+\contentsline {section}{\numberline {7}Controlled cSBM Experiments}{36}{}%
+\contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{36}{}%
+\contentsline {subsection}{\numberline {7.2}Predictive Performance Across Controlled Conditions}{38}{}%
+\contentsline {subsection}{\numberline {7.3}Critical Depth and Representation Collapse}{38}{}%
+\contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{40}{}%
+\contentsline {section}{\numberline {9}PairNorm Component Ablation}{42}{}%
+\contentsline {subsection}{\numberline {9.1}Ablation Results}{42}{}%
+\contentsline {subsection}{\numberline {9.2}Interpretation of the Components}{46}{}%
+\contentsline {section}{\numberline {10}Oversmoothing Synthesis}{46}{}%

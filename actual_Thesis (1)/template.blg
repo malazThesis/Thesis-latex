@@ -7,46 +7,50 @@ Repeated entry---line 182 of file references.bib
  : @inproceedings{zhao2020pairnorm
  :                                ,
 I'm skipping whatever remains of this entry
+Repeated entry---line 239 of file references.bib
+ : @inproceedings{deshpande2018csbm
+ :                                 ,
+I'm skipping whatever remains of this entry
 Warning--can't use both volume and number fields in li2018oversmoothing
-You've used 13 entries,
+You've used 25 entries,
             2541 wiz_defined-function locations,
-            624 strings with 7070 characters,
-and the built_in function-call counts, 6461 in all, are:
-= -- 625
-> -- 355
-< -- 13
-+ -- 129
-- -- 127
-* -- 467
-:= -- 1026
-add.period$ -- 42
-call.type$ -- 13
-change.case$ -- 86
-chr.to.int$ -- 13
-cite$ -- 14
-duplicate$ -- 271
-empty$ -- 463
-format.name$ -- 136
-if$ -- 1359
+            685 strings with 8977 characters,
+and the built_in function-call counts, 11618 in all, are:
+= -- 1119
+> -- 646
+< -- 19
++ -- 235
+- -- 231
+* -- 845
+:= -- 1880
+add.period$ -- 79
+call.type$ -- 25
+change.case$ -- 159
+chr.to.int$ -- 25
+cite$ -- 26
+duplicate$ -- 478
+empty$ -- 837
+format.name$ -- 252
+if$ -- 2410
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 12
-newline$ -- 69
-num.names$ -- 39
-pop$ -- 115
+missing$ -- 24
+newline$ -- 129
+num.names$ -- 75
+pop$ -- 205
 preamble$ -- 1
-purify$ -- 112
+purify$ -- 209
 quote$ -- 0
-skip$ -- 228
+skip$ -- 392
 stack$ -- 0
-substring$ -- 293
-swap$ -- 89
-text.length$ -- 13
-text.prefix$ -- 1
+substring$ -- 509
+swap$ -- 127
+text.length$ -- 19
+text.prefix$ -- 3
 top$ -- 0
-type$ -- 104
+type$ -- 200
 warning$ -- 1
-while$ -- 53
-width$ -- 17
-write$ -- 174
-(There was 1 error message)
+while$ -- 99
+width$ -- 31
+write$ -- 327
+(There were 2 error messages)

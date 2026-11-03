@@ -16,6 +16,12 @@ Francesco Di~Giovanni, Lorenzo Giusti, Federico Barbero, Giulia Luise, Pietro
   Learning}, volume 202 of {\em Proceedings of Machine Learning Research},
   pages 7865--7885. PMLR, 2023.
 
+\bibitem[DSMM18]{deshpande2018csbm}
+Yash Deshpande, Subhabrata Sen, Andrea Montanari, and Elchanan Mossel.
+\newblock Contextual Stochastic Block Models.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~31, 2018.
+
 \bibitem[GSR{\etalchar{+}}17]{gilmer2017mpnn}
 Justin Gilmer, Samuel~S. Schoenholz, Patrick~F. Riley, Oriol Vinyals, and
   George~E. Dahl.
@@ -23,6 +29,11 @@ Justin Gilmer, Samuel~S. Schoenholz, Patrick~F. Riley, Oriol Vinyals, and
 \newblock In {\em Proceedings of the 34th International Conference on Machine
   Learning}, volume~70 of {\em Proceedings of Machine Learning Research}, pages
   1263--1272. PMLR, 2017.
+
+\bibitem[Hol79]{holm1979procedure}
+Sture Holm.
+\newblock A Simple Sequentially Rejective Multiple Test Procedure.
+\newblock {\em Scandinavian Journal of Statistics}, 6(2):65--70, 1979.
 
 \bibitem[HYL17]{hamilton2017graphsage}
 William~L. Hamilton, Rex Ying, and Jure Leskovec.
@@ -35,6 +46,17 @@ Niklas Kormann, Benjamin Doerr, and Johannes~F. Lutzeyer.
 \newblock Position: Don't be Afraid of Over-Smoothing And Over-Squashing.
 \newblock {\em arXiv preprint arXiv:2601.07419}, 2026.
 
+\bibitem[KW17]{kipf2017gcn}
+Thomas~N. Kipf and Max Welling.
+\newblock Semi-Supervised Classification with Graph Convolutional Networks.
+\newblock In {\em International Conference on Learning Representations}, 2017.
+
+\bibitem[Lak13]{lakens2013effectsizes}
+Dani{\"e}l Lakens.
+\newblock Calculating and Reporting Effect Sizes to Facilitate Cumulative
+  Science: A Practical Primer for t-tests and ANOVAs.
+\newblock {\em Frontiers in Psychology}, 4:863, 2013.
+
 \bibitem[LHW18]{li2018oversmoothing}
 Qimai Li, Zhichao Han, and Xiao-Ming Wu.
 \newblock Deeper Insights Into Graph Convolutional Networks for Semi-Supervised
@@ -46,6 +68,11 @@ Qimai Li, Zhichao Han, and Xiao-Ming Wu.
 Andreas Loukas.
 \newblock What Graph Neural Networks Cannot Learn: Depth vs Width.
 \newblock In {\em International Conference on Learning Representations}, 2020.
+
+\bibitem[MS02]{maslov2002specificity}
+Sergei Maslov and Kim Sneppen.
+\newblock Specificity and Stability in Topology of Protein Networks.
+\newblock {\em Science}, 296(5569):910--913, 2002.
 
 \bibitem[OS20]{oono2020oversmoothing}
 Kenta Oono and Taiji Suzuki.
@@ -60,11 +87,40 @@ Oleg Platonov, Denis Kuznedelev, Michael Diskin, Artem Babenko, and Liudmila
   Really Making Progress?
 \newblock In {\em International Conference on Learning Representations}, 2023.
 
+\bibitem[PWC{\etalchar{+}}20]{pei2020geomgcn}
+Hongbin Pei, Bingzhe Wei, Kevin Chen-Chuan Chang, Yu~Lei, and Bo~Yang.
+\newblock Geom-GCN: Geometric Graph Convolutional Networks.
+\newblock In {\em International Conference on Learning Representations}, 2020.
+
+\bibitem[RAS21]{rozemberczki2021multiscale}
+Benedek Rozemberczki, Carl Allen, and Rik Sarkar.
+\newblock Multi-Scale Attributed Node Embedding.
+\newblock {\em Journal of Complex Networks}, 9(2):cnab014, 2021.
+
 \bibitem[RBM23]{rusch2023oversmoothing}
 T.~Konstantin Rusch, Michael~M. Bronstein, and Siddhartha Mishra.
 \newblock A Survey on Oversmoothing in Graph Neural Networks.
 \newblock Technical Report 2023-17, Seminar for Applied Mathematics, ETH
   Zurich, 2023.
+
+\bibitem[RV07]{roy2007effective}
+Olivier Roy and Martin Vetterli.
+\newblock The Effective Rank: A Measure of Effective Dimensionality.
+\newblock In {\em 2007 15th European Signal Processing Conference}, pages
+  606--610, 2007.
+
+\bibitem[SMBG18]{shchur2018pitfalls}
+Oleksandr Shchur, Maximilian Mumme, Aleksandar Bojchevski, and Stephan
+  G{\"u}nnemann.
+\newblock Pitfalls of Graph Neural Network Evaluation.
+\newblock {\em Relational Representation Learning Workshop, NeurIPS 2018},
+  2018.
+
+\bibitem[VCC{\etalchar{+}}18]{velickovic2018gat}
+Petar Veli{\v{c}}kovi{\'c}, Guillem Cucurull, Arantxa Casanova, Adriana Romero,
+  Pietro Li{\`o}, and Yoshua Bengio.
+\newblock Graph Attention Networks.
+\newblock In {\em International Conference on Learning Representations}, 2018.
 
 \bibitem[XLT{\etalchar{+}}18]{xu2018jk}
 Keyulu Xu, Chengtao Li, Yonglong Tian, Tomohiro Sonobe, Ken-ichi Kawarabayashi,
@@ -74,10 +130,22 @@ Keyulu Xu, Chengtao Li, Yonglong Tian, Tomohiro Sonobe, Ken-ichi Kawarabayashi,
   Learning}, volume~80 of {\em Proceedings of Machine Learning Research}, pages
   5453--5462. PMLR, 2018.
 
+\bibitem[YCS16]{yang2016planetoid}
+Zhilin Yang, William~W. Cohen, and Ruslan Salakhutdinov.
+\newblock Revisiting Semi-Supervised Learning with Graph Embeddings.
+\newblock In {\em Proceedings of the 33rd International Conference on Machine
+  Learning}, volume~48 of {\em Proceedings of Machine Learning Research}, pages
+  40--48. PMLR, 2016.
+
 \bibitem[ZA20]{zhao2020pairnorm}
 Lingxiao Zhao and Leman Akoglu.
 \newblock PairNorm: Tackling Oversmoothing in GNNs.
 \newblock In {\em International Conference on Learning Representations}, 2020.
+
+\bibitem[ZDHT26]{zhang2026measuring}
+Kaicheng Zhang, Piero Deidda, Desmond~J. Higham, and Francesco Tudisco.
+\newblock Are We Measuring Oversmoothing in Graph Neural Networks Correctly?
+\newblock In {\em International Conference on Learning Representations}, 2026.
 
 \bibitem[ZYZ{\etalchar{+}}20]{zhu2020heterophily}
 Jiong Zhu, Yujun Yan, Lingxiao Zhao, Mark Heimann, Leman Akoglu, and Danai

@@ -565,26 +565,845 @@ Finally, PairNorm is also reused later in the long-range information propagation
 % 3 Experimental Methodology
 % ============================================================
 
+
 \section{Experimental Methodology}
-\label{sec:methodology}
+\label{sec:experimental-methodology}
 
+The previous chapter introduced the theoretical concepts needed to investigate depth-related performance degradation in graph neural networks. In particular, it distinguished the loss of representation diversity associated with oversmoothing from a decrease in predictive accuracy. The empirical analysis follows this distinction by evaluating both quantities separately and examining whether they change together under controlled modifications of network depth, normalization, and graph structure.
 
-% ============================================================
-% 3.1 Real-World Datasets
-% ============================================================
+The experiments are organized into several complementary stages. First, a broad screening study examines the behavior of shallow and deeper graph neural networks on 15 real-world node-classification datasets. Four datasets are then selected for a more detailed comparison of GraphSAGE with and without PairNorm. To reduce the confounding effects of comparing unrelated datasets, additional experiments modify edge homophily while retaining the node features and labels of PubMed and Roman-Empire. A synthetic contextual stochastic block model provides further control over graph connectivity and feature information. Finally, learning-rate sensitivity and component-ablation experiments investigate whether the observed differences depend on optimization or on particular operations of PairNorm.
+
+These stages serve different purposes. The broad screening identifies the extent and heterogeneity of depth-related degradation. The controlled experiments provide more direct evidence about the relationship between representation geometry, predictive performance, and normalization. None of these measurements is treated as sufficient on its own to establish that oversmoothing causes an observed accuracy decrease.
 
 \subsection{Real-World Datasets}
-\label{sec:real-world-datasets}
+\label{sec:realworld-datasets}
 
+The real-world evaluation covers 15 node-classification datasets with different graph sizes, feature dimensions, numbers of classes, and degrees of class-label homophily. Node classification is the task of predicting a class label for each node using the available node features and graph structure. In the experiments considered here, the graph and node features are available during message passing, while only the labels of the training nodes are used to optimize the model parameters.
+
+Table~\ref{tab:dataset-overview} summarizes the dataset characteristics. The number of edges refers to unique undirected node pairs. The feature count denotes the dimensionality of the input feature vector, and the number of classes specifies the possible prediction labels. The edge-homophily values use the raw class-label definition introduced in Section~2.3. The table also identifies the dataset loader and corresponding benchmark source for each employed dataset version.
+
+The dataset collection deliberately includes both relatively homophilous and strongly heterophilous graphs. For example, Coauthor-Physics has an edge-homophily value of approximately 0.931, whereas Roman-Empire has a value of approximately 0.047. These values describe the observed alignment between graph edges and class labels; they do not establish that one dataset is inherently easier than the other. Differences in node features, class distributions, topology, and available training labels may all affect classification performance.
+
+The datasets also differ substantially in size. Cornell and Texas each contain 183 nodes, while Coauthor-Physics contains 34,493 nodes. Similarly, the input feature dimensionality ranges from 300 for Roman-Empire and Amazon-Ratings to 8,415 for Coauthor-Physics. This diversity is useful for evaluating whether a pattern associated with increasing network depth is specific to one benchmark or appears across substantially different graph-learning conditions.
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{Overview of the 15 real-world node-classification datasets. Edges are counted as unique undirected pairs. The source column identifies the benchmark reference for the employed dataset version.}
+\label{tab:dataset-overview}
+\scriptsize
+\begin{tabular}{lrrrrrll}
+\toprule
+Dataset & Nodes & Edges & Features & Classes &
+$h$ & Loader & Source \\
+\midrule
+Cora & 2,708 & 5,278 & 1,433 & 7 & 0.810 &
+Planetoid & \cite{yang2016planetoid}\\
+CiteSeer & 3,327 & 4,552 & 3,703 & 6 & 0.736 &
+Planetoid & \cite{yang2016planetoid}\\
+PubMed & 19,717 & 44,324 & 500 & 3 & 0.802 &
+Planetoid & \cite{yang2016planetoid}\\
+Roman-Empire & 22,662 & 32,927 & 300 & 18 & 0.047 &
+HeterophilousGraphDataset & \cite{platonov2023critical}\\
+Amazon-Photo & 7,650 & 119,081 & 745 & 8 & 0.827 &
+Amazon & \cite{shchur2018pitfalls}\\
+Amazon-Computers & 13,752 & 245,861 & 767 & 10 & 0.777 &
+Amazon & \cite{shchur2018pitfalls}\\
+Coauthor-CS & 18,333 & 81,894 & 6,805 & 15 & 0.808 &
+Coauthor & \cite{shchur2018pitfalls}\\
+Coauthor-Physics & 34,493 & 247,962 & 8,415 & 5 & 0.931 &
+Coauthor & \cite{shchur2018pitfalls}\\
+Actor & 7,600 & 26,752 & 932 & 5 & 0.219 &
+Actor & \cite{pei2020geomgcn}\\
+Chameleon & 2,277 & 31,421 & 2,325 & 5 & 0.235 &
+WikipediaNetwork & \cite{pei2020geomgcn,rozemberczki2021multiscale}\\
+Squirrel & 5,201 & 198,493 & 2,089 & 5 & 0.224 &
+WikipediaNetwork & \cite{pei2020geomgcn,rozemberczki2021multiscale}\\
+Cornell & 183 & 280 & 1,703 & 5 & 0.131 &
+WebKB & \cite{pei2020geomgcn}\\
+Texas & 183 & 295 & 1,703 & 5 & 0.108 &
+WebKB & \cite{pei2020geomgcn}\\
+Wisconsin & 251 & 466 & 1,703 & 5 & 0.196 &
+WebKB & \cite{pei2020geomgcn}\\
+Amazon-Ratings & 24,492 & 93,050 & 300 & 5 & 0.380 &
+HeterophilousGraphDataset & \cite{platonov2023critical}\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\linewidth}{\scriptsize
+\textit{Note.} Features denotes the input feature dimensionality;
+Classes denotes the number of target classes;
+$h$ is raw class-label edge homophily.
+Loader identifies the dataset class used in PyTorch Geometric.
+}
+\end{table}
+\end{landscape}
+
+\subsection{Evaluation Protocol}
+\label{sec:evaluation-protocol}
+
+All experiments distinguish model training, model selection, and final performance evaluation. This distinction is necessary because the use of test results to choose model configurations would bias the reported performance toward the evaluated test data.
+
+Each node-classification experiment partitions the labeled nodes into training, validation, and test sets according to its specified experimental protocol. Training labels are used to update the model parameters. Validation labels are used to select checkpoints and, where applicable, model configurations or hyperparameters. Test labels are reserved for reporting predictive performance after these choices have been made.
+
+The main predictive quantity is test accuracy evaluated at the checkpoint with the highest validation accuracy. For a test set $V_{\mathrm{test}}$, accuracy is defined as
+
+\begin{equation}
+\operatorname{Acc}_{\mathrm{test}}
+=
+\frac{1}{|V_{\mathrm{test}}|}
+\sum_{v\in V_{\mathrm{test}}}
+\mathbb{I}[\widehat{y}_v=y_v],
+\label{eq:test-accuracy}
+\end{equation}
+
+where $\widehat{y}_v$ is the predicted class of node $v$, $y_v$ is its true class, and $\mathbb{I}$ is the indicator function, which equals one if the prediction is correct and zero otherwise.
+
+To select the checkpoint, validation accuracy is evaluated during training. The epoch with the highest validation accuracy is retained, and the test accuracy reported for that run corresponds to the selected checkpoint. Consequently, a model that reaches high training accuracy but does not generalize to the validation nodes is not automatically preferred over another configuration.
+
+Two kinds of model comparison are used. In the broad screening, model families and hyperparameters are selected according to validation performance within predefined candidate sets. These comparisons describe the performance of the selected configurations but do not isolate the effect of a single architectural modification. In the mechanistic follow-up experiments, configurations are matched wherever possible so that differences associated with depth or PairNorm can be examined under otherwise comparable settings.
+
+The broad screening includes graph convolutional networks (GCNs), graph attention networks (GATs), and GraphSAGE. GCNs aggregate neighboring representations through normalized graph convolution \cite{kipf2017gcn}. GATs use learned attention coefficients to weight neighboring information \cite{velickovic2018gat}. GraphSAGE constructs node representations through neighborhood aggregation and transformation \cite{hamilton2017graphsage}. The corresponding PairNorm variants introduce the normalization mechanism described in Section~2.5 \cite{zhao2020pairnorm}. The reported hidden dimension denotes the configured intermediate representation size, although architecture-specific operations such as attention heads may affect the exact internal dimensionality and parameter count.
+
+The controlled experiments use repeated graph and model initialization seeds. A graph seed determines the generated or rewired graph instance, while an initialization seed determines the stochastic model initialization and associated training randomness. These sources of variability are distinguished because multiple neural-network initializations on the same graph do not constitute independent graph realizations.
+
+Where five graph seeds and five initialization seeds are combined, the five initialization results are first averaged for each graph seed. The resulting five graph-level means are then used to summarize variability across independently generated or rewired graph instances. Descriptive tables may additionally report statistics across all 25 individual runs; the aggregation level is stated explicitly whenever this occurs.
+
+A related distinction concerns the representation diagnostics. Predictive accuracy is measured at the validation-selected checkpoint, whereas several representation analyses evaluate a specified training epoch. Such comparisons characterize the model's representation geometry at that epoch but do not directly establish the geometry of the checkpoint selected for prediction. In particular, a fixed-epoch representation metric cannot automatically be interpreted as a causal explanation of accuracy measured at an earlier checkpoint.
+
+The historical experiments were conducted through several runners and experiment-specific configurations. Therefore, differences in optimization settings and normalization implementations must be considered when comparing separate experiment families. One audited real-world runner uses centering followed by scaling with the mean node-vector norm, whereas the standard PairNorm formulation described in Section~2.5 scales by the root mean squared centered norm. A separate synthetic runner uses the PyTorch Geometric PairNorm implementation. These operations are closely related but do not impose identical mathematical constraints in general. Accordingly, the results below are primarily compared within each experimental design, and cross-experiment differences are not attributed exclusively to PairNorm without accounting for implementation and protocol differences.
+
+\subsection{Oversmoothing Diagnostics}
+\label{sec:oversmoothing-diagnostics}
+
+A decline in classification accuracy does not establish whether node representations have become less distinguishable. Oversmoothing is therefore investigated using representation-level measurements in addition to predictive performance.
+
+The primary diagnostics are normalized Dirichlet energy (NDE) and effective rank. Pairwise and edge-based cosine distances are used as supporting measurements. These quantities describe different geometric properties of the representations and should not be interpreted as interchangeable estimates of predictive quality. This multi-metric approach follows the broader observation that oversmoothing measures can capture different aspects of representation contraction and need not agree in every setting \cite{rusch2023oversmoothing,arnaiz2026demystifying,zhang2026measuring}.
+
+The analysis concerns intermediate node representations rather than predicted class logits. In the main experiments, the relevant hidden representation has 128 dimensions and is taken from the final hidden stage before the classifier. The recorded tensor can depend on the model-specific instrumentation: for example, a message-passing output and a normalization output are not necessarily located at the same point relative to activation or dropout operations. The stored diagnostic values are consequently interpreted according to their recorded representation stage, rather than assumed to describe every intermediate operation of the network.
+
+\paragraph{Normalized Dirichlet energy.}
+
+Dirichlet energy measures how different the representations of neighboring nodes are. For an undirected graph $G=(V,E)$ and a representation matrix $H$, an edge-averaged squared-distance quantity is
+
+\begin{equation}
+D_{\mathrm{edge}}(H)
+=
+\frac{1}{|E|}
+\sum_{\{u,v\}\in E}
+\|\mathbf{h}_u-\mathbf{h}_v\|_2^2.
+\label{eq:edge-energy}
+\end{equation}
+
+A smaller value indicates that neighboring node representations are more similar in Euclidean distance. However, this raw quantity changes if all representations are multiplied by a common scaling factor, even though such scaling does not by itself change which representations can be separated by a suitable classifier. This scale dependence motivates normalization \cite{arnaiz2026demystifying}.
+
+The normalized diagnostic used here compares the mean squared difference across edges with the mean squared norm of the node representations. In its edge-averaged form, it can be expressed as
+
+\begin{equation}
+\operatorname{NDE}(H)
+=
+\frac{
+\frac{1}{|E|}
+\sum_{\{u,v\}\in E}
+\|\mathbf{h}_u-\mathbf{h}_v\|_2^2
+}{
+\frac{1}{|V|}
+\sum_{v\in V}\|\mathbf{h}_v\|_2^2
++\varepsilon
+},
+\label{eq:nde}
+\end{equation}
+
+where $\varepsilon$ is a small numerical stabilization term. The precise normalization convention is specified by the experimental implementation. This quantity follows the general principle of comparing variation across edges relative to the overall magnitude of the representations, rather than treating raw energy values as directly comparable across differently scaled embeddings.
+
+When the denominator is non-negligible, NDE is approximately invariant under uniform rescaling of all node representations. Values close to zero indicate that neighboring nodes have very similar hidden representations relative to the overall representation magnitude. Higher values indicate stronger edgewise variation, although this variation need not correspond to useful separation between class labels.
+
+A limitation is that Dirichlet energy primarily describes differences between adjacent nodes. It does not directly determine whether two nodes belonging to different classes can be distinguished by a classifier. In particular, preserving high energy across edges may be irrelevant or even unhelpful when the graph topology and task labels have a different relationship \cite{rusch2023oversmoothing,arnaiz2026demystifying}.
+
+\paragraph{Effective rank.}
+
+Normalized Dirichlet energy describes variation across edges, but it does not directly measure how many independent directions are represented in the hidden feature matrix. To characterize this second aspect, the experiments use effective rank.
+
+Let $\sigma_1,\ldots,\sigma_q$ denote the singular values of a representation matrix $H$, where $q=\min(|V|,p)$ and $p$ is the hidden dimension. For a nonzero singular-value sum, define
+
+\begin{equation}
+w_k=\frac{\sigma_k}{\sum_{j=1}^{q}\sigma_j}.
+\label{eq:singular-weight}
+\end{equation}
+
+Following the entropy-based definition introduced by Roy and Vetterli \cite{roy2007effective}, effective rank is
+
+\begin{equation}
+\operatorname{erank}(H)
+=
+\exp\left(
+-\sum_{k=1}^{q}w_k\log w_k
+\right),
+\label{eq:effective-rank}
+\end{equation}
+
+using the convention $0\log 0=0$.
+
+A representation matrix whose singular values are concentrated in one direction has an effective rank close to one. If substantial variation is distributed across several independent directions, the effective rank is larger. Unlike ordinary matrix rank, which counts nonzero singular values, effective rank also reflects their relative magnitudes. Degenerate zero matrices require a numerical convention because the normalized singular-value weights are undefined.
+
+For comparisons across hidden dimensions, the experiments additionally use the effective-rank ratio
+
+\begin{equation}
+r_{\mathrm{eff}}(H)
+=
+\frac{\operatorname{erank}(H)}{p}.
+\label{eq:effective-rank-ratio}
+\end{equation}
+
+This normalized quantity indicates the effective dimensionality relative to the configured hidden representation size. For a fixed hidden dimension, effective rank and its ratio provide the same ordering of models.
+
+Effective rank is complementary to Dirichlet energy. A representation may preserve substantial edgewise differences while most variation occupies only a small subspace. Conversely, a representation may occupy several directions without encoding useful class-related information. Rank-based diagnostics have therefore been proposed as an important complement to energy-based oversmoothing measures \cite{zhang2026measuring}.
+
+\paragraph{Cosine-distance diagnostics.}
+
+To examine the alignment of node representations independently of their absolute magnitudes, the experiments also use cosine-based distances. For two nonzero node representations, cosine distance is
+
+\begin{equation}
+d_{\cos}(\mathbf{h}_u,\mathbf{h}_v)
+=
+1-
+\frac{
+\mathbf{h}_u^{\top}\mathbf{h}_v
+}{
+\|\mathbf{h}_u\|_2\|\mathbf{h}_v\|_2
+}.
+\label{eq:cosine-distance}
+\end{equation}
+
+A value close to zero indicates that two representations point in nearly the same direction. The analysis considers distances over node pairs and, separately, over graph edges. These measurements complement NDE because cosine similarity is not directly affected by positive uniform scaling of the representations. However, cosine distance becomes numerically delicate when node-vector norms are close to zero. It also does not capture differences in vector magnitude and is therefore not sufficient as a stand-alone indicator of useful representation diversity.
+
+The decision to prioritize NDE and effective rank while using cosine distances as supporting evidence is intentional. PairNorm explicitly modifies the global spread of intermediate representations, so changes in distance-based metrics may partly reflect the normalization operation itself. A geometric change becomes relevant to the research questions only when considered together with predictive accuracy, training dynamics, and the conditions under which it occurs.
+
+\paragraph{Interpretation of diagnostic evidence.}
+
+The subsequent experiments therefore use three distinct types of evidence: predictive accuracy measures whether a model solves the classification task; representation diagnostics measure properties of the learned hidden vectors; and matched interventions examine how both quantities respond when depth, normalization, graph topology, or optimization settings change.
+
+When a deep model exhibits both a severe accuracy decrease and a strong reduction in representation diversity, this provides evidence consistent with an oversmoothing-related failure. If an intervention preserves representation diversity and improves accuracy in the same controlled condition, the evidence becomes stronger. Nevertheless, such co-occurrence does not establish that the measured diagnostic causally mediates the accuracy improvement. PairNorm can also change optimization dynamics, and graph interventions can alter the information available to the model.
+
+Conversely, a high NDE or effective rank does not guarantee accurate predictions. This distinction is essential for identifying the conditions in which oversmoothing is a useful explanation for deep-GNN degradation and those in which additional factors must be considered.
+
+
+% ============================================================
+% 4 Real-World Screening
+% ============================================================
+
+
+\section{Broad Real-World Screening}
+\label{sec:broad-screening}
+
+\subsection{Experimental Design}
+\label{sec:broad-screening-design}
+
+The first empirical study examines how predictive performance changes with message-passing depth across the 15 real-world datasets introduced in Section~\ref{sec:realworld-datasets}. Its purpose is to determine whether deeper graph neural networks exhibit a consistent performance decline or whether the effect depends on the dataset and model configuration. This broad comparison also identifies representative conditions for the more controlled experiments that follow.
+
+The screening was divided into two phases. The first phase considered relatively shallow networks with $L\in\{2,4\}$ message-passing layers. The second phase evaluated deeper networks with $L\in\{8,16,32\}$. Both phases considered configured hidden dimensions of 64 and 128. The model families included GCN, GAT, and GraphSAGE, together with their corresponding PairNorm configurations.
+
+The two-phase design separates two related questions. The comparison between shallow and deeper phases indicates how the predictive performance of validation-selected configurations changes when the candidate depth range increases. Within each phase, comparisons between baseline and normalization-augmented models examine whether the availability of PairNorm changes the best-performing configuration. However, because model family, hidden dimension, and depth may differ between selected configurations, this second comparison must not be interpreted as an isolated estimate of the PairNorm effect.
+
+Model and hyperparameter selection were performed using validation accuracy. For each dataset and comparison category, the configuration with the highest mean validation performance was selected from the evaluated candidates. The reported test accuracy corresponds to the validation-selected configuration and its best-validation checkpoints. Repetitions were used to characterize variability where repeated observations were available.
+
+The results are summarized in Table~\ref{tab:broad-screening-results}. The baseline columns restrict selection to models without PairNorm, while the full columns permit the normalization-augmented configurations. Each entry reports the selected model family, depth, configured hidden dimension, and test accuracy.
+
+\subsection{Results}
+\label{sec:broad-screening-results}
+
+The broad screening shows that increasing the permitted depth range does not produce a uniform effect across datasets. Several datasets exhibit substantial degradation when the selected configuration changes from the shallow to the deeper phase, whereas others retain similar predictive performance. This heterogeneity is already visible in Figure~\ref{fig:realworld-depth}.
+
+One of the clearest examples is Amazon-Computers. The selected shallow baseline is a two-layer GCN with 128 hidden dimensions and a test accuracy of $83.71\pm0.79\%$. In the deeper phase, the selected baseline is an eight-layer GCN with 64 hidden dimensions and reaches only $56.63\pm9.74\%$. The difference between the phase means is approximately 27.08 percentage points. In addition to the large decrease in mean accuracy, the deeper baseline exhibits substantially greater variability. The result demonstrates that allowing greater depth does not necessarily improve predictive performance, even when the configuration is selected by validation accuracy.
+
+The full model search produces a different result on the same dataset. In the deeper phase, GraphSAGE with PairNorm, eight layers, and 128 hidden dimensions reaches $82.37\pm1.47\%$. This is 25.74 percentage points above the selected deeper baseline, and it approaches the shallow performance level. Nevertheless, the selected deeper baseline is a GCN rather than GraphSAGE. Therefore, this comparison combines changes in architecture, hidden dimension, and normalization. It demonstrates the usefulness of including alternative deep configurations in the search, but it does not isolate a causal 25.74-percentage-point benefit from PairNorm.
+
+Roman-Empire provides another pronounced depth-sensitive case. The selected shallow baseline, a four-layer GraphSAGE model, reaches $79.37\pm0.58\%$, whereas the selected deeper baseline, an eight-layer GraphSAGE model, reaches $68.06\pm0.67\%$. The decrease of approximately 11.31 percentage points occurs while the selected hidden dimension remains 128. Unlike the Amazon-Computers comparison, the model family is also unchanged, making this a more direct descriptive indication of depth-related degradation under the selected configurations. Allowing PairNorm in the deeper phase raises the selected accuracy to $71.62\pm0.78\%$, but the resulting performance remains noticeably below the shallow configuration.
+
+Actor exhibits a similar contrast, although with substantially lower absolute accuracy. Its shallow baseline reaches $34.49\pm1.11\%$, while the selected deeper baseline reaches $26.40\pm1.25\%$. This corresponds to a decrease of 8.09 percentage points. The deeper full search instead selects an eight-layer GraphSAGE+PairNorm model, reaching $32.87\pm0.60\%$. Thus, the full search recovers much of the selected baseline's depth-related loss, but it does not exceed the shallow result.
+
+Not every dataset follows this pattern. Coauthor-Physics retains comparatively stable performance, with selected baseline accuracy changing from $92.83\pm0.29\%$ in the shallow phase to $92.30\pm0.56\%$ in the deeper phase. The difference is only 0.53 percentage points. Similarly, PubMed changes from $77.20\%$ for the selected shallow baseline to $77.57\pm1.38\%$ for the selected deeper baseline, showing no corresponding depth-related deterioration in this screening comparison. These cases demonstrate why degradation cannot be regarded as an inevitable consequence of increasing the number of message-passing layers.
+
+The smaller WebKB datasets show further variability. Cornell changes from $71.08\pm5.56\%$ for the selected shallow baseline to $56.22\pm6.96\%$ for the deeper baseline. Texas decreases from $78.65\pm5.76\%$ to $65.68\pm7.21\%$, while Wisconsin decreases from $80.20\pm4.66\%$ to $66.67\pm7.22\%$. These substantial mean differences occur alongside relatively large standard deviations, emphasizing that individual dataset splits or random repetitions can influence the observed outcome.
+
+The left panel of Figure~\ref{fig:realworld-depth} compares the selected predictive performance across datasets, while its right panel summarizes the changes between the two depth phases. The figure makes two observations apparent. First, the absolute difficulty and achievable accuracy differ considerably across datasets. Second, the magnitude of the depth-related change is not simply proportional to the initial performance level or to the raw edge-homophily value.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig06a_realworld_performance_depth.png}
+\caption{Broad real-world screening under validation-selected configurations. The left panel compares predictive performance across shallow and deeper phases, while the right panel summarizes the change between phases. Differences describe the selected configurations and do not isolate depth independently of all other hyperparameters.}
+\label{fig:realworld-depth}
+\end{figure}
+
+Figure~\ref{fig:realworld-pairnorm} focuses on the role of PairNorm. Its first panel reports changes when normalization-augmented candidates are admitted to the validation-based search. The second panel uses matched model, depth, and hidden-dimension configurations, providing a more controlled comparison of the normalization variants.
+
+The results differ across datasets and comparison protocols. For example, the large improvement of the selected full configuration on Amazon-Computers indicates that the expanded search finds a much stronger deep model, but part of this difference can arise from architecture selection. By contrast, matched comparisons are designed to hold the architecture and relevant hyperparameters fixed so that the remaining variation is more directly associated with normalization.
+
+The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\pm0.22\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\pm0.61\%$. This is a difference of 5.04 percentage points between the selected configurations. In a separate fixed GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.20 percentage points. These are different comparison questions and should not be presented as interchangeable estimates.
+
+The screening also contains cases in which adding PairNorm candidates provides little or no improvement. On Cora and CiteSeer, the selected configurations in each phase are unchanged between the baseline and full candidate sets. On Squirrel, the deeper full selection reaches $31.76\pm0.85\%$, compared with $31.99\pm1.65\%$ for the deeper baseline. The two selected configurations also differ in depth and hidden dimension. This result does not support a general claim that PairNorm improves deep-GNN performance.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig06b_realworld_pairnorm_effects.png}
+\caption{PairNorm effects in the broad real-world screening. The first panel compares validation-selected configurations, while the second panel uses matched architecture, depth, and hidden-dimension comparisons. Positive and negative effects occur across datasets, and changes in selected architecture must be distinguished from isolated normalization effects.}
+\label{fig:realworld-pairnorm}
+\end{figure}
+
+Taken together, the broad screening provides an initial answer to RQ1: depth-related predictive degradation is strongly dependent on the dataset and selected model configuration. Some deeper models lose a substantial amount of accuracy, while others remain competitive with their shallow counterparts. PairNorm can improve performance in certain settings, but the effect is neither uniform nor sufficient to establish an oversmoothing explanation.
+
+This limitation motivates the following study. Instead of continuing to compare the best configurations from heterogeneous model families, the analysis narrows its focus to matched GraphSAGE and GraphSAGE+PairNorm experiments on four deliberately contrasting datasets.
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{Validation-selected results from the broad real-world screening. Phase 1 considers depths 2 and 4; Phase 2 considers depths 8, 16, and 32. Each entry identifies the selected model, depth, hidden dimension, and test accuracy. PN denotes PairNorm.}
+\label{tab:broad-screening-results}
+\scriptsize
+\begin{tabular}{lcccc}
+\toprule
+Dataset & Phase 1 baseline & Phase 1 full &
+Phase 2 baseline & Phase 2 full\\
+\midrule
+Cora &
+\makecell{GAT\\L4, H128\\79.50\%} &
+\makecell{GAT\\L4, H128\\79.50\%} &
+\makecell{GCN\\L8, H64\\$76.70\pm0.85$\%} &
+\makecell{GCN\\L8, H64\\$76.70\pm0.85$\%}\\
+CiteSeer &
+\makecell{GraphSAGE\\L2, H128\\70.60\%} &
+\makecell{GraphSAGE\\L2, H128\\70.60\%} &
+\makecell{GCN\\L8, H128\\$63.27\pm0.31$\%} &
+\makecell{GCN\\L8, H128\\$63.27\pm0.31$\%}\\
+PubMed &
+\makecell{GraphSAGE\\L2, H64\\77.20\%} &
+\makecell{GAT+PN\\L4, H128\\77.30\%} &
+\makecell{GAT\\L8, H128\\$77.57\pm1.38$\%} &
+\makecell{GAT+PN\\L8, H128\\$76.47\pm0.95$\%}\\
+Roman-Empire &
+\makecell{GraphSAGE\\L4, H128\\$79.37\pm0.58$\%} &
+\makecell{GraphSAGE\\L4, H128\\$79.42\pm0.51$\%} &
+\makecell{GraphSAGE\\L8, H128\\$68.06\pm0.67$\%} &
+\makecell{GraphSAGE+PN\\L8, H128\\$71.62\pm0.78$\%}\\
+Amazon-Photo &
+\makecell{GAT\\L2, H128\\$91.51\pm0.57$\%} &
+\makecell{GAT\\L2, H128\\$91.63\pm0.60$\%} &
+\makecell{GCN\\L8, H64\\$82.58\pm2.57$\%} &
+\makecell{GraphSAGE+PN\\L8, H128\\$87.07\pm1.30$\%}\\
+Amazon-Computers &
+\makecell{GCN\\L2, H128\\$83.71\pm0.79$\%} &
+\makecell{GCN\\L2, H128\\$83.74\pm0.58$\%} &
+\makecell{GCN\\L8, H64\\$56.63\pm9.74$\%} &
+\makecell{GraphSAGE+PN\\L8, H128\\$82.37\pm1.47$\%}\\
+Coauthor-CS &
+\makecell{GCN\\L2, H128\\$91.22\pm0.69$\%} &
+\makecell{GCN\\L2, H128\\$91.22\pm0.69$\%} &
+\makecell{GCN\\L8, H64\\$86.17\pm0.92$\%} &
+\makecell{GCN\\L8, H64\\$86.09\pm0.90$\%}\\
+Coauthor-Physics &
+\makecell{GCN\\L4, H64\\$92.83\pm0.29$\%} &
+\makecell{GCN\\L2, H64\\$93.20\pm0.54$\%} &
+\makecell{GCN\\L8, H64\\$92.30\pm0.56$\%} &
+\makecell{GCN\\L8, H64\\$92.21\pm0.49$\%}\\
+Actor &
+\makecell{GraphSAGE\\L4, H64\\$34.49\pm1.11$\%} &
+\makecell{GraphSAGE\\L4, H64\\$34.39\pm1.15$\%} &
+\makecell{GCN\\L8, H64\\$26.40\pm1.25$\%} &
+\makecell{GraphSAGE+PN\\L8, H128\\$32.87\pm0.60$\%}\\
+Chameleon &
+\makecell{GraphSAGE\\L2, H64\\$49.82\pm2.32$\%} &
+\makecell{GraphSAGE\\L2, H64\\$49.82\pm2.32$\%} &
+\makecell{GraphSAGE\\L8, H64\\$42.83\pm2.80$\%} &
+\makecell{GraphSAGE\\L8, H64\\$42.57\pm2.74$\%}\\
+Squirrel &
+\makecell{GraphSAGE\\L2, H64\\$36.95\pm2.27$\%} &
+\makecell{GraphSAGE\\L2, H64\\$36.95\pm2.27$\%} &
+\makecell{GraphSAGE\\L8, H128\\$31.99\pm1.65$\%} &
+\makecell{GraphSAGE+PN\\L16, H64\\$31.76\pm0.85$\%}\\
+Cornell &
+\makecell{GraphSAGE\\L2, H128\\$71.08\pm5.56$\%} &
+\makecell{GraphSAGE\\L2, H128\\$71.08\pm5.56$\%} &
+\makecell{GraphSAGE\\L8, H64\\$56.22\pm6.96$\%} &
+\makecell{GraphSAGE+PN\\L8, H64\\$52.43\pm12.30$\%}\\
+Texas &
+\makecell{GraphSAGE\\L2, H128\\$78.65\pm5.76$\%} &
+\makecell{GraphSAGE\\L2, H128\\$78.65\pm5.76$\%} &
+\makecell{GraphSAGE\\L8, H128\\$65.68\pm7.21$\%} &
+\makecell{GraphSAGE\\L8, H128\\$64.86\pm7.32$\%}\\
+Wisconsin &
+\makecell{GraphSAGE\\L2, H128\\$80.20\pm4.66$\%} &
+\makecell{GraphSAGE\\L2, H128\\$80.78\pm4.51$\%} &
+\makecell{GraphSAGE\\L8, H128\\$66.67\pm7.22$\%} &
+\makecell{GraphSAGE\\L8, H128\\$64.12\pm7.28$\%}\\
+Amazon-Ratings &
+\makecell{GraphSAGE\\L4, H128\\$45.76\pm0.41$\%} &
+\makecell{GraphSAGE+PN\\L4, H128\\$50.10\pm0.41$\%} &
+\makecell{GAT\\L8, H128\\$42.96\pm0.22$\%} &
+\makecell{GraphSAGE+PN\\L8, H128\\$48.00\pm0.61$\%}\\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{landscape}
+
+
+\section{Selected Real-World Cases}
+\label{sec:selected-realworld}
+
+The broad screening established that depth-related degradation and PairNorm effects vary substantially across datasets. However, the validation-selected comparisons do not consistently isolate the role of normalization because different architectures and hyperparameters may be selected. The next experiment therefore restricts attention to matched GraphSAGE comparisons on four datasets and examines both predictive performance and hidden-representation geometry.
+
+The four selected datasets are Amazon-Ratings, Squirrel, Roman-Empire, and Actor. They were chosen because the preceding experiments indicated contrasting relationships between depth and normalization, including cases in which PairNorm appeared helpful and cases in which it did not. The selection is therefore designed to investigate heterogeneous mechanisms rather than to construct a random or representative statistical sample of all graph-learning tasks.
+
+For each dataset, GraphSAGE and GraphSAGE+PairNorm are compared at depths $L=4$ and $L=8$, with a hidden dimension of 128. The design uses ten matched splits and a training budget of 800 epochs. The learning-rate candidates are $0.0003$, $0.001$, $0.003$, $0.005$, $0.01$, and $0.03$. The matching allows depth and normalization comparisons to be evaluated under the same learning rate and corresponding split.
+
+\begin{table}[htbp]
+\centering
+\caption{Design of the four selected real-world comparisons. All datasets use the same architecture pair, depth values, hidden dimension, number of matched splits, and training budget.}
+\label{tab:selected-design}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Dataset & Models & Depths & Hidden & Splits\\
+\midrule
+Amazon-Ratings & GS / GS+PN & 4, 8 & 128 & 10\\
+Squirrel & GS / GS+PN & 4, 8 & 128 & 10\\
+Roman-Empire & GS / GS+PN & 4, 8 & 128 & 10\\
+Actor & GS / GS+PN & 4, 8 & 128 & 10\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\linewidth}{\footnotesize
+\textit{Note.} GS = GraphSAGE; PN = PairNorm. Each configuration
+uses 800 training epochs and the learning-rate grid described
+in the text.
+}
+\end{table}
+
+\subsection{Depth Interaction}
+\label{sec:selected-depth-interaction}
+
+A comparison of the eight-layer models alone would show whether PairNorm changes performance at a fixed depth. It would not, however, establish whether PairNorm specifically reduces the degradation associated with increasing depth. For this reason, the analysis compares the change from four to eight layers for both models.
+
+Let $\operatorname{Acc}_{L4}$ and $\operatorname{Acc}_{L8}$ denote test accuracy at the validation-selected checkpoint for models with four and eight message-passing layers, respectively. Define the depth loss as
+
+\begin{equation}
+\operatorname{DepthLoss}
+=
+\operatorname{Acc}_{L4}
+-
+\operatorname{Acc}_{L8}.
+\label{eq:depth-loss}
+\end{equation}
+
+A positive depth loss indicates that the deeper network performs worse. A negative value would mean that the eight-layer model achieves higher accuracy.
+
+To quantify how PairNorm changes this relationship, the experiment uses a matched difference-in-differences comparison:
+
+\begin{equation}
+\begin{split}
+\operatorname{DiD}
+={}&
+(\operatorname{Acc}^{PN}_{L8}
+-\operatorname{Acc}^{PN}_{L4})\\
+&-
+(\operatorname{Acc}^{GS}_{L8}
+-\operatorname{Acc}^{GS}_{L4}).
+\end{split}
+\label{eq:depth-did}
+\end{equation}
+
+Here, $GS$ denotes GraphSAGE without PairNorm, while $PN$ denotes GraphSAGE+PairNorm. Equivalently, the interaction is the depth loss of GraphSAGE minus the depth loss of GraphSAGE+PairNorm. Positive values indicate that PairNorm reduces the loss associated with increasing depth, whereas negative values indicate that the depth-related degradation becomes larger under PairNorm.
+
+Figure~\ref{fig:selected-depth} shows that the sign of this interaction changes across the four datasets. Amazon-Ratings and Squirrel exhibit positive interactions, while Roman-Empire and Actor exhibit negative interactions.
+
+For Amazon-Ratings, GraphSAGE loses 2.734 percentage points when depth increases from four to eight layers. The corresponding loss under PairNorm is 0.928 percentage points. Thus, PairNorm reduces depth-related degradation by 1.806 percentage points in the matched comparison. The difference is meaningful because the intervention reduces the depth penalty rather than merely changing the selected performance of one isolated deep model.
+
+Squirrel shows a larger favorable interaction. The GraphSAGE depth loss is 4.092 percentage points, while GraphSAGE+PairNorm loses only 0.893 percentage points. The resulting interaction is +3.199 percentage points. In this configuration, PairNorm therefore retains substantially more of the four-layer predictive performance when the network becomes deeper.
+
+The opposite occurs on Roman-Empire. The GraphSAGE depth loss is only 0.184 percentage points, whereas the PairNorm variant loses 2.243 percentage points. The difference-in-differences is consequently approximately -2.060 percentage points. In this matched setting, PairNorm increases rather than decreases the penalty associated with additional message-passing layers.
+
+Actor provides another negative interaction. GraphSAGE loses 1.178 percentage points from four to eight layers, while GraphSAGE+PairNorm loses 3.132 percentage points. The resulting interaction is -1.954 percentage points. Thus, although PairNorm changes the hidden representations, it does not reduce depth-related degradation in this condition.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig07_selected4_depth_interaction.png}
+\caption{Matched depth interaction for GraphSAGE and GraphSAGE+PairNorm on four real-world datasets. Positive values indicate that PairNorm reduces the test-accuracy loss from four to eight layers; negative values indicate increased degradation under PairNorm. All differences are expressed in percentage points.}
+\label{fig:selected-depth}
+\end{figure}
+
+The matched interaction results are summarized in Table~\ref{tab:selected-results}. The table also reports Holm-adjusted $p$-values and paired standardized effect sizes. The $p$-values account for the family of four selected-dataset comparisons using Holm's sequential multiple-testing correction \cite{holm1979procedure}. Cohen's $d_z$ standardizes the paired differences by their sample standard deviation \cite{lakens2013effectsizes}.
+
+For Amazon-Ratings, Squirrel, and Roman-Empire, the reported Holm-adjusted $p$-value is approximately 0.005859. For Actor, the corresponding value is 0.011719. The observed interactions are therefore distinguishable from zero under the reported paired testing procedure. However, the four datasets were selected because they exhibited interesting behavior in earlier experiments. The tests should consequently be interpreted as evidence within these selected conditions rather than as confirmatory evidence for a population-wide PairNorm effect.
+
+The paired effect sizes reinforce the contrast. Amazon-Ratings and Squirrel have positive $d_z$ values of approximately 2.316 and 2.977, respectively. Roman-Empire and Actor instead have negative values of approximately -2.001 and -1.291. Both the direction and magnitude of the interaction are therefore dataset-dependent.
+
+\begin{table}[htbp]
+\centering
+\caption{Matched depth interactions and representation-diagnostic ratios for the four selected real-world datasets. Depth losses and DiD are expressed in percentage points. NDE and rank ratios compare PairNorm with GraphSAGE at eight layers.}
+\label{tab:selected-results}
+\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Dataset & LR & GS loss & PN loss & DiD &
+Holm $p$ & $d_z$ & NDE ratio & Rank ratio\\
+\midrule
+Amazon-Ratings & 0.003 & 2.734 & 0.928 & +1.806 &
+0.005859 & +2.316 & 2.31 & 3.63\\
+Squirrel & 0.030 & 4.092 & 0.893 & +3.199 &
+0.005859 & +2.977 & 3.14 & 2.30\\
+Roman-Empire & 0.005 & 0.184 & 2.243 & -2.060 &
+0.005859 & -2.001 & 1.61 & 0.99\\
+Actor & 0.0003 & 1.178 & 3.132 & -1.954 &
+0.011719 & -1.291 & 1.47 & 2.30\\
+\bottomrule
+\end{tabular}%
+}
+
+\smallskip
+\parbox{\linewidth}{\footnotesize
+\textit{Note.} LR = learning rate; GS = GraphSAGE;
+PN = GraphSAGE+PairNorm; DiD = difference-in-differences;
+$d_z$ = paired standardized effect size.
+Representation ratios refer to epoch 800.
+}
+\end{table}
+
+\subsection{Representation Diagnostics}
+\label{sec:selected-representations}
+
+The preceding results establish that PairNorm changes depth-related performance differently across the four datasets. The next question is whether these differences correspond to changes in the geometry of the node representations.
+
+Figure~\ref{fig:selected-representations} compares the normalized Dirichlet energy and effective-rank ratio of eight-layer GraphSAGE models with and without PairNorm. Both measurements are evaluated at epoch 800 under the matched learning-rate settings. Each bar represents the ratio of the PairNorm value to the corresponding GraphSAGE value. A ratio greater than one therefore indicates a larger diagnostic value under PairNorm.
+
+On Amazon-Ratings, PairNorm increases NDE by a factor of approximately 2.31 and the effective-rank ratio by a factor of approximately 3.63. These geometric changes accompany the positive depth interaction observed in the predictive results. The joint observation is consistent with PairNorm preserving representation diversity in a condition where deeper GraphSAGE otherwise suffers a larger accuracy loss.
+
+Squirrel displays a similar relationship. NDE increases by a factor of approximately 3.14, while the effective-rank ratio increases by a factor of approximately 2.30. At the same time, PairNorm reduces the depth loss by 3.199 percentage points. Thus, both datasets with favorable depth interactions also exhibit greater measured representation diversity under PairNorm.
+
+However, this relationship does not generalize to all four datasets. Roman-Empire shows an NDE ratio of approximately 1.61 but an effective-rank ratio of approximately 0.99. While local representation variation increases under PairNorm, effective dimensionality remains almost unchanged. The predictive depth interaction is negative. This case demonstrates that a larger Dirichlet-energy diagnostic does not necessarily correspond to stronger predictive performance.
+
+Actor provides an especially informative counterexample. PairNorm increases NDE by approximately 47\% and the effective-rank ratio by approximately 130\%. Nevertheless, the depth interaction is -1.954 percentage points. In other words, the eight-layer PairNorm model maintains greater measured representation diversity while suffering a larger relative decline in predictive accuracy.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig08_selected4_representation_ratios.png}
+\caption{PairNorm-to-GraphSAGE ratios of normalized Dirichlet energy and effective-rank ratio at eight layers and epoch 800. Values greater than one indicate increased measured representation diversity under PairNorm. The ratios do not imply a corresponding improvement in predictive accuracy.}
+\label{fig:selected-representations}
+\end{figure}
+
+This counterexample is important for interpreting oversmoothing. Increasing representation diversity can change the geometry of hidden vectors without necessarily improving their usefulness for node classification. A representation may remain dispersed or occupy several effective dimensions while failing to encode information that separates the relevant classes.
+
+The selected-four results therefore support two conclusions. First, PairNorm can reduce depth-related degradation in some real-world settings, and the favorable cases can coincide with increased representation diversity. Second, maintaining greater NDE or effective rank is not sufficient to ensure stronger predictive performance. The evidence is consistent with oversmoothing being relevant in certain configurations, but it also indicates that the relationship between geometry and classification depends on additional dataset and task properties.
+
+Because the four datasets differ in many characteristics beyond homophily, these comparisons cannot identify which graph properties are responsible for the observed variation. The following controlled experiments address this limitation by changing the relationship between graph edges and labels within the same underlying dataset.
 % To be written later.
 
 
 % ============================================================
-% 3.2 Evaluation Protocol
+% 3.2 Homophily
 % ============================================================
 
-\subsection{Evaluation Protocol}
-\label{sec:evaluation-protocol}
+
+\section{Controlled Homophily}
+\label{sec:controlled-homophily}
+
+The selected real-world experiments demonstrated that the effect of PairNorm differs across datasets, even when architecture, depth, and hidden dimension are matched. However, comparing different datasets does not reveal whether these differences arise from homophily, node features, class distributions, or other structural properties. The controlled-homophily experiment addresses this limitation by modifying graph connectivity within a fixed real-world node-classification setting.
+
+\subsection{Controlled Graph Construction}
+\label{sec:controlled-graph-construction}
+
+The experiment uses PubMed and Roman-Empire as two contrasting graph-learning environments. PubMed has relatively high raw edge homophily in its natural topology, while Roman-Empire is strongly heterophilous. Both datasets retain their original node features and class labels, but their graph edges are modified to obtain specified target homophily values.
+
+The controlled graphs target raw edge homophily values of
+
+\begin{equation}
+h\in\{0.1,0.5,0.9\}.
+\label{eq:controlled-homophily-levels}
+\end{equation}
+
+A value of $h=0.1$ indicates that approximately 10\% of the undirected edges connect nodes with the same class label. At $h=0.9$, approximately 90\% connect nodes belonging to the same class. The intermediate setting $h=0.5$ provides a third condition between these two extremes.
+
+The graph-construction procedure uses degree-preserving double-edge swaps. A swap replaces two existing edges with two alternative connections between their endpoints, subject to validity constraints. This type of operation can change the relationships between neighboring nodes without changing the number of incident edges at each involved node. Degree-preserving graph randomization is a known structural-control principle \cite{maslov2002specificity}; the specific homophily-targeting procedure used here is an experimental construction of this thesis.
+
+The implemented procedure restricts swaps so that the graph remains a simple undirected graph and rejects changes that would violate the required connectivity condition. As a result, the experiments preserve the number of nodes, number of edges, and degree sequence while modifying the alignment of edges with class labels. Node features and labels remain unchanged.
+
+These constraints are useful because the experiment does not simply compare unrelated datasets with different feature representations and class distributions. Instead, it changes a defined structural characteristic while holding several other quantities fixed. Nevertheless, degree-preserving rewiring also changes higher-order structural properties such as neighborhood composition, paths, and local connectivity patterns. The experiment therefore identifies the effect of the controlled graph intervention, not a mathematically isolated effect of a scalar homophily value independent of all topology.
+
+For the low-label experiments, 5\% of nodes are assigned to the training set, 10\% to validation, and 85\% to the test set. This setting is intentionally demanding because the models must learn from a relatively small number of labeled nodes.
+
+The initial controlled exploration evaluates several network depths, including two, four, and eight message-passing layers. A subsequent factorial study concentrates on seven and eight layers to investigate the behavior near the observed deep-network degradation regimes more carefully.
+
+The refined factorial design uses GraphSAGE and GraphSAGE+PairNorm, 128 hidden dimensions, five graph seeds, and five initialization seeds. The graph seeds are $1,2,3,4,5$, and the initialization seeds are $11,29,47,65,83$. Each configuration is trained for 2400 epochs, and the evaluated mask is split 0.
+
+For two datasets, three homophily targets, two model variants, two depths, five graph seeds, and five initialization seeds, the design contains
+
+\begin{equation}
+2\cdot3\cdot2\cdot2\cdot5\cdot5=600
+\label{eq:homophily-run-count}
+\end{equation}
+
+experimental cells. The recorded factorial is complete, with 600 observed and no missing cells.
+
+\begin{table}[htbp]
+\centering
+\caption{Refined controlled-homophily factorial design. The experiment varies graph topology, depth, and PairNorm while retaining the underlying node features and labels within each dataset.}
+\label{tab:controlled-design}
+\small
+\begin{tabular}{ll}
+\toprule
+Factor & Setting\\
+\midrule
+Datasets & PubMed-derived; Roman-Empire-derived\\
+Target raw edge homophily & 0.1, 0.5, 0.9\\
+Models & GraphSAGE; GraphSAGE+PairNorm\\
+Depths & 7, 8\\
+Hidden dimension & 128\\
+Graph seeds & 1, 2, 3, 4, 5\\
+Initialization seeds & 11, 29, 47, 65, 83\\
+Evaluated split & 0\\
+Training epochs & 2400\\
+Train / validation / test & 5\% / 10\% / 85\%\\
+Expected / observed cells & 600 / 600\\
+Missing cells & 0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Endpoint Results}
+\label{sec:controlled-endpoints}
+
+The controlled experiments examine whether depth-related predictive degradation and representation collapse depend on the alignment between graph edges and class labels. The results show that changing this alignment can substantially change model behavior, but the response differs between PubMed and Roman-Empire.
+
+Figure~\ref{fig:controlled-overview} presents the initial controlled-homophily depth exploration. It compares GraphSAGE with GraphSAGE+PairNorm across increasing depth for each dataset and homophily condition. The figure provides a broad view of how depth and normalization interact before the more focused factorial analysis.
+
+In PubMed, the low-homophily conditions show a pronounced separation between the two models at greater depth. GraphSAGE loses much of its predictive performance, while the PairNorm variant retains substantially higher accuracy. The difference is especially visible at eight layers. In the high-homophily condition, both models remain more competitive, and the contrast is considerably smaller.
+
+Roman-Empire exhibits a different pattern. Its response varies with homophily, and PairNorm does not provide the same consistent recovery seen in the difficult PubMed conditions. At high homophily, the baseline can perform very strongly without normalization. This behavior illustrates that PairNorm's benefit cannot be predicted from increasing depth or decreasing homophily alone.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig09_controlled_homophily_overview.png}
+\caption{Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints. This overview is distinct from the refined seven/eight-layer factorial design.}
+\label{fig:controlled-overview}
+\end{figure}
+
+The refined eight-layer endpoint results provide a more detailed comparison and are summarized in Table~\ref{tab:controlled-results}. The table reports test accuracy at the validation-selected checkpoint together with normalized Dirichlet energy and effective rank measured at epoch 2400. These two measurement times must be distinguished when interpreting the results.
+
+For PubMed at $h=0.1$, GraphSAGE reaches only 39.94\% test accuracy, whereas GraphSAGE+PairNorm reaches 83.49\%. The improvement is 43.55 percentage points. This is one of the largest predictive differences observed in the real-world-derived oversmoothing experiments.
+
+The representation diagnostics reveal an equally pronounced contrast. GraphSAGE has normalized Dirichlet energy of approximately $5.20\times10^{-26}$ and an effective rank of 1.000. These values indicate an extremely compressed hidden representation: neighboring nodes have almost no measured squared representation difference relative to their overall magnitude, and the singular-value distribution is concentrated in approximately one effective direction.
+
+Under PairNorm, NDE rises to approximately 2.652 and effective rank to 4.688. Thus, the normalized model retains substantially greater edgewise variation and effective dimensionality. The combination of a severe predictive deficit, highly compressed representations, and simultaneous recovery under PairNorm provides strong evidence consistent with an oversmoothing-related failure in this specific controlled condition.
+
+A similar outcome appears for PubMed at $h=0.5$. GraphSAGE again reaches 39.94\% accuracy, while GraphSAGE+PairNorm reaches 78.09\%, an improvement of 38.16 percentage points. GraphSAGE NDE is approximately $2.79\times10^{-20}$ and its effective rank is 1.000. PairNorm increases the respective values to 1.404 and 4.814. The close similarity of the two baseline accuracy values, together with the near-degenerate hidden representations, indicates that both conditions belong to a strongly degraded regime for the tested deep GraphSAGE configuration.
+
+At $h=0.9$, PubMed behaves differently. Baseline GraphSAGE reaches 78.80\%, and the PairNorm variant reaches 88.56\%, corresponding to a smaller improvement of 9.76 percentage points. The baseline NDE of 0.134 and effective rank of 2.534 are no longer as close to complete collapse as in the two lower-homophily settings. PairNorm increases these measurements to 0.231 and 3.476. This contrast shows that the same dataset and architecture can exhibit substantially different representation and performance behavior after a controlled topology modification.
+
+The Roman-Empire results demonstrate that the phenomenon is not determined by the homophily target alone. At $h=0.1$, GraphSAGE reaches 51.89\% and PairNorm reaches 55.56\%, a modest improvement of 3.67 percentage points. Both models retain non-negligible NDE, with values of 1.211 and 1.685, respectively. Their effective ranks are 11.278 and 16.968. Unlike the corresponding PubMed condition, the Roman-Empire baseline does not exhibit the same near-zero energy and rank-one representation collapse.
+
+At $h=0.5$, Roman-Empire GraphSAGE reaches 71.82\%, compared with 78.68\% under PairNorm. The improvement of 6.85 percentage points accompanies an NDE increase from 0.284 to 0.726 and an effective-rank increase from 11.579 to 20.027. This indicates a favorable association between preserved representation diversity and predictive performance, although the relationship is much less extreme than in low-homophily PubMed.
+
+The clearest counterexample appears at Roman-Empire $h=0.9$. Baseline GraphSAGE reaches 98.55\% accuracy, while GraphSAGE+PairNorm reaches 98.13\%. PairNorm therefore produces a small negative difference of 0.42 percentage points. Nevertheless, NDE increases from 0.082 to 0.187, and effective rank increases from 9.969 to 17.178. The normalization substantially changes the measured representation geometry without producing a corresponding predictive benefit.
+
+This result demonstrates that greater representation diversity is not sufficient for improved classification. When the baseline already performs very strongly, additional geometric spread may not provide useful information for the task. It can also alter representations that the classifier already exploits effectively. The experiment does not establish which of these explanations dominates, but it rules out a simple monotonic relationship between representation diversity and accuracy.
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{Eight-layer endpoint results in the refined low-label controlled-homophily experiment. Accuracy is evaluated at the best-validation checkpoint; NDE and effective rank are measured at epoch 2400.}
+\label{tab:controlled-results}
+\small
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Dataset & $h$ & GS acc. & PN acc. & PN effect &
+GS NDE & PN NDE & GS rank & PN rank\\
+\midrule
+PubMed & 0.1 & 39.94\% & 83.49\% & +43.55 pp &
+$5.20\times10^{-26}$ & 2.652 & 1.000 & 4.688\\
+PubMed & 0.5 & 39.94\% & 78.09\% & +38.16 pp &
+$2.79\times10^{-20}$ & 1.404 & 1.000 & 4.814\\
+PubMed & 0.9 & 78.80\% & 88.56\% & +9.76 pp &
+0.134 & 0.231 & 2.534 & 3.476\\
+Roman-Empire & 0.1 & 51.89\% & 55.56\% & +3.67 pp &
+1.211 & 1.685 & 11.278 & 16.968\\
+Roman-Empire & 0.5 & 71.82\% & 78.68\% & +6.85 pp &
+0.284 & 0.726 & 11.579 & 20.027\\
+Roman-Empire & 0.9 & 98.55\% & 98.13\% & -0.42 pp &
+0.082 & 0.187 & 9.969 & 17.178\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\linewidth}{\footnotesize
+\textit{Note.} GS = GraphSAGE; PN = GraphSAGE+PairNorm;
+acc. = test accuracy; pp = percentage points;
+$h$ = target raw edge homophily.
+PN effect is PN accuracy minus GS accuracy.
+The fixed-epoch metrics and checkpoint-selected accuracy are
+different measurements and should not be interpreted as a
+directly observed causal sequence.
+}
+\end{table}
+\end{landscape}
+
+The comparison between PubMed and Roman-Empire is important for the interpretation of homophily. Both datasets were rewired toward the same numerical targets, yet their predictive behavior and representation diagnostics differed substantially. Moreover, because the datasets have different numbers of classes and class distributions, the same raw edge-homophily value does not necessarily imply the same statistical relationship between graph connectivity and labels. A chance-adjusted interpretation is therefore needed when comparing the meaning of homophily across graph families.
+
+The controlled results support a conditional mechanism interpretation. Severe representation contraction and predictive degradation coincide in the difficult PubMed conditions, and PairNorm improves both. However, the Roman-Empire counterexample shows that substantial geometric changes do not necessarily yield higher accuracy. Homophily influences the setting in which a failure occurs, but it is not a sufficient explanation by itself.
+
+\subsection{Temporal Representation Dynamics}
+\label{sec:temporal-dynamics}
+
+Endpoint diagnostics indicate the final state of the learned representations, but they do not show how the models reach that state. In particular, a near-zero NDE at the final epoch could reflect persistent compression throughout training or a collapse that develops only after an earlier period of useful representation learning. These possibilities have different implications for interpreting the relationship between optimization and oversmoothing.
+
+Figure~\ref{fig:temporal-recovery} therefore tracks NDE and the effective-rank ratio over the training epochs for two contrasting controlled conditions: PubMed at $h=0.1$ and Roman-Empire at $h=0.9$, both with eight message-passing layers.
+
+For PubMed at $h=0.1$, the GraphSAGE baseline remains close to zero in NDE over most of the recorded training trajectory. Its effective-rank ratio is likewise concentrated near the low end of the scale. By contrast, GraphSAGE+PairNorm maintains substantially greater NDE throughout training and preserves a larger effective-rank ratio. The distinction between the models is therefore not limited to their final recorded values.
+
+This persistent contrast supports the interpretation that the deep PubMed baseline occupies a highly compressed representation regime. At the same time, the curves do not establish that gradient-based training alone creates the compression. Strongly reduced representation diversity can arise very early, and architectural propagation can produce compressed representations before substantial parameter optimization has occurred. The evidence therefore concerns the observed representation state and its persistence, not a proven training-induced causal origin.
+
+The Roman-Empire condition exhibits a different temporal pattern. Both models retain nonzero representation diversity, and PairNorm generally increases the measured NDE and effective-rank ratio. However, the baseline already reaches very high predictive accuracy, and the PairNorm model does not improve it. The temporal measurements therefore reinforce the endpoint counterexample: the geometry can change consistently throughout training without producing a useful gain in node classification.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig10_temporal_recovery.png}
+\caption{Temporal representation dynamics for controlled PubMed at $h=0.1$ and Roman-Empire at $h=0.9$, both at eight layers. The curves show normalized Dirichlet energy and effective-rank ratio across training epochs. Persistent representation compression and non-collapsed dynamics are compared without assuming that training itself is the sole cause of the observed geometry.}
+\label{fig:temporal-recovery}
+\end{figure}
+
+Taken together, the controlled-homophily and temporal results provide a more detailed picture than endpoint accuracy alone. PubMed demonstrates a regime in which the deep baseline exhibits persistent representation collapse and poor prediction, while PairNorm preserves geometric diversity and markedly improves accuracy. Roman-Empire demonstrates that the same normalization can alter representation geometry without improving an already successful baseline.
+
+These results motivate a further controlled investigation in which graph structure and node-feature information can be varied independently. A synthetic contextual stochastic block model is used for this purpose.
+
+
+\section{Controlled cSBM Experiments}
+\label{sec:csbm}
+
+The controlled real-world experiments retain the node features and labels of PubMed and Roman-Empire while modifying graph connectivity. This design reduces several sources of variation but remains dependent on the properties of the original datasets. In particular, the class distribution and the relationship between node features and labels are not independently adjustable.
+
+To investigate whether the observed behavior extends to a setting with more explicit control over these quantities, the next experiment uses a synthetic graph-learning task based on a contextual stochastic block model (cSBM).
+
+\subsection{Synthetic Graph and Feature Construction}
+\label{sec:csbm-construction}
+
+A stochastic block model generates graph connections according to a partition of the nodes into groups or communities. In a contextual stochastic block model, nodes additionally possess feature vectors related to the same underlying group structure. The combination permits experiments in which both connectivity and node attributes provide information about latent classes.
+
+Deshpande et al.\ introduce and analyze contextual stochastic block models that combine a graph with high-dimensional node covariates associated with latent communities \cite{deshpande2018csbm}. Their work provides the conceptual basis for the synthetic setting used here. However, the graph generator in this thesis is a controlled experimental variant and does not reproduce the original probabilistic model of Deshpande et al.\ exactly. The specific node count, edge-generation parameters, Gaussian feature construction, and experimental splits are choices of the present study.
+
+Each generated graph contains 2,000 nodes belonging to two balanced classes of 1,000 nodes each. Every node receives a 64-dimensional feature vector. The target average degree is 20, and the class-label edge-homophily targets are
+
+\begin{equation}
+h\in\{0.1,0.5,0.9\}.
+\label{eq:csbm-h}
+\end{equation}
+
+The features are generated from isotropic Gaussian noise together with a class-dependent shift along a randomly chosen unit direction. The separation between the class means is controlled by the feature-signal parameter,
+
+\begin{equation}
+\mathrm{FS}\in\{0.25,0.50\}.
+\label{eq:csbm-feature-signal}
+\end{equation}
+
+The feature-signal parameter therefore controls the magnitude of the class-related component in the generated features. Increasing it strengthens the class-mean separation under this construction, without changing the target graph homophily.
+
+Because the classes are balanced, the expected same-class edge fraction under class-independent random mixing is approximately 0.5. Consequently, the intermediate homophily target of 0.5 corresponds to an approximately class-neutral connectivity regime, whereas $h=0.1$ represents a strongly heterophilous relationship and $h=0.9$ a strongly homophilous one. Both extremes can contain substantial class information in the connectivity pattern, although the direction of the relationship differs.
+
+This distinction matters for the interpretation of the synthetic results. Low homophily is not equivalent to a lack of useful graph information. In a balanced two-class graph, a strong tendency to connect nodes from the opposite class can itself be informative for classification. The usefulness of that pattern depends on whether the architecture and optimization procedure can exploit it.
+
+The experiment uses 5\% training nodes, 10\% validation nodes, and 85\% test nodes. For the 2,000-node balanced graph, this corresponds to 100 training nodes, 200 validation nodes, and 1,700 test nodes. The splits are stratified so that the class proportions remain balanced. Ten possible stratified masks are generated, of which split 0 is evaluated.
+
+The compared models are GraphSAGE and GraphSAGE+PairNorm, using a hidden dimension of 128. The principal controlled design evaluates depths of two, seven, and eight layers. Each configuration uses five coupled graph/training seeds, learning rate 0.01, weight decay 0.0005, dropout 0.5, and 200 training epochs.
+
+The complete primary design contains 180 runs, corresponding to three homophily targets, two feature-signal strengths, two model variants, three depths, and five seeds. Additional depth investigations are used later to examine the onset of failure more closely; these follow-up runs should not be confused with the 180-run primary factorial.
+
+\begin{table}[htbp]
+\centering
+\caption{Controlled synthetic cSBM experimental design. The graph and feature generator is a thesis-specific variant inspired by the joint graph-and-covariate setting of Deshpande et al.\ \cite{deshpande2018csbm}.}
+\label{tab:csbm-design}
+\small
+\begin{tabular}{ll}
+\toprule
+Factor & Setting\\
+\midrule
+Graph family & Contextual stochastic block model variant\\
+Nodes & 2,000\\
+Node features & 64\\
+Classes & 2 balanced classes\\
+Target edge homophily & 0.1, 0.5, 0.9\\
+Target average degree & 20\\
+Feature signal & 0.25, 0.50\\
+Feature construction & Gaussian noise + class shift\\
+Class-mean separation & Feature-signal parameter\\
+Models & GraphSAGE; GraphSAGE+PairNorm\\
+Depths & 2, 7, 8\\
+Hidden dimension & 128\\
+Train / validation / test & 5\% / 10\% / 85\%\\
+Training nodes & 100\\
+Validation nodes & 200\\
+Test nodes & 1,700\\
+Available mask splits & 10 stratified splits\\
+Evaluated split & 0\\
+Coupled seeds & 1, 2, 3, 4, 5\\
+Learning rate & 0.01\\
+Training epochs & 200\\
+Dropout & 0.5\\
+Weight decay & 0.0005\\
+Total primary runs & 180\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Predictive Performance Across Controlled Conditions}
+\label{sec:csbm-performance}
+
+The synthetic experiments investigate whether the large PairNorm improvements observed on controlled PubMed can also occur in a graph where homophily and feature signal are explicitly adjustable. The results show that they can, but that the effect depends strongly on the combination of graph structure and node-feature information.
+
+Figure~\ref{fig:csbm-performance} compares eight-layer GraphSAGE with and without PairNorm across the three homophily levels and two feature-signal strengths. The points represent mean test accuracy over five coupled graph/training seeds, and the error bars indicate standard deviations.
+
+At $h=0.1$, GraphSAGE performs close to 50\% accuracy for both feature-signal strengths. Because the synthetic task contains two balanced classes, this corresponds approximately to the accuracy of uninformed binary prediction. GraphSAGE+PairNorm, by contrast, reaches almost 100\% accuracy in the same conditions. The result therefore reproduces a particularly large normalization-associated performance difference in a controlled synthetic setting.
+
+This finding is noteworthy because the graph is strongly heterophilous. The result does not mean that heterophily itself causes the collapse. Rather, the connectivity contains a strong opposite-class relationship, and the PairNorm model appears able to exploit the available graph and feature information, whereas the tested deep baseline fails to do so.
+
+At $h=0.5$, the two models perform near 50\% for the tested eight-layer configurations. PairNorm therefore does not produce the dramatic improvement observed at $h=0.1$. This contrast is consistent with the fact that the graph connectivity is approximately class-neutral in the balanced binary setting, while the feature signal is relatively weak in the 64-dimensional Gaussian feature space. Preserving representation diversity cannot by itself create class-relevant information that is not effectively available to the predictor.
+
+At $h=0.9$, the result again depends on the feature signal. With feature signal 0.25, the baseline is less reliable and exhibits substantially greater variability than the PairNorm model. With feature signal 0.50, the baseline and PairNorm models both reach very high accuracy. Thus, normalization can become unnecessary for predictive recovery when the tested configuration already solves the task successfully.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig11_csbm_controlled_summary.png}
+\caption{Test accuracy of eight-layer GraphSAGE with and without PairNorm in the controlled cSBM variants. The panels compare feature-signal strengths 0.25 and 0.50 across target homophily levels 0.1, 0.5, and 0.9. Means and standard deviations summarize five coupled graph/training seeds.}
+\label{fig:csbm-performance}
+\end{figure}
+
+The synthetic results therefore identify two important conditions. First, PairNorm can recover almost all predictive performance in a regime where deep GraphSAGE otherwise performs near chance level. Second, PairNorm is not universally beneficial: when the available information is insufficient for the tested model, or when the baseline already performs almost perfectly, preserving geometric spread does not necessarily improve the prediction.
+
+\subsection{Critical Depth and Representation Collapse}
+\label{sec:csbm-critical-depth}
+
+The large eight-layer performance contrast at $h=0.1$ raises a more specific question: whether the baseline degrades gradually as depth increases or whether there is a sharp transition between successful and unsuccessful configurations.
+
+Additional depth probes were therefore conducted around the critical regime. These results show a pronounced transition between seven and eight message-passing layers for the tested GraphSAGE configuration.
+
+For feature signal 0.50 at $h=0.1$, baseline GraphSAGE reaches approximately 99.81\% at six layers and 99.71\% at seven layers. Increasing depth to eight layers reduces accuracy to 50.00\%. The baseline remains at approximately 50\% for the additional nine- and ten-layer probes.
+
+This sequence is important because it does not support an alternating odd-even explanation of the results. The seven-layer model already performs very strongly, whereas the eight-, nine-, and ten-layer models fail. The dominant observation is therefore a sharp failure threshold between seven and eight layers, followed by persistent degradation at the evaluated greater depths.
+
+For feature signal 0.25, the eight-, nine-, and ten-layer baselines similarly reach approximately 50.13\%, 50.00\%, and 50.00\%. The PairNorm variants retain approximately 99.91\%, 99.64\%, and 99.72\%, respectively. With feature signal 0.50, the corresponding PairNorm accuracies remain near 99.9\%.
+
+Across these six deep conditions, all five baseline seeds in each condition exhibit predictive collapse, whereas none of the five corresponding PairNorm runs does. This consistency across matched repetitions indicates that the difference is not explained solely by an isolated unfavorable model initialization.
+
+The representation diagnostics provide additional evidence. In the deep $h=0.1$ baseline conditions, the mean pairwise cosine distance of the final hidden representations approaches zero. This means that the recorded node representations become almost aligned in direction. The corresponding PairNorm configurations retain mean pairwise cosine distances close to 0.99, indicating that a substantial degree of angular diversity remains.
+
+These observations establish a strong association between three features of the experiment: the critical increase in depth, severe representation compression, and a collapse in predictive performance. PairNorm changes the representation geometry and prevents the predictive failure in the same controlled regime.
+
+The evidence is therefore consistent with an oversmoothing-related mechanism contributing to the baseline failure. However, even this unusually clear intervention result should not be interpreted as proof that the measured representation collapse is the only causal pathway. PairNorm also modifies the transformations experienced by the hidden states during training, which can influence optimization and the propagation of useful signals.
+
+A further qualification concerns the effective-rank diagnostic. The effective rank does not follow every accuracy difference monotonically across the synthetic conditions. In particular, preserving a larger rank or pairwise distance is not always associated with stronger prediction. This reinforces the need to interpret multiple diagnostics together rather than treating one statistic as a universal indicator of successful information preservation.
+
+The cSBM results therefore provide one of the strongest controlled examples supporting an oversmoothing interpretation in this thesis, while also demonstrating its limitations. In the difficult heterophilous deep-network regime, predictive and geometric collapse occur together and PairNorm prevents both. In other graph-feature conditions, the same normalization does not necessarily produce a meaningful predictive advantage.
+
+The remaining experiments examine whether these patterns are robust to changes in optimization settings and whether the different operations of PairNorm contribute equally to the observed outcomes.
+
 
 % To be written later.
 
@@ -593,8 +1412,203 @@ Finally, PairNorm is also reused later in the long-range information propagation
 % 3.3 Oversmoothing Diagnostics
 % ============================================================
 
-\subsection{Oversmoothing Diagnostics}
-\label{sec:oversmoothing-diagnostics}
+
+\section{Learning-Rate Sensitivity}
+\label{sec:lr-sensitivity}
+
+The preceding controlled experiments identified configurations in which deeper GraphSAGE models exhibit large predictive losses accompanied by strongly compressed representations. However, an observed failure at a particular training configuration does not establish that the architecture cannot learn the task. Optimization settings may influence whether the model reaches a useful solution, and PairNorm may change these optimization dynamics in addition to modifying representation geometry.
+
+The learning-rate sensitivity experiment investigates this competing explanation directly. It focuses on the controlled $h=0.1$ versions of PubMed and Roman-Empire, using eight-layer GraphSAGE with and without PairNorm and a hidden dimension of 128.
+
+The learning rate determines the step size used when updating the model parameters during optimization. If the learning rate is too small for the available training budget, optimization may progress too slowly. Conversely, an excessively large learning rate may prevent stable convergence or cause the model to move away from useful parameter regions. The appropriate value can depend on the architecture, normalization procedure, and properties of the training task.
+
+Four learning rates are evaluated:
+
+\begin{equation}
+\eta\in\{0.001,0.003,0.01,0.03\}.
+\label{eq:lr-grid}
+\end{equation}
+
+For each dataset, model variant, and learning rate, five graph seeds are combined with five initialization seeds. This gives 25 individual training runs per dataset-model-learning-rate condition and 400 runs across the complete comparison. The initialization results are first averaged within each graph seed, followed by a summary across the five graph-level means. Learning-rate selection is performed using validation accuracy rather than test accuracy.
+
+Figure~\ref{fig:lr-sensitivity} compares the resulting test accuracies. The two datasets exhibit substantially different sensitivity patterns.
+
+For controlled PubMed at $h=0.1$, eight-layer GraphSAGE remains close to 40\% test accuracy throughout the tested learning-rate range. Increasing the learning rate from 0.001 to 0.03 does not produce a meaningful recovery of the baseline in this experiment. This is important because the severe predictive deficit persists across several optimization step sizes rather than appearing only at a single learning rate.
+
+GraphSAGE+PairNorm behaves differently on the same PubMed graphs. Its accuracy improves as the learning rate increases from the smallest evaluated value and reaches approximately the low-to-mid 80\% range at the larger learning rates. The resulting separation between baseline GraphSAGE and PairNorm remains large. PairNorm therefore improves the predictive outcome throughout the tested configurations, although the magnitude of the improvement depends on the learning rate.
+
+The checkpoint-selection behavior provides additional context. In several of the low-homophily PubMed baseline runs, the best validation checkpoint occurs at the first few training epochs, whereas the PairNorm models select substantially later checkpoints. This difference indicates that the two variants follow different training trajectories. It is consistent with PairNorm changing the optimization process as well as the representation geometry.
+
+Nevertheless, the early selected baseline checkpoints do not by themselves establish whether optimization difficulty or oversmoothing is the dominant mechanism. The persistent near-degenerate representation measurements in the associated controlled experiments support a representation-collapse interpretation, while the checkpoint dynamics indicate that optimization and representation geometry cannot be treated as independent explanations without further intervention.
+
+Roman-Empire presents a less stable pattern. Baseline GraphSAGE improves as the learning rate increases from 0.001 toward 0.01, but its performance falls again at 0.03. The PairNorm variant follows a different trend and achieves its strongest performance toward the higher end of the tested range. Thus, the relative ranking of the two models depends more strongly on the learning-rate choice than in PubMed.
+
+This contrast matters for interpreting depth-related performance degradation. A model that performs poorly under one learning rate but substantially better under another cannot be described as exhibiting an optimization-independent failure. In Roman-Empire, the tested optimization settings provide an important competing explanation for part of the observed performance variation.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig12_pubmed_roman_lr_sensitivity.png}
+\caption{Learning-rate sensitivity of eight-layer GraphSAGE with and without PairNorm on controlled PubMed and Roman-Empire graphs at $h=0.1$. Results are summarized across five graph seeds after averaging five initialization seeds within each graph. Star markers identify learning rates selected exclusively by validation accuracy.}
+\label{fig:lr-sensitivity}
+\end{figure}
+
+The experiment therefore distinguishes two kinds of failure within the tested learning-rate grid. PubMed exhibits a robust baseline deficit that is not recovered by changing the learning rate within the evaluated range. Roman-Empire exhibits considerably stronger optimization sensitivity, so conclusions based on a single learning rate would be less reliable.
+
+These observations do not imply that PubMed GraphSAGE would fail under every possible optimizer, learning-rate schedule, initialization, or training procedure. The conclusion is restricted to the tested settings. However, within that range, the persistence of both predictive degradation and representation compression provides stronger evidence for an oversmoothing-related regime than would an isolated accuracy drop.
+
+The next experiment examines PairNorm itself more closely. In particular, it investigates whether the two operations introduced in Section~2.5 have comparable effects or whether different components explain the successful interventions.
+
+
+\section{PairNorm Component Ablation}
+\label{sec:pairnorm-ablation}
+
+PairNorm combines two operations: centering the node representations and rescaling their global spread. The original method applies these operations together \cite{zhao2020pairnorm}. The previous experiments showed that the complete normalization can produce large performance improvements in some conditions while providing little benefit in others.
+
+To investigate whether centering and scaling contribute equally, the component-ablation study compares four configurations: an unnormalized GraphSAGE baseline, centering alone, scaling alone, and full PairNorm. The center-only and scale-only configurations are diagnostic variants introduced for this thesis; they are not presented as separate methods proposed in the original PairNorm publication.
+
+The ablation is evaluated in three contrasting conditions. The first is controlled PubMed at $h=0.1$, where the deep baseline exhibits severe predictive and representation collapse. The second is controlled Roman-Empire at $h=0.9$, where the baseline already performs very well and PairNorm changes representation geometry without improving accuracy. The third is the synthetic cSBM at $h=0.1$ with feature signal 0.50, where the deep baseline can collapse while PairNorm achieves nearly perfect classification.
+
+All three conditions use eight-layer GraphSAGE and a hidden dimension of 128. PubMed and Roman-Empire use learning rate 0.01, while the selected cSBM ablation uses learning rate 0.03. These values define the particular ablation conditions and should not be confused with the default learning rate used in the primary cSBM factorial.
+
+Each condition contains five graph seeds and five initialization seeds. Figure~\ref{fig:pairnorm-ablation} first averages initialization results within each graph seed and then summarizes the five graph-level means. Table~\ref{tab:pairnorm-ablation} instead reports the mean and standard deviation across the 25 individual runs. The two presentations describe the same experiment records but use different aggregation levels.
+
+\subsection{Ablation Results}
+\label{sec:pairnorm-ablation-results}
+
+The controlled PubMed condition shows that the scaling operation is particularly important in the observed successful intervention.
+
+The unnormalized baseline reaches 39.94\% test accuracy. Applying centering alone does not improve this result: the center-only variant also reaches 39.94\%. In contrast, scaling alone raises accuracy to $80.82\pm1.00\%$, while full PairNorm reaches $83.28\pm0.52\%$. Thus, most of the predictive recovery in this condition is already present when the scale operation is used without the complete normalization.
+
+The representation diagnostics show a corresponding difference. Baseline GraphSAGE has NDE near zero, and centering alone produces an even smaller recorded value. Scaling alone raises NDE to approximately 1.967, while full PairNorm reaches approximately 2.689. Effective rank similarly increases to approximately 3.719 for scale-only and 4.539 for full PairNorm.
+
+These findings indicate that merely subtracting the global mean does not prevent the severe compression observed in the PubMed condition. The scale operation, in contrast, is associated with both greater representation diversity and a substantial accuracy improvement. The additional difference between scale-only and full PairNorm suggests that centering can still affect the final result when used together with scaling.
+
+A numerical qualification is necessary for the center-only effective-rank result. The stored value is reported as zero because of the diagnostic's handling of an almost degenerate representation. Under the mathematical effective-rank definition for a nonzero matrix, the value cannot be below one. The reported zero should therefore be understood as a numerical degeneracy indicator rather than a literal effective rank satisfying the nonzero-matrix definition.
+
+Roman-Empire at $h=0.9$ behaves differently. The baseline reaches $98.38\pm0.29\%$ accuracy, and all three normalization variants remain close to this value. Center-only reaches $98.23\pm0.37\%$, scale-only reaches $97.86\pm0.35\%$, and full PairNorm reaches $98.21\pm0.22\%$. None of these operations produces a useful improvement over the baseline in the tested condition.
+
+The representation geometry nevertheless changes substantially. Effective rank decreases from approximately 9.895 to 1.894 under centering alone, while scaling alone increases it to 14.796 and full PairNorm to 16.413. NDE also changes across the variants, increasing from 0.073 for the baseline to 0.173 under full PairNorm. Thus, the normalization components can alter the measured geometry without improving classification accuracy.
+
+This result reinforces the earlier Roman-Empire counterexample. A model that already separates the relevant classes effectively does not necessarily benefit from additional normalization, even when that normalization substantially changes the global structure of its hidden representations.
+
+The synthetic cSBM condition provides a third, distinct pattern. The unnormalized baseline reaches $54.00\pm13.73\%$, reflecting a low mean accuracy and considerable variability. Centering alone raises accuracy to $99.87\pm0.20\%$. Scaling alone reaches $99.68\pm0.42\%$, while full PairNorm achieves $99.87\pm0.24\%$.
+
+Unlike controlled PubMed, where centering alone fails, the synthetic cSBM task is almost perfectly recovered by either component individually. The result therefore does not support a universal explanation in which only scaling is responsible for successful normalization.
+
+The cSBM representation metrics also demonstrate that effective rank is not a sufficient proxy for predictive success. The baseline effective rank is approximately 2.389, while the center-only and scale-only variants have lower mean effective ranks of approximately 1.760 and 1.301, despite achieving almost perfect accuracy. Full PairNorm reaches an effective rank of approximately 1.910. Therefore, a model can achieve excellent classification performance without maximizing the measured effective dimensionality of its hidden representations.
+
+In contrast, normalized Dirichlet energy increases substantially for all successful cSBM variants. However, this does not establish that the energy increase causes their predictive improvement. Both measurements respond to the intervention, and the normalization operations can change several properties of the model simultaneously.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig13_pairnorm_component_ablation.png}
+\caption{PairNorm component ablations for controlled PubMed, Roman-Empire, and cSBM conditions. Each row compares predictive accuracy, normalized Dirichlet energy, and effective rank across baseline, center-only, scale-only, and full PairNorm variants. Results are first averaged over five initializations within each graph seed, with graph-level variability shown by the error bars.}
+\label{fig:pairnorm-ablation}
+\end{figure}
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{PairNorm component-ablation results. Values are mean $\pm$ standard deviation across 25 individual runs per condition and variant. Accuracy is reported at the validation-selected checkpoint, while representation diagnostics are measured at the fixed final epoch.}
+\label{tab:pairnorm-ablation}
+\small
+\begin{tabular}{llrrrr}
+\toprule
+Condition & Variant & LR & Test accuracy &
+NDE & Effective rank\\
+\midrule
+PubMed ($h=0.1$) &
+Baseline & 0.01 & $39.94\pm0.00$\% &
+$(5.34\pm26.1)\times10^{-16}$ & $1.043\pm0.145$\\
+&
+Center only & 0.01 & $39.94\pm0.00$\% &
+$(6.17\pm28.3)\times10^{-31}$ & $0.000\pm0.000$\\
+&
+Scale only & 0.01 & $80.82\pm1.00$\% &
+$1.967\pm0.121$ & $3.719\pm0.214$\\
+&
+Full PairNorm & 0.01 & $83.28\pm0.52$\% &
+$2.689\pm0.149$ & $4.539\pm0.211$\\
+\midrule
+Roman-Empire ($h=0.9$) &
+Baseline & 0.01 & $98.38\pm0.29$\% &
+$0.073\pm0.028$ & $9.895\pm0.763$\\
+&
+Center only & 0.01 & $98.23\pm0.37$\% &
+$0.061\pm0.043$ & $1.894\pm0.927$\\
+&
+Scale only & 0.01 & $97.86\pm0.35$\% &
+$0.128\pm0.030$ & $14.796\pm3.171$\\
+&
+Full PairNorm & 0.01 & $98.21\pm0.22$\% &
+$0.173\pm0.017$ & $16.413\pm1.117$\\
+\midrule
+cSBM ($h=0.1$, FS=0.50) &
+Baseline & 0.03 & $54.00\pm13.73$\% &
+$0.120\pm0.415$ & $2.389\pm2.111$\\
+&
+Center only & 0.03 & $99.87\pm0.20$\% &
+$3.610\pm0.049$ & $1.760\pm0.351$\\
+&
+Scale only & 0.03 & $99.68\pm0.42$\% &
+$2.542\pm0.203$ & $1.301\pm0.061$\\
+&
+Full PairNorm & 0.03 & $99.87\pm0.24$\% &
+$3.600\pm0.038$ & $1.910\pm0.308$\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\linewidth}{\footnotesize
+\textit{Note.} LR = learning rate; FS = feature signal;
+NDE = normalized Dirichlet energy. The zero effective-rank
+value for the degenerate PubMed center-only representation
+reflects the numerical convention of the stored diagnostic.
+Figure~\ref{fig:pairnorm-ablation} uses graph-level aggregation,
+whereas this table summarizes individual runs.
+}
+\end{table}
+\end{landscape}
+
+\subsection{Interpretation of the Components}
+\label{sec:pairnorm-component-interpretation}
+
+The three conditions reveal that the contribution of PairNorm's centering and scaling operations is domain-dependent.
+
+In controlled PubMed at low homophily, scaling is the main successful component. Centering alone does not recover the predictive performance of the collapsed baseline. In the synthetic cSBM task, either centering or scaling alone is sufficient to obtain near-perfect accuracy in the tested condition. In high-homophily Roman-Empire, neither component produces a meaningful predictive advantage because the baseline already performs very well.
+
+These differences are incompatible with the idea that one fixed normalization operation is universally responsible for preventing deep-GNN failure. They also show that preserving a particular geometric statistic is not equivalent to preserving all task-relevant information.
+
+The component ablation strengthens the central conclusion of the preceding experiments. PairNorm can be highly effective under specific conditions, but its predictive effect depends on the relationship between normalization, model depth, graph structure, available information, and optimization. The successful interventions should therefore be interpreted as condition-specific evidence rather than as a general proof that representation spread alone determines GNN performance.
+
+
+\section{Oversmoothing Synthesis}
+\label{sec:oversmoothing-synthesis}
+
+The empirical oversmoothing analysis was designed to answer RQ2 directly: when is depth-related predictive degradation accompanied by representation collapse, and under which conditions does PairNorm mitigate both?
+
+The results support a conditional explanation rather than a universal one.
+
+The broad real-world screening showed that increasing the depth range can substantially reduce predictive accuracy on some datasets, while other datasets retain competitive performance. The size of this degradation varies across graph-learning tasks, model families, and selected configurations. In particular, Amazon-Computers, Roman-Empire, and Actor exhibit pronounced decreases in the deeper screening phase, whereas Coauthor-Physics and PubMed are comparatively stable. These observations provide evidence for heterogeneous depth sensitivity, but they do not establish oversmoothing as its universal cause.
+
+The matched selected-four experiments demonstrated that PairNorm can reduce or increase depth-related degradation. Amazon-Ratings and Squirrel show positive depth interactions under PairNorm, while Roman-Empire and Actor show negative interactions. The representation diagnostics further demonstrate that increased NDE or effective rank does not guarantee stronger prediction. Actor is especially informative because measured representation diversity increases while depth-related performance becomes worse.
+
+The controlled PubMed experiments provide stronger evidence for an oversmoothing-related mechanism. At low homophily, deep GraphSAGE exhibits severe predictive degradation together with extremely small normalized Dirichlet energy and effective rank close to one. PairNorm preserves greater representation diversity and substantially improves test accuracy. The temporal measurements indicate that the compressed baseline representation regime persists throughout much of training rather than appearing only as an isolated final-epoch measurement.
+
+The synthetic cSBM experiments reproduce a particularly clear version of this phenomenon. Under strong heterophily and the tested feature signals, GraphSAGE performs very well at seven layers but collapses to approximately chance-level accuracy at eight layers and remains degraded in the deeper follow-up probes. PairNorm prevents the predictive failure and maintains substantially greater pairwise representation separation. This provides one of the strongest controlled associations between depth, representation collapse, and predictive degradation observed in this thesis.
+
+However, the counterexamples are equally important for the interpretation. In high-homophily Roman-Empire, PairNorm changes representation geometry without improving an already successful classifier. In the synthetic cSBM, preserving representation diversity does not necessarily recover prediction when the tested graph-feature condition provides insufficient exploitable class information. The component ablations also show that near-perfect accuracy can occur with comparatively low effective rank, so no single representation statistic is sufficient to determine predictive usefulness.
+
+The learning-rate sensitivity experiment provides an additional qualification. Controlled PubMed GraphSAGE remains severely degraded across the tested learning-rate grid, while Roman-Empire exhibits substantial sensitivity to the optimization setting. Thus, an apparent depth failure may be relatively robust to the tested optimization changes in one condition and much more optimization-dependent in another. This distinction argues against inferring a representation-level cause from test accuracy alone.
+
+These findings are consistent with the broader caution in the literature that mitigating a measured oversmoothing statistic need not guarantee stronger deep-GNN performance \cite{rusch2023oversmoothing,kormann2026position,arnaiz2026demystifying}. The experiments in this thesis add controlled comparisons showing both where geometric and predictive recovery coincide and where they separate.
+
+RQ2 can therefore be answered as follows. Oversmoothing is a useful explanation for deep-GNN failure in specific regimes where increasing depth is accompanied by persistent representation compression and a substantial predictive decline, especially when a matched normalization intervention prevents both. Controlled low-homophily PubMed and the strongly heterophilous deep cSBM configurations provide the clearest supporting evidence. Nevertheless, representation diversity is not sufficient for good classification, and PairNorm is not universally beneficial. Its effect depends on the graph-learning task, topology, feature information, optimization regime, and implementation.
+
+The evidence therefore supports treating oversmoothing as one possible mechanism of depth-related degradation rather than its general explanation. This conclusion also informs RQ4, which requires oversmoothing to be assessed alongside alternative explanations, including optimization, graph structure, and the availability of task-relevant information.
+
+The next part of the thesis extends this mechanism-oriented approach to long-range information propagation. Instead of focusing primarily on the contraction of node representations, it examines whether information originating from distant nodes is effectively transmitted through the graph and how structural bottlenecks influence that process.
+
 
 % To be written later.
 
