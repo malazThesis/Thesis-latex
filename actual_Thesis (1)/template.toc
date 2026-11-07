@@ -11,28 +11,28 @@
 \contentsline {subsection}{\numberline {2.5}PairNorm}{11}{}%
 \contentsline {section}{\numberline {3}Experimental Methodology}{13}{}%
 \contentsline {subsection}{\numberline {3.1}Real-World Datasets}{14}{}%
-\contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{16}{}%
-\contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{17}{}%
-\contentsline {paragraph}{Normalized Dirichlet energy.}{17}{}%
-\contentsline {paragraph}{Effective rank.}{18}{}%
-\contentsline {paragraph}{Cosine-distance diagnostics.}{19}{}%
-\contentsline {paragraph}{Interpretation of diagnostic evidence.}{19}{}%
-\contentsline {section}{\numberline {4}Broad Real-World Screening}{19}{}%
-\contentsline {subsection}{\numberline {4.1}Experimental Design}{19}{}%
-\contentsline {subsection}{\numberline {4.2}Results}{20}{}%
-\contentsline {section}{\numberline {5}Selected Real-World Cases}{25}{}%
-\contentsline {subsection}{\numberline {5.1}Depth Interaction}{25}{}%
-\contentsline {subsection}{\numberline {5.2}Representation Diagnostics}{28}{}%
-\contentsline {section}{\numberline {6}Controlled Homophily}{29}{}%
-\contentsline {subsection}{\numberline {6.1}Controlled Graph Construction}{29}{}%
-\contentsline {subsection}{\numberline {6.2}Endpoint Results}{31}{}%
-\contentsline {subsection}{\numberline {6.3}Temporal Representation Dynamics}{34}{}%
-\contentsline {section}{\numberline {7}Controlled cSBM Experiments}{36}{}%
-\contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{36}{}%
-\contentsline {subsection}{\numberline {7.2}Predictive Performance Across Controlled Conditions}{38}{}%
-\contentsline {subsection}{\numberline {7.3}Critical Depth and Representation Collapse}{38}{}%
-\contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{40}{}%
-\contentsline {section}{\numberline {9}PairNorm Component Ablation}{42}{}%
-\contentsline {subsection}{\numberline {9.1}Ablation Results}{42}{}%
-\contentsline {subsection}{\numberline {9.2}Interpretation of the Components}{46}{}%
-\contentsline {section}{\numberline {10}Oversmoothing Synthesis}{46}{}%
+\contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{14}{}%
+\contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{15}{}%
+\contentsline {paragraph}{Normalized Dirichlet energy.}{16}{}%
+\contentsline {paragraph}{Effective rank.}{17}{}%
+\contentsline {paragraph}{Cosine-distance diagnostics.}{17}{}%
+\contentsline {paragraph}{Interpretation of diagnostic evidence.}{18}{}%
+\contentsline {section}{\numberline {4}Broad Real-World Screening}{18}{}%
+\contentsline {subsection}{\numberline {4.1}Experimental Design}{18}{}%
+\contentsline {subsection}{\numberline {4.2}Results}{19}{}%
+\contentsline {section}{\numberline {5}Selected Real-World Cases}{23}{}%
+\contentsline {subsection}{\numberline {5.1}Depth Interaction}{23}{}%
+\contentsline {subsection}{\numberline {5.2}Representation Diagnostics}{26}{}%
+\contentsline {section}{\numberline {6}Controlled Homophily}{27}{}%
+\contentsline {subsection}{\numberline {6.1}Controlled Graph Construction}{27}{}%
+\contentsline {subsection}{\numberline {6.2}Endpoint Results}{29}{}%
+\contentsline {subsection}{\numberline {6.3}Temporal Representation Dynamics}{32}{}%
+\contentsline {section}{\numberline {7}Controlled cSBM Experiments}{34}{}%
+\contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{34}{}%
+\contentsline {subsection}{\numberline {7.2}Predictive Performance Across Controlled Conditions}{36}{}%
+\contentsline {subsection}{\numberline {7.3}Critical Depth and Representation Collapse}{36}{}%
+\contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{38}{}%
+\contentsline {section}{\numberline {9}PairNorm Component Ablation}{40}{}%
+\contentsline {subsection}{\numberline {9.1}Ablation Results}{40}{}%
+\contentsline {subsection}{\numberline {9.2}Interpretation of the Components}{44}{}%
+\contentsline {section}{\numberline {10}Oversmoothing Synthesis}{44}{}%

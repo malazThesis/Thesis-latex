@@ -19,6 +19,9 @@
 \usepackage{caption}
 \usepackage{enumitem}
 \usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
 
 % ============================================================
 % Paths and layout helpers
@@ -569,29 +572,31 @@ Finally, PairNorm is also reused later in the long-range information propagation
 \section{Experimental Methodology}
 \label{sec:experimental-methodology}
 
-The previous chapter introduced the theoretical concepts needed to investigate depth-related performance degradation in graph neural networks. In particular, it distinguished the loss of representation diversity associated with oversmoothing from a decrease in predictive accuracy. The empirical analysis follows this distinction by evaluating both quantities separately and examining whether they change together under controlled modifications of network depth, normalization, and graph structure.
+The previous chapter introduced the theoretical concepts needed to understand why graph neural networks may perform worse as their depth increases. In particular, it distinguished the loss of representation diversity associated with oversmoothing from a decrease in predictive accuracy. The empirical analysis follows this distinction by evaluating both aspects separately and examining whether they change together under controlled modifications of network depth, normalization, and graph structure.
 
-The experiments are organized into several complementary stages. First, a broad screening study examines the behavior of shallow and deeper graph neural networks on 15 real-world node-classification datasets. Four datasets are then selected for a more detailed comparison of GraphSAGE with and without PairNorm. To reduce the confounding effects of comparing unrelated datasets, additional experiments modify edge homophily while retaining the node features and labels of PubMed and Roman-Empire. A synthetic contextual stochastic block model provides further control over graph connectivity and feature information. Finally, learning-rate sensitivity and component-ablation experiments investigate whether the observed differences depend on optimization or on particular operations of PairNorm.
+The experiments are divided into several stages that complement each other. The first stage consists of a broad screening study that investigates the performance of shallow and deeper graph neural networks across 15 real-world node-classification datasets. Out of the 15 datasets, four are then selected for a more detailed comparison of GraphSAGE with and without PairNorm. To make the comparisons more controlled, additional experiments change the level of edge homophily in PubMed and Roman-Empire while preserving their original node features and labels. A synthetic contextual stochastic block model provides further control over graph connectivity and feature information. Finally, learning-rate sensitivity and component-ablation experiments investigate whether the observed differences depend on optimization or on particular operations of PairNorm.
 
-These stages serve different purposes. The broad screening identifies the extent and heterogeneity of depth-related degradation. The controlled experiments provide more direct evidence about the relationship between representation geometry, predictive performance, and normalization. None of these measurements is treated as sufficient on its own to establish that oversmoothing causes an observed accuracy decrease.
+These stages serve different purposes. The broad screening study examines how predictive performance changes with increasing network depth and how these effects differ between datasets. The subsequent controlled experiments provide further insight into how node representations, model performance, and normalization are related. However, no measurement on its own is considered sufficient to conclude that oversmoothing is responsible for an observed decline in accuracy.
 
 \subsection{Real-World Datasets}
 \label{sec:realworld-datasets}
 
-The real-world evaluation covers 15 node-classification datasets with different graph sizes, feature dimensions, numbers of classes, and degrees of class-label homophily. Node classification is the task of predicting a class label for each node using the available node features and graph structure. In the experiments considered here, the graph and node features are available during message passing, while only the labels of the training nodes are used to optimize the model parameters.
+As outlined in the previous section, the real-world evaluation consists of 15 node-classification datasets that differ in graph size, feature dimensionality, number of classes, and degree of class-label homophily. Node classification is the task of predicting a class label for each node using the available node features and graph structure. In the experiments considered here, the graph and node features are available during message passing, while only the labels of the training nodes are used to optimize the model parameters.
 
-Table~\ref{tab:dataset-overview} summarizes the dataset characteristics. The number of edges refers to unique undirected node pairs. The feature count denotes the dimensionality of the input feature vector, and the number of classes specifies the possible prediction labels. The edge-homophily values use the raw class-label definition introduced in Section~2.3. The table also identifies the dataset loader and corresponding benchmark source for each employed dataset version.
+Table~\ref{tab:dataset-overview} summarizes the dataset characteristics. The number of edges in the table refers to unique undirected node pairs. The feature count denotes the dimensionality of the input feature vector, and the number of classes specifies the possible prediction labels. The edge-homophily values use the raw class-label definition introduced in Section~2.3. The table also contains the dataset loader and corresponding source for each employed dataset version.
 
-The dataset collection deliberately includes both relatively homophilous and strongly heterophilous graphs. For example, Coauthor-Physics has an edge-homophily value of approximately 0.931, whereas Roman-Empire has a value of approximately 0.047. These values describe the observed alignment between graph edges and class labels; they do not establish that one dataset is inherently easier than the other. Differences in node features, class distributions, topology, and available training labels may all affect classification performance.
+The dataset collection deliberately includes both relatively homophilous and strongly heterophilous graphs to cover a broad range of graph characteristics. The datasets also differ substantially in size. This diversity is useful for evaluating whether a pattern associated with increasing network depth is specific to one benchmark or appears across substantially different graph-learning conditions.
 
-The datasets also differ substantially in size. Cornell and Texas each contain 183 nodes, while Coauthor-Physics contains 34,493 nodes. Similarly, the input feature dimensionality ranges from 300 for Roman-Empire and Amazon-Ratings to 8,415 for Coauthor-Physics. This diversity is useful for evaluating whether a pattern associated with increasing network depth is specific to one benchmark or appears across substantially different graph-learning conditions.
-
-\begin{landscape}
-\begin{table}[p]
+\begin{table}[H]
 \centering
-\caption{Overview of the 15 real-world node-classification datasets. Edges are counted as unique undirected pairs. The source column identifies the benchmark reference for the employed dataset version.}
+\caption{Overview of the 15 real-world node-classification datasets. The source column identifies the benchmark reference for the employed dataset version.}
 \label{tab:dataset-overview}
-\scriptsize
+
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.95}
+
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrrll}
 \toprule
 Dataset & Nodes & Edges & Features & Classes &
@@ -628,51 +633,48 @@ WebKB & \cite{pei2020geomgcn}\\
 Amazon-Ratings & 24,492 & 93,050 & 300 & 5 & 0.380 &
 HeterophilousGraphDataset & \cite{platonov2023critical}\\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 
-\smallskip
-\parbox{\linewidth}{\scriptsize
-\textit{Note.} Features denotes the input feature dimensionality;
-Classes denotes the number of target classes;
+\medskip
+\parbox{\linewidth}{\footnotesize
+\textit{Note.} Features denotes the input feature dimensionality.
+Classes denotes the number of target classes.
 $h$ is raw class-label edge homophily.
 Loader identifies the dataset class used in PyTorch Geometric.
 }
+
+\endgroup
 \end{table}
-\end{landscape}
 
 \subsection{Evaluation Protocol}
 \label{sec:evaluation-protocol}
 
-All experiments distinguish model training, model selection, and final performance evaluation. This distinction is necessary because the use of test results to choose model configurations would bias the reported performance toward the evaluated test data.
+Throughout the experiments, model training, model selection, and final performance evaluation are treated as separate stages. This separation prevents test results from influencing the choice of model configurations, which could otherwise lead to biased performance estimates.
 
-Each node-classification experiment partitions the labeled nodes into training, validation, and test sets according to its specified experimental protocol. Training labels are used to update the model parameters. Validation labels are used to select checkpoints and, where applicable, model configurations or hyperparameters. Test labels are reserved for reporting predictive performance after these choices have been made.
+In each node-classification experiment, labeled nodes are divided into training, validation, and test sets following the respective experimental protocol. Training labels are used to update the model parameters, while validation labels are used to select checkpoints and, where applicable, model configurations and hyperparameters. Test labels are used exclusively to evaluate the predictive performance of the selected model and do not influence model selection.
 
-The main predictive quantity is test accuracy evaluated at the checkpoint with the highest validation accuracy. For a test set $V_{\mathrm{test}}$, accuracy is defined as
+The main predictive measure is test accuracy, which represents the proportion of test nodes that are correctly classified. It is calculated as
 
 \begin{equation}
 \operatorname{Acc}_{\mathrm{test}}
 =
-\frac{1}{|V_{\mathrm{test}}|}
-\sum_{v\in V_{\mathrm{test}}}
-\mathbb{I}[\widehat{y}_v=y_v],
+\frac{N_{\mathrm{correct}}}{N_{\mathrm{test}}},
 \label{eq:test-accuracy}
 \end{equation}
 
-where $\widehat{y}_v$ is the predicted class of node $v$, $y_v$ is its true class, and $\mathbb{I}$ is the indicator function, which equals one if the prediction is correct and zero otherwise.
+where $N_{\mathrm{correct}}$ is the number of correctly classified test nodes and $N_{\mathrm{test}}$ is the total number of test nodes. When accuracy is expressed as a percentage, the result is then multiplied by 100.
 
-To select the checkpoint, validation accuracy is evaluated during training. The epoch with the highest validation accuracy is retained, and the test accuracy reported for that run corresponds to the selected checkpoint. Consequently, a model that reaches high training accuracy but does not generalize to the validation nodes is not automatically preferred over another configuration.
+To select the checkpoint, validation accuracy is evaluated during training. The model checkpoint with the highest validation accuracy is selected, and the test accuracy reported for that run corresponds to this checkpoint. As a result, achieving high training accuracy alone is not sufficient for selecting a model, especially if it performs poorly on the validation nodes.
 
-Two kinds of model comparison are used. In the broad screening, model families and hyperparameters are selected according to validation performance within predefined candidate sets. These comparisons describe the performance of the selected configurations but do not isolate the effect of a single architectural modification. In the mechanistic follow-up experiments, configurations are matched wherever possible so that differences associated with depth or PairNorm can be examined under otherwise comparable settings.
+Two kinds of model comparison are used. In the initial screening study, model families and hyperparameters are selected according to their validation performance within predefined candidate sets. While these comparisons characterize the predictive performance of the selected configurations, they do not isolate the contribution of individual architectural modifications. In the subsequent experiments, model configurations are matched wherever possible to investigate differences associated with network depth and PairNorm under comparable conditions.
 
-The broad screening includes graph convolutional networks (GCNs), graph attention networks (GATs), and GraphSAGE. GCNs aggregate neighboring representations through normalized graph convolution \cite{kipf2017gcn}. GATs use learned attention coefficients to weight neighboring information \cite{velickovic2018gat}. GraphSAGE constructs node representations through neighborhood aggregation and transformation \cite{hamilton2017graphsage}. The corresponding PairNorm variants introduce the normalization mechanism described in Section~2.5 \cite{zhao2020pairnorm}. The reported hidden dimension denotes the configured intermediate representation size, although architecture-specific operations such as attention heads may affect the exact internal dimensionality and parameter count.
+To account for variability between experimental runs, the experiments use repeated evaluations with different random seeds or data splits, depending on the experimental setup. In the controlled experiments, graph seeds determine the generated or rewired graph instances, while initialization seeds control model initialization and training randomness. It is important to distinguish between these sources of variability because training models with different initializations on the same graph does not produce independent graph instances. When experiments involve multiple graph seeds and model initialization seeds, the results are first averaged across initializations for each graph seed. These graph-level averages are then used to summarize performance and variability across the different graph instances. Details on the number of repetitions and the aggregation procedure are provided in the respective experimental sections.
 
-The controlled experiments use repeated graph and model initialization seeds. A graph seed determines the generated or rewired graph instance, while an initialization seed determines the stochastic model initialization and associated training randomness. These sources of variability are distinguished because multiple neural-network initializations on the same graph do not constitute independent graph realizations.
+Another important consideration concerns the evaluation of node representations. While predictive accuracy is assessed using the checkpoint selected based on validation performance, certain representation metrics are measured at a predefined training epoch. As a result, these measurements reflect the geometry of node representations at that specific point in training and may differ from those of the checkpoint used for test evaluation. This difference is considered when analyzing the relationship between representation collapse and predictive performance.
 
-Where five graph seeds and five initialization seeds are combined, the five initialization results are first averaged for each graph seed. The resulting five graph-level means are then used to summarize variability across independently generated or rewired graph instances. Descriptive tables may additionally report statistics across all 25 individual runs; the aggregation level is stated explicitly whenever this occurs.
-
-A related distinction concerns the representation diagnostics. Predictive accuracy is measured at the validation-selected checkpoint, whereas several representation analyses evaluate a specified training epoch. Such comparisons characterize the model's representation geometry at that epoch but do not directly establish the geometry of the checkpoint selected for prediction. In particular, a fixed-epoch representation metric cannot automatically be interpreted as a causal explanation of accuracy measured at an earlier checkpoint.
-
-The historical experiments were conducted through several runners and experiment-specific configurations. Therefore, differences in optimization settings and normalization implementations must be considered when comparing separate experiment families. One audited real-world runner uses centering followed by scaling with the mean node-vector norm, whereas the standard PairNorm formulation described in Section~2.5 scales by the root mean squared centered norm. A separate synthetic runner uses the PyTorch Geometric PairNorm implementation. These operations are closely related but do not impose identical mathematical constraints in general. Accordingly, the results below are primarily compared within each experimental design, and cross-experiment differences are not attributed exclusively to PairNorm without accounting for implementation and protocol differences.
+Finally, the experiments were conducted using different training
+implementations and configurations. In particular, one of the real-world experimental setups uses a normalization procedure that differs from the standard PairNorm scaling introduced in Section~2.5 \cite{zhao2020pairnorm}, whereas the cSBM experiments use the implementation provided by PyTorch Geometric. For this reason, results are primarily compared within their respective experimental settings, and differences across experiment groups are not attributed solely to PairNorm.
 
 \subsection{Oversmoothing Diagnostics}
 \label{sec:oversmoothing-diagnostics}
