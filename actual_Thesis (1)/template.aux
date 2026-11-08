@@ -112,20 +112,21 @@
 \citation{rusch2023oversmoothing}
 \citation{arnaiz2026demystifying}
 \citation{zhang2026measuring}
+\citation{rusch2023oversmoothing}
 \citation{arnaiz2026demystifying}
 \citation{rusch2023oversmoothing}
 \citation{arnaiz2026demystifying}
 \@writefile{toc}{\contentsline {paragraph}{Normalized Dirichlet energy.}{16}{}\protected@file@percent }
-\newlabel{eq:edge-energy}{{11}{16}{}{equation.11}{}}
-\newlabel{eq:nde}{{12}{16}{}{equation.12}{}}
+\newlabel{eq:nde}{{11}{16}{}{equation.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{Effective rank.}{16}{}\protected@file@percent }
 \citation{roy2007effective}
 \citation{zhang2026measuring}
-\@writefile{toc}{\contentsline {paragraph}{Effective rank.}{17}{}\protected@file@percent }
-\newlabel{eq:singular-weight}{{13}{17}{}{equation.13}{}}
-\newlabel{eq:effective-rank}{{14}{17}{}{equation.14}{}}
-\newlabel{eq:effective-rank-ratio}{{15}{17}{}{equation.15}{}}
+\citation{rusch2023oversmoothing}
+\newlabel{eq:singular-weight}{{12}{17}{}{equation.12}{}}
+\newlabel{eq:effective-rank}{{13}{17}{}{equation.13}{}}
+\newlabel{eq:effective-rank-ratio}{{14}{17}{}{equation.14}{}}
 \@writefile{toc}{\contentsline {paragraph}{Cosine-distance diagnostics.}{17}{}\protected@file@percent }
-\newlabel{eq:cosine-distance}{{16}{17}{}{equation.16}{}}
+\newlabel{eq:cosine-distance}{{15}{17}{}{equation.15}{}}
 \@writefile{toc}{\contentsline {paragraph}{Interpretation of diagnostic evidence.}{18}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4}Broad Real-World Screening}{18}{}\protected@file@percent }
 \newlabel{sec:broad-screening}{{4}{18}{}{section.4}{}}
@@ -145,10 +146,10 @@
 \newlabel{tab:selected-design}{{3}{23}{}{table.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Depth Interaction}{23}{}\protected@file@percent }
 \newlabel{sec:selected-depth-interaction}{{5.1}{23}{}{subsection.5.1}{}}
-\newlabel{eq:depth-loss}{{17}{23}{}{equation.17}{}}
+\newlabel{eq:depth-loss}{{16}{23}{}{equation.16}{}}
 \citation{holm1979procedure}
 \citation{lakens2013effectsizes}
-\newlabel{eq:depth-did}{{18}{24}{}{equation.18}{}}
+\newlabel{eq:depth-did}{{17}{24}{}{equation.17}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Matched depth interaction for GraphSAGE and GraphSAGE+PairNorm on four real-world datasets. Positive values indicate that PairNorm reduces the test-accuracy loss from four to eight layers; negative values indicate increased degradation under PairNorm. All differences are expressed in percentage points.}}{25}{}\protected@file@percent }
 \newlabel{fig:selected-depth}{{8}{25}{}{figure.8}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Matched depth interactions and representation-diagnostic ratios for the four selected real-world datasets. Depth losses and DiD are expressed in percentage points. NDE and rank ratios compare PairNorm with GraphSAGE at eight layers.}}{25}{}\protected@file@percent }
@@ -162,8 +163,8 @@
 \newlabel{sec:controlled-homophily}{{6}{27}{}{section.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Controlled Graph Construction}{27}{}\protected@file@percent }
 \newlabel{sec:controlled-graph-construction}{{6.1}{27}{}{subsection.6.1}{}}
-\newlabel{eq:controlled-homophily-levels}{{19}{27}{}{equation.19}{}}
-\newlabel{eq:homophily-run-count}{{20}{28}{}{equation.20}{}}
+\newlabel{eq:controlled-homophily-levels}{{18}{27}{}{equation.18}{}}
+\newlabel{eq:homophily-run-count}{{19}{28}{}{equation.19}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Refined controlled-homophily factorial design. The experiment varies graph topology, depth, and PairNorm while retaining the underlying node features and labels within each dataset.}}{28}{}\protected@file@percent }
 \newlabel{tab:controlled-design}{{5}{28}{}{table.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Endpoint Results}{29}{}\protected@file@percent }
@@ -181,8 +182,8 @@
 \newlabel{sec:csbm}{{7}{34}{}{section.7}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{34}{}\protected@file@percent }
 \newlabel{sec:csbm-construction}{{7.1}{34}{}{subsection.7.1}{}}
-\newlabel{eq:csbm-h}{{21}{34}{}{equation.21}{}}
-\newlabel{eq:csbm-feature-signal}{{22}{34}{}{equation.22}{}}
+\newlabel{eq:csbm-h}{{20}{34}{}{equation.20}{}}
+\newlabel{eq:csbm-feature-signal}{{21}{34}{}{equation.21}{}}
 \citation{deshpande2018csbm}
 \citation{deshpande2018csbm}
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Controlled synthetic cSBM experimental design. The graph and feature generator is a thesis-specific variant inspired by the joint graph-and-covariate setting of Deshpande et al.\ \cite  {deshpande2018csbm}.}}{35}{}\protected@file@percent }
@@ -195,7 +196,7 @@
 \newlabel{fig:csbm-performance}{{12}{37}{}{figure.12}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{38}{}\protected@file@percent }
 \newlabel{sec:lr-sensitivity}{{8}{38}{}{section.8}{}}
-\newlabel{eq:lr-grid}{{23}{38}{}{equation.23}{}}
+\newlabel{eq:lr-grid}{{22}{38}{}{equation.22}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Learning-rate sensitivity of eight-layer GraphSAGE with and without PairNorm on controlled PubMed and Roman-Empire graphs at $h=0.1$. Results are summarized across five graph seeds after averaging five initialization seeds within each graph. Star markers identify learning rates selected exclusively by validation accuracy.}}{39}{}\protected@file@percent }
 \newlabel{fig:lr-sensitivity}{{13}{39}{}{figure.13}{}}
 \citation{zhao2020pairnorm}

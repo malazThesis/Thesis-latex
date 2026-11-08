@@ -681,26 +681,19 @@ implementations and configurations. In particular, one of the real-world experim
 
 A decline in classification accuracy does not establish whether node representations have become less distinguishable. Oversmoothing is therefore investigated using representation-level measurements in addition to predictive performance.
 
-The primary diagnostics are normalized Dirichlet energy (NDE) and effective rank. Pairwise and edge-based cosine distances are used as supporting measurements. These quantities describe different geometric properties of the representations and should not be interpreted as interchangeable estimates of predictive quality. This multi-metric approach follows the broader observation that oversmoothing measures can capture different aspects of representation contraction and need not agree in every setting \cite{rusch2023oversmoothing,arnaiz2026demystifying,zhang2026measuring}.
+The primary diagnostic measures used in these experiments are normalized Dirichlet energy (NDE) and effective rank. Pairwise and edge-based cosine distances are used as supporting measurements. These quantities describe different geometric properties of the representations and should not be interpreted as interchangeable estimates of predictive quality. This multi-metric approach is motivated by the fact that oversmoothing measures can capture distinct properties of node representations and may therefore lead to different conclusions depending on the experimental setting \cite{rusch2023oversmoothing,arnaiz2026demystifying,zhang2026measuring}.
 
-The analysis concerns intermediate node representations rather than predicted class logits. In the main experiments, the relevant hidden representation has 128 dimensions and is taken from the final hidden stage before the classifier. The recorded tensor can depend on the model-specific instrumentation: for example, a message-passing output and a normalization output are not necessarily located at the same point relative to activation or dropout operations. The stored diagnostic values are consequently interpreted according to their recorded representation stage, rather than assumed to describe every intermediate operation of the network.
+The analysis focuses on intermediate node representations rather than predicted class logits. In the main experiments, the relevant hidden representation has 128 dimensions and is taken from the final hidden stage before the classifier. The exact point at which these representations are recorded may vary depending on the model implementation. For instance, outputs from message-passing and normalization operations may be captured at different stages relative to activation functions or dropout. Therefore, the recorded diagnostic values are interpreted with respect to the specific representation stage from which they were obtained, rather than being treated as representative of all intermediate operations.
 
 \paragraph{Normalized Dirichlet energy.}
 
-Dirichlet energy measures how different the representations of neighboring nodes are. For an undirected graph $G=(V,E)$ and a representation matrix $H$, an edge-averaged squared-distance quantity is
+As introduced in Section~2.4, Dirichlet energy measures differences between the representations of neighboring
+nodes \cite{rusch2023oversmoothing}. The unnormalized form was defined in Equation~\eqref{eq:dirichlet-energy}.
+However, its value depends on the magnitude of the node representations. Multiplying all representations by the same factor changes the Dirichlet energy without changing their relative geometric arrangement. This makes direct comparisons between models or training conditions
+difficult when representation magnitudes differ \cite{arnaiz2026demystifying}.
 
-\begin{equation}
-D_{\mathrm{edge}}(H)
-=
-\frac{1}{|E|}
-\sum_{\{u,v\}\in E}
-\|\mathbf{h}_u-\mathbf{h}_v\|_2^2.
-\label{eq:edge-energy}
-\end{equation}
-
-A smaller value indicates that neighboring node representations are more similar in Euclidean distance. However, this raw quantity changes if all representations are multiplied by a common scaling factor, even though such scaling does not by itself change which representations can be separated by a suitable classifier. This scale dependence motivates normalization \cite{arnaiz2026demystifying}.
-
-The normalized diagnostic used here compares the mean squared difference across edges with the mean squared norm of the node representations. In its edge-averaged form, it can be expressed as
+To address this limitation, the experiments use normalized Dirichlet energy (NDE). Instead of considering only the
+squared differences between neighboring nodes, NDE compares the average squared difference across edges with the average squared norm of the node representations. For an undirected graph $G=(V,E)$ and a representation matrix $H$, it is calculated as
 
 \begin{equation}
 \operatorname{NDE}(H)
@@ -717,11 +710,14 @@ The normalized diagnostic used here compares the mean squared difference across 
 \label{eq:nde}
 \end{equation}
 
-where $\varepsilon$ is a small numerical stabilization term. The precise normalization convention is specified by the experimental implementation. This quantity follows the general principle of comparing variation across edges relative to the overall magnitude of the representations, rather than treating raw energy values as directly comparable across differently scaled embeddings.
+where $|E|$ is the number of undirected edges, $|V|$ is the number of nodes and $\varepsilon$ is a small
+constant used for numerical stability. Unlike the unnormalized Dirichlet energy introduced in Section~2.4, the numerator represents the average squared distance between connected node representations, while the denominator accounts for the overall magnitude of the node representations.
 
-When the denominator is non-negligible, NDE is approximately invariant under uniform rescaling of all node representations. Values close to zero indicate that neighboring nodes have very similar hidden representations relative to the overall representation magnitude. Higher values indicate stronger edgewise variation, although this variation need not correspond to useful separation between class labels.
+When the denominator is sufficiently large relative to $\varepsilon$, NDE remains approximately unchanged when node representations are uniformly rescaled. Values approaching zero indicate that neighboring nodes have very similar representations relative to their overall magnitude, whereas larger values indicate greater differences between connected node representations relative to their magnitude.
 
-A limitation is that Dirichlet energy primarily describes differences between adjacent nodes. It does not directly determine whether two nodes belonging to different classes can be distinguished by a classifier. In particular, preserving high energy across edges may be irrelevant or even unhelpful when the graph topology and task labels have a different relationship \cite{rusch2023oversmoothing,arnaiz2026demystifying}.
+However, NDE measures differences between connected nodes rather than how well representations separate
+different classes. A higher NDE therefore does not necessarily indicate better predictive performance. Depending on the graph structure and the classification task, greater variation between neighboring nodes may not correspond to more useful class information
+\cite{rusch2023oversmoothing,arnaiz2026demystifying}.
 
 \paragraph{Effective rank.}
 
@@ -747,7 +743,7 @@ Following the entropy-based definition introduced by Roy and Vetterli \cite{roy2
 
 using the convention $0\log 0=0$.
 
-A representation matrix whose singular values are concentrated in one direction has an effective rank close to one. If substantial variation is distributed across several independent directions, the effective rank is larger. Unlike ordinary matrix rank, which counts nonzero singular values, effective rank also reflects their relative magnitudes. Degenerate zero matrices require a numerical convention because the normalized singular-value weights are undefined.
+When one singular value dominates the spectrum of a representation matrix, its effective rank approaches one. In contrast, a higher effective rank indicates that variation is spread across multiple independent directions. Unlike the standard matrix rank, which only considers whether singular values are nonzero, the effective rank also takes their relative magnitudes into account. For zero matrices, a numerical convention is required because the normalized singular-value weights are undefined.
 
 For comparisons across hidden dimensions, the experiments additionally use the effective-rank ratio
 
@@ -758,13 +754,15 @@ r_{\mathrm{eff}}(H)
 \label{eq:effective-rank-ratio}
 \end{equation}
 
-This normalized quantity indicates the effective dimensionality relative to the configured hidden representation size. For a fixed hidden dimension, effective rank and its ratio provide the same ordering of models.
+This normalized measure describes the effective dimensionality of the representations relative to the available hidden dimension. When the hidden dimension is held constant, both effective rank and the normalized ratio yield the same ranking of models.
 
-Effective rank is complementary to Dirichlet energy. A representation may preserve substantial edgewise differences while most variation occupies only a small subspace. Conversely, a representation may occupy several directions without encoding useful class-related information. Rank-based diagnostics have therefore been proposed as an important complement to energy-based oversmoothing measures \cite{zhang2026measuring}.
+Effective rank provides a complementary perspective to Dirichlet energy. Node representations can exhibit considerable differences across graph edges even when most of their variation is concentrated in a low-dimensional subspace. On the other hand, representations can be distributed across several directions without providing useful information for distinguishing between classes. Therefore, a higher effective rank does not necessarily indicate better predictive performance. Zhang et al. have proposed rank-based measures to address limitations of energy-based oversmoothing diagnostics \cite{zhang2026measuring}.
 
 \paragraph{Cosine-distance diagnostics.}
 
-To examine the alignment of node representations independently of their absolute magnitudes, the experiments also use cosine-based distances. For two nonzero node representations, cosine distance is
+In addition to NDE and effective rank, the experiments use cosine-based distances to examine the similarity between node
+representations. Unlike Euclidean distance, cosine distance focuses on the direction of two vectors rather than their magnitude. The Mean Average Distance (MAD) formulation discussed by Rusch et al. includes cosine distance as one of its components
+\cite{rusch2023oversmoothing}. For two nonzero node representations, cosine distance is defined as
 
 \begin{equation}
 d_{\cos}(\mathbf{h}_u,\mathbf{h}_v)
@@ -774,17 +772,26 @@ d_{\cos}(\mathbf{h}_u,\mathbf{h}_v)
 \mathbf{h}_u^{\top}\mathbf{h}_v
 }{
 \|\mathbf{h}_u\|_2\|\mathbf{h}_v\|_2
-}.
+},
 \label{eq:cosine-distance}
 \end{equation}
 
-A value close to zero indicates that two representations point in nearly the same direction. The analysis considers distances over node pairs and, separately, over graph edges. These measurements complement NDE because cosine similarity is not directly affected by positive uniform scaling of the representations. However, cosine distance becomes numerically delicate when node-vector norms are close to zero. It also does not capture differences in vector magnitude and is therefore not sufficient as a stand-alone indicator of useful representation diversity.
+where $\mathbf{h}_u$ and $\mathbf{h}_v$ are the representations of two nodes. The numerator is their dot product, while the
+denominator is the product of their Euclidean norms. Together, these quantities describe how closely the two vectors point
+in the same direction. A cosine distance close to zero indicates that the representations point in nearly the same
+direction, whereas larger values indicate greater differences in their directions.
 
-The decision to prioritize NDE and effective rank while using cosine distances as supporting evidence is intentional. PairNorm explicitly modifies the global spread of intermediate representations, so changes in distance-based metrics may partly reflect the normalization operation itself. A geometric change becomes relevant to the research questions only when considered together with predictive accuracy, training dynamics, and the conditions under which it occurs.
+The experiments consider cosine distances between node pairs and separately between nodes connected by an edge. These
+measurements complement NDE because they describe directional similarity independently of the absolute magnitudes of the
+representations. However, cosine distance can become numerically unstable when the norm of a representation is
+close to zero. It also does not measure differences in vector magnitude or determine whether the representations contain useful information for classification.
+
+PairNorm can also influence cosine distances by changing the directions of node representations through its centering
+operation. For these reasons, cosine distances are used only as supporting measurements and are interpreted together with predictive accuracy, training dynamics, and the other representation diagnostics.
 
 \paragraph{Interpretation of diagnostic evidence.}
 
-The subsequent experiments therefore use three distinct types of evidence: predictive accuracy measures whether a model solves the classification task; representation diagnostics measure properties of the learned hidden vectors; and matched interventions examine how both quantities respond when depth, normalization, graph topology, or optimization settings change.
+The subsequent experiments therefore use three distinct types of evidence. Predictive accuracy is used to assess classification performance, while representation diagnostics measure properties of the learned hidden vectors and matched interventions examine how both quantities respond when depth, normalization, graph topology, or optimization settings change.
 
 When a deep model exhibits both a severe accuracy decrease and a strong reduction in representation diversity, this provides evidence consistent with an oversmoothing-related failure. If an intervention preserves representation diversity and improves accuracy in the same controlled condition, the evidence becomes stronger. Nevertheless, such co-occurrence does not establish that the measured diagnostic causally mediates the accuracy improvement. PairNorm can also change optimization dynamics, and graph interventions can alter the information available to the model.
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  7 NOV 2026 20:02
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  8 NOV 2026 20:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -542,7 +542,7 @@ t>
 File: figures/fig06a_realworld_performance_depth.png Graphic file (type png)
 <use figures/fig06a_realworld_performance_depth.png>
 Package pdftex.def Info: figures/fig06a_realworld_performance_depth.png  used o
-n input line 836.
+n input line 843.
 (pdftex.def)             Requested size: 418.25368pt x 191.57335pt.
 
 
@@ -552,14 +552,14 @@ n input line 836.
 File: figures/fig06b_realworld_pairnorm_effects.png Graphic file (type png)
 <use figures/fig06b_realworld_pairnorm_effects.png>
 Package pdftex.def Info: figures/fig06b_realworld_pairnorm_effects.png  used on
- input line 851.
+ input line 858.
 (pdftex.def)             Requested size: 418.25368pt x 191.57335pt.
 
 
 [21 <./figures/fig06b_realworld_pairnorm_effects.png>]
 
 [22]
-Overfull \hbox (12.43205pt too wide) in paragraph at lines 1003--1004
+Overfull \hbox (12.43205pt too wide) in paragraph at lines 1010--1011
 []\OT1/ptm/m/n/10 To quan-tify how PairNorm changes this re-la-tion-ship, the e
 x-per-i-ment uses a matched difference-in-differences
  []
@@ -574,7 +574,7 @@ x-per-i-ment uses a matched difference-in-differences
 File: figures/fig07_selected4_depth_interaction.png Graphic file (type png)
 <use figures/fig07_selected4_depth_interaction.png>
 Package pdftex.def Info: figures/fig07_selected4_depth_interaction.png  used on
- input line 1032.
+ input line 1039.
 (pdftex.def)             Requested size: 384.7926pt x 209.88861pt.
 
 
@@ -587,12 +587,12 @@ File: figures/fig08_selected4_representation_ratios.png Graphic file (type png)
 
 <use figures/fig08_selected4_representation_ratios.png>
 Package pdftex.def Info: figures/fig08_selected4_representation_ratios.png  use
-d on input line 1092.
+d on input line 1099.
 (pdftex.def)             Requested size: 384.7926pt x 209.88861pt.
 
 
 [26]
-Overfull \hbox (8.2127pt too wide) in paragraph at lines 1118--1119
+Overfull \hbox (8.2127pt too wide) in paragraph at lines 1125--1126
 []\OT1/ptm/m/n/10 The ex-per-i-ment uses PubMed and Roman-Empire as two con-tra
 st-ing graph-learning en-vi-ron-ments. PubMed
  []
@@ -600,7 +600,7 @@ st-ing graph-learning en-vi-ron-ments. PubMed
 
 
 [27 <./figures/fig08_selected4_representation_ratios.png>]
-Overfull \hbox (3.14229pt too wide) in paragraph at lines 1137--1138
+Overfull \hbox (3.14229pt too wide) in paragraph at lines 1144--1145
 []\OT1/ptm/m/n/10 The ini-tial con-trolled ex-plo-ration eval-u-ates sev-eral n
 et-work depths, in-clud-ing two, four, and eight message-
  []
@@ -613,10 +613,10 @@ t>
 File: figures/fig09_controlled_homophily_overview.png Graphic file (type png)
 <use figures/fig09_controlled_homophily_overview.png>
 Package pdftex.def Info: figures/fig09_controlled_homophily_overview.png  used 
-on input line 1188.
+on input line 1195.
 (pdftex.def)             Requested size: 418.25368pt x 217.34529pt.
 
-Overfull \hbox (0.90594pt too wide) in paragraph at lines 1195--1196
+Overfull \hbox (0.90594pt too wide) in paragraph at lines 1202--1203
 []\OT1/ptm/m/n/10 For PubMed at $\OML/cmm/m/it/10 h \OT1/cmr/m/n/10 = 0\OML/cmm
 /m/it/10 :\OT1/cmr/m/n/10 1$\OT1/ptm/m/n/10 , Graph-SAGE reaches only 39.94% te
 st ac-cu-racy, whereas Graph-SAGE+PairNorm
@@ -633,7 +633,7 @@ st ac-cu-racy, whereas Graph-SAGE+PairNorm
 File: figures/fig10_temporal_recovery.png Graphic file (type png)
 <use figures/fig10_temporal_recovery.png>
 Package pdftex.def Info: figures/fig10_temporal_recovery.png  used on input lin
-e 1271.
+e 1278.
 (pdftex.def)             Requested size: 418.25368pt x 288.94052pt.
 
 
@@ -651,7 +651,7 @@ e 1271.
 File: figures/fig11_csbm_controlled_summary.png Graphic file (type png)
 <use figures/fig11_csbm_controlled_summary.png>
 Package pdftex.def Info: figures/fig11_csbm_controlled_summary.png  used on inp
-ut line 1375.
+ut line 1382.
 (pdftex.def)             Requested size: 418.25368pt x 174.03188pt.
 
 
@@ -665,7 +665,7 @@ pt>
 File: figures/fig12_pubmed_roman_lr_sensitivity.png Graphic file (type png)
 <use figures/fig12_pubmed_roman_lr_sensitivity.png>
 Package pdftex.def Info: figures/fig12_pubmed_roman_lr_sensitivity.png  used on
- input line 1452.
+ input line 1459.
 (pdftex.def)             Requested size: 418.25368pt x 173.56854pt.
 
 
@@ -677,7 +677,7 @@ t>
 File: figures/fig13_pairnorm_component_ablation.png Graphic file (type png)
 <use figures/fig13_pairnorm_component_ablation.png>
 Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.png  used on
- input line 1506.
+ input line 1513.
 (pdftex.def)             Requested size: 418.25368pt x 511.1959pt.
 
 
@@ -686,7 +686,7 @@ Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.png  used on
 [42 <./figures/fig13_pairnorm_component_ablation.png>]
 
 [43]
-Overfull \hbox (1.42224pt too wide) in paragraph at lines 1578--1579
+Overfull \hbox (1.42224pt too wide) in paragraph at lines 1585--1586
 []\OT1/ptm/m/n/10 The three con-di-tions re-veal that the con-tri-bu-tion of Pa
 irNorm's cen-ter-ing and scal-ing op-er-a-tions is domain-
  []
@@ -711,10 +711,10 @@ L3 programming layer <2025-01-18>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 7031 strings out of 473190
- 121565 string characters out of 5715801
- 563874 words of memory out of 5000000
- 30149 multiletter control sequences out of 15000+600000
+ 7030 strings out of 473190
+ 121549 string characters out of 5715801
+ 563847 words of memory out of 5000000
+ 30148 multiletter control sequences out of 15000+600000
  589673 words of font info for 98 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  66i,16n,68p,1137b,368s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -739,7 +739,7 @@ texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-di
 st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
 ype1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/t
 imes/utmri8a.pfb>
-Output written on template.pdf (48 pages, 3416261 bytes).
+Output written on template.pdf (48 pages, 3416470 bytes).
 PDF statistics:
  295 PDF objects out of 1000 (max. 8388607)
  173 compressed objects within 2 object streams

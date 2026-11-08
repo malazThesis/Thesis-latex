@@ -14,7 +14,7 @@
 \contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{14}{}%
 \contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{15}{}%
 \contentsline {paragraph}{Normalized Dirichlet energy.}{16}{}%
-\contentsline {paragraph}{Effective rank.}{17}{}%
+\contentsline {paragraph}{Effective rank.}{16}{}%
 \contentsline {paragraph}{Cosine-distance diagnostics.}{17}{}%
 \contentsline {paragraph}{Interpretation of diagnostic evidence.}{18}{}%
 \contentsline {section}{\numberline {4}Broad Real-World Screening}{18}{}%
