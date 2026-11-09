@@ -22,6 +22,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{float}
+\usepackage{makecell}
 
 % ============================================================
 % Paths and layout helpers
@@ -811,20 +812,20 @@ Conversely, a high NDE or effective rank does not guarantee accurate predictions
 
 The first empirical study examines how predictive performance changes with message-passing depth across the 15 real-world datasets introduced in Section~\ref{sec:realworld-datasets}. Its purpose is to determine whether deeper graph neural networks exhibit a consistent performance decline or whether the effect depends on the dataset and model configuration. This broad comparison also identifies representative conditions for the more controlled experiments that follow.
 
-The screening was divided into two phases. The first phase considered relatively shallow networks with $L\in\{2,4\}$ message-passing layers. The second phase evaluated deeper networks with $L\in\{8,16,32\}$. Both phases considered configured hidden dimensions of 64 and 128. The model families included GCN, GAT, and GraphSAGE, together with their corresponding PairNorm configurations.
+The screening was divided into two phases. The first phase considered relatively shallow networks with $L\in\{2,4\}$ message-passing layers. The second phase evaluated deeper networks with $L\in\{8,16,32\}$. Regarding hidden dimensions, both phases considered 64 and 128. The model families included GCN, GAT, and GraphSAGE, together with their corresponding PairNorm configurations.
 
-The two-phase design separates two related questions. The comparison between shallow and deeper phases indicates how the predictive performance of validation-selected configurations changes when the candidate depth range increases. Within each phase, comparisons between baseline and normalization-augmented models examine whether the availability of PairNorm changes the best-performing configuration. However, because model family, hidden dimension, and depth may differ between selected configurations, this second comparison must not be interpreted as an isolated estimate of the PairNorm effect.
+The two-phase design separates two related questions. The comparison between shallow and deeper phases indicates how the predictive performance of validation-selected configurations changes when the candidate depth range increases. Within each phase, the baseline-only search is compared with an expanded search that also includes PairNorm configurations. This comparison examines whether allowing PairNorm candidates changes the selected predictive performance. However, since the selected configurations may differ in architecture, hidden dimension, and network depth, these comparisons do not isolate the effect of PairNorm alone.
 
-Model and hyperparameter selection were performed using validation accuracy. For each dataset and comparison category, the configuration with the highest mean validation performance was selected from the evaluated candidates. The reported test accuracy corresponds to the validation-selected configuration and its best-validation checkpoints. Repetitions were used to characterize variability where repeated observations were available.
+Model and hyperparameter selection were performed using validation accuracy. For each dataset and comparison category, the configuration with the highest mean validation performance was selected from the evaluated candidates. Ties in mean validation accuracy were resolved by preferring fewer layers, followed by a smaller hidden dimension and alphabetical model order. The reported test accuracy corresponds to the validation-selected configuration and its best-validation checkpoints. Repetitions were used to characterize variability where repeated observations were available.
 
-The results are summarized in Table~\ref{tab:broad-screening-results}. The baseline columns restrict selection to models without PairNorm, while the full columns permit the normalization-augmented configurations. Each entry reports the selected model family, depth, configured hidden dimension, and test accuracy.
+The results are summarized in Table~\ref{tab:broad-screening-results}, in which the baseline columns consider only models without PairNorm, whereas the full columns also include configurations that incorporate PairNorm. 
 
 \subsection{Results}
 \label{sec:broad-screening-results}
 
-The broad screening shows that increasing the permitted depth range does not produce a uniform effect across datasets. Several datasets exhibit substantial degradation when the selected configuration changes from the shallow to the deeper phase, whereas others retain similar predictive performance. This heterogeneity is already visible in Figure~\ref{fig:realworld-depth}.
+The broad screening shows that increasing the permitted depth range does not affect all datasets in the same way. Several datasets exhibit substantial degradation when the selected configuration changes from the shallow to the deeper phase, whereas others maintain relatively stable results. These differences are illustrated in Figure~\ref{fig:realworld-depth}.
 
-One of the clearest examples is Amazon-Computers. The selected shallow baseline is a two-layer GCN with 128 hidden dimensions and a test accuracy of $83.71\pm0.79\%$. In the deeper phase, the selected baseline is an eight-layer GCN with 64 hidden dimensions and reaches only $56.63\pm9.74\%$. The difference between the phase means is approximately 27.08 percentage points. In addition to the large decrease in mean accuracy, the deeper baseline exhibits substantially greater variability. The result demonstrates that allowing greater depth does not necessarily improve predictive performance, even when the configuration is selected by validation accuracy.
+One of the clearest examples of the differences between the shallow and deeper phases is Amazon-Computers. As described above, the configurations were selected based on their mean validation accuracy within each comparison category. For Amazon-Computers, the selected shallow baseline is a two-layer GCN with 128 hidden dimensions and a test accuracy of $83.71\pm0.79\%$. In the deeper phase, the selected baseline is an eight-layer GCN with 64 hidden dimensions and reaches only $56.63\pm9.74\%$. The difference between the phase means is approximately 27.08 percentage points. In addition to the large decrease in mean accuracy, the deeper baseline exhibits substantially greater variability. The result demonstrates that allowing greater depth does not necessarily improve predictive performance, even when the configuration is selected by validation accuracy.
 
 The full model search produces a different result on the same dataset. In the deeper phase, GraphSAGE with PairNorm, eight layers, and 128 hidden dimensions reaches $82.37\pm1.47\%$. This is 25.74 percentage points above the selected deeper baseline, and it approaches the shallow performance level. Nevertheless, the selected deeper baseline is a GCN rather than GraphSAGE. Therefore, this comparison combines changes in architecture, hidden dimension, and normalization. It demonstrates the usefulness of including alternative deep configurations in the search, but it does not isolate a causal 25.74-percentage-point benefit from PairNorm.
 
@@ -832,11 +833,11 @@ Roman-Empire provides another pronounced depth-sensitive case. The selected shal
 
 Actor exhibits a similar contrast, although with substantially lower absolute accuracy. Its shallow baseline reaches $34.49\pm1.11\%$, while the selected deeper baseline reaches $26.40\pm1.25\%$. This corresponds to a decrease of 8.09 percentage points. The deeper full search instead selects an eight-layer GraphSAGE+PairNorm model, reaching $32.87\pm0.60\%$. Thus, the full search recovers much of the selected baseline's depth-related loss, but it does not exceed the shallow result.
 
-Not every dataset follows this pattern. Coauthor-Physics retains comparatively stable performance, with selected baseline accuracy changing from $92.83\pm0.29\%$ in the shallow phase to $92.30\pm0.56\%$ in the deeper phase. The difference is only 0.53 percentage points. Similarly, PubMed changes from $77.20\%$ for the selected shallow baseline to $77.57\pm1.38\%$ for the selected deeper baseline, showing no corresponding depth-related deterioration in this screening comparison. These cases demonstrate why degradation cannot be regarded as an inevitable consequence of increasing the number of message-passing layers.
+Not every dataset follows this pattern. Coauthor-Physics retains comparatively stable performance, with selected baseline accuracy changing from $93.20\pm0.54\%$ in the shallow phase to $92.30\pm0.56\%$ in the deeper phase. The difference is approximately 0.90 percentage points. Similarly, PubMed changes from $77.20\%$ for the selected shallow baseline to $77.57\pm1.38\%$ for the selected deeper baseline, showing no corresponding depth-related deterioration in this screening comparison. These cases demonstrate why degradation cannot be regarded as an inevitable consequence of increasing the number of message-passing layers.
 
 The smaller WebKB datasets show further variability. Cornell changes from $71.08\pm5.56\%$ for the selected shallow baseline to $56.22\pm6.96\%$ for the deeper baseline. Texas decreases from $78.65\pm5.76\%$ to $65.68\pm7.21\%$, while Wisconsin decreases from $80.20\pm4.66\%$ to $66.67\pm7.22\%$. These substantial mean differences occur alongside relatively large standard deviations, emphasizing that individual dataset splits or random repetitions can influence the observed outcome.
 
-The left panel of Figure~\ref{fig:realworld-depth} compares the selected predictive performance across datasets, while its right panel summarizes the changes between the two depth phases. The figure makes two observations apparent. First, the absolute difficulty and achievable accuracy differ considerably across datasets. Second, the magnitude of the depth-related change is not simply proportional to the initial performance level or to the raw edge-homophily value.
+Figure~\ref{fig:realworld-depth} highlights two main observations. First, the absolute difficulty and achievable accuracy differ considerably across datasets. Second, the magnitude of the change between the shallow and deeper phases is not simply proportional to the initial performance level. Comparing these results with the edge-homophily values in Table~\ref{tab:dataset-overview} also suggests that raw edge homophily alone does not explain the observed differences.
 
 \begin{figure}[htbp]
 \centering
@@ -845,18 +846,20 @@ The left panel of Figure~\ref{fig:realworld-depth} compares the selected predict
 \label{fig:realworld-depth}
 \end{figure}
 
-Figure~\ref{fig:realworld-pairnorm} focuses on the role of PairNorm. Its first panel reports changes when normalization-augmented candidates are admitted to the validation-based search. The second panel uses matched model, depth, and hidden-dimension configurations, providing a more controlled comparison of the normalization variants.
+
+In contrast to Figure~\ref{fig:realworld-depth}, which examines differences between the shallow and deeper phases, Figure~\ref{fig:realworld-pairnorm} focuses on the role of PairNorm in predictive performance. The analysis examines whether expanding the search to include PairNorm candidates improves the selected performance and whether consistent accuracy differences are observed when model configurations are matched.
 
 The results differ across datasets and comparison protocols. For example, the large improvement of the selected full configuration on Amazon-Computers indicates that the expanded search finds a much stronger deep model, but part of this difference can arise from architecture selection. By contrast, matched comparisons are designed to hold the architecture and relevant hyperparameters fixed so that the remaining variation is more directly associated with normalization.
 
-The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\pm0.22\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\pm0.61\%$. This is a difference of 5.04 percentage points between the selected configurations. In a separate fixed GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.20 percentage points. These are different comparison questions and should not be presented as interchangeable estimates.
+
+The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\pm0.22\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\pm0.61\%$. This corresponds to a difference of approximately 5.04 percentage points between the selected configurations. In a separate matched GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.20 percentage points. However, the average matched difference across all evaluated configurations on Amazon-Ratings in the deeper phase is approximately 3.09 percentage points. This illustrates that the effect of PairNorm can vary considerably across model configurations.
 
 The screening also contains cases in which adding PairNorm candidates provides little or no improvement. On Cora and CiteSeer, the selected configurations in each phase are unchanged between the baseline and full candidate sets. On Squirrel, the deeper full selection reaches $31.76\pm0.85\%$, compared with $31.99\pm1.65\%$ for the deeper baseline. The two selected configurations also differ in depth and hidden dimension. This result does not support a general claim that PairNorm improves deep-GNN performance.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig06b_realworld_pairnorm_effects.png}
-\caption{PairNorm effects in the broad real-world screening. The first panel compares validation-selected configurations, while the second panel uses matched architecture, depth, and hidden-dimension comparisons. Positive and negative effects occur across datasets, and changes in selected architecture must be distinguished from isolated normalization effects.}
+\caption{PairNorm comparisons in the broad real-world screening. The left panel compares the test accuracy of validation-selected baseline and full configurations, while the right panel summarizes accuracy differences between models with and without PairNorm under matched architecture, depth, and hidden dimension.}
 \label{fig:realworld-pairnorm}
 \end{figure}
 
@@ -864,97 +867,129 @@ Taken together, the broad screening provides an initial answer to RQ1: depth-rel
 
 This limitation motivates the following study. Instead of continuing to compare the best configurations from heterogeneous model families, the analysis narrows its focus to matched GraphSAGE and GraphSAGE+PairNorm experiments on four deliberately contrasting datasets.
 
+
 \begin{landscape}
 \begin{table}[p]
 \centering
-\caption{Validation-selected results from the broad real-world screening. Phase 1 considers depths 2 and 4; Phase 2 considers depths 8, 16, and 32. Each entry identifies the selected model, depth, hidden dimension, and test accuracy. PN denotes PairNorm.}
+\caption{Validation-selected results from the broad real-world screening. Phase 1 considers depths 2 and 4. Phase 2 considers depths 8, 16, and 32. Each entry identifies the selected model, depth, hidden dimension, and test accuracy. The baseline and full searches were conducted using separate
+training runs. Consequently, identical model configurations may have different reported test accuracies. These differences should not be interpreted as isolated PairNorm effects. PN denotes PairNorm.}
 \label{tab:broad-screening-results}
 \scriptsize
-\begin{tabular}{lcccc}
+
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lcccc@{}}
 \toprule
 Dataset & Phase 1 baseline & Phase 1 full &
 Phase 2 baseline & Phase 2 full\\
 \midrule
+
 Cora &
 \makecell{GAT\\L4, H128\\79.50\%} &
 \makecell{GAT\\L4, H128\\79.50\%} &
 \makecell{GCN\\L8, H64\\$76.70\pm0.85$\%} &
 \makecell{GCN\\L8, H64\\$76.70\pm0.85$\%}\\
+\midrule
+
 CiteSeer &
 \makecell{GraphSAGE\\L2, H128\\70.60\%} &
 \makecell{GraphSAGE\\L2, H128\\70.60\%} &
 \makecell{GCN\\L8, H128\\$63.27\pm0.31$\%} &
 \makecell{GCN\\L8, H128\\$63.27\pm0.31$\%}\\
+\midrule
+
 PubMed &
 \makecell{GraphSAGE\\L2, H64\\77.20\%} &
 \makecell{GAT+PN\\L4, H128\\77.30\%} &
 \makecell{GAT\\L8, H128\\$77.57\pm1.38$\%} &
 \makecell{GAT+PN\\L8, H128\\$76.47\pm0.95$\%}\\
+\midrule
+
 Roman-Empire &
 \makecell{GraphSAGE\\L4, H128\\$79.37\pm0.58$\%} &
 \makecell{GraphSAGE\\L4, H128\\$79.42\pm0.51$\%} &
 \makecell{GraphSAGE\\L8, H128\\$68.06\pm0.67$\%} &
 \makecell{GraphSAGE+PN\\L8, H128\\$71.62\pm0.78$\%}\\
+\midrule
+
 Amazon-Photo &
 \makecell{GAT\\L2, H128\\$91.51\pm0.57$\%} &
 \makecell{GAT\\L2, H128\\$91.63\pm0.60$\%} &
 \makecell{GCN\\L8, H64\\$82.58\pm2.57$\%} &
 \makecell{GraphSAGE+PN\\L8, H128\\$87.07\pm1.30$\%}\\
+\midrule
+
 Amazon-Computers &
 \makecell{GCN\\L2, H128\\$83.71\pm0.79$\%} &
 \makecell{GCN\\L2, H128\\$83.74\pm0.58$\%} &
 \makecell{GCN\\L8, H64\\$56.63\pm9.74$\%} &
 \makecell{GraphSAGE+PN\\L8, H128\\$82.37\pm1.47$\%}\\
+\midrule
+
 Coauthor-CS &
 \makecell{GCN\\L2, H128\\$91.22\pm0.69$\%} &
 \makecell{GCN\\L2, H128\\$91.22\pm0.69$\%} &
 \makecell{GCN\\L8, H64\\$86.17\pm0.92$\%} &
 \makecell{GCN\\L8, H64\\$86.09\pm0.90$\%}\\
+\midrule
+
 Coauthor-Physics &
-\makecell{GCN\\L4, H64\\$92.83\pm0.29$\%} &
+\makecell{GCN\\L2, H64\\$93.20\pm0.54$\%}&
 \makecell{GCN\\L2, H64\\$93.20\pm0.54$\%} &
 \makecell{GCN\\L8, H64\\$92.30\pm0.56$\%} &
 \makecell{GCN\\L8, H64\\$92.21\pm0.49$\%}\\
+\midrule
+
 Actor &
 \makecell{GraphSAGE\\L4, H64\\$34.49\pm1.11$\%} &
 \makecell{GraphSAGE\\L4, H64\\$34.39\pm1.15$\%} &
 \makecell{GCN\\L8, H64\\$26.40\pm1.25$\%} &
 \makecell{GraphSAGE+PN\\L8, H128\\$32.87\pm0.60$\%}\\
+\midrule
+
 Chameleon &
 \makecell{GraphSAGE\\L2, H64\\$49.82\pm2.32$\%} &
 \makecell{GraphSAGE\\L2, H64\\$49.82\pm2.32$\%} &
 \makecell{GraphSAGE\\L8, H64\\$42.83\pm2.80$\%} &
 \makecell{GraphSAGE\\L8, H64\\$42.57\pm2.74$\%}\\
+\midrule
+
 Squirrel &
 \makecell{GraphSAGE\\L2, H64\\$36.95\pm2.27$\%} &
 \makecell{GraphSAGE\\L2, H64\\$36.95\pm2.27$\%} &
 \makecell{GraphSAGE\\L8, H128\\$31.99\pm1.65$\%} &
 \makecell{GraphSAGE+PN\\L16, H64\\$31.76\pm0.85$\%}\\
+\midrule
+
 Cornell &
 \makecell{GraphSAGE\\L2, H128\\$71.08\pm5.56$\%} &
 \makecell{GraphSAGE\\L2, H128\\$71.08\pm5.56$\%} &
 \makecell{GraphSAGE\\L8, H64\\$56.22\pm6.96$\%} &
 \makecell{GraphSAGE+PN\\L8, H64\\$52.43\pm12.30$\%}\\
+\midrule
+
 Texas &
 \makecell{GraphSAGE\\L2, H128\\$78.65\pm5.76$\%} &
 \makecell{GraphSAGE\\L2, H128\\$78.65\pm5.76$\%} &
 \makecell{GraphSAGE\\L8, H128\\$65.68\pm7.21$\%} &
 \makecell{GraphSAGE\\L8, H128\\$64.86\pm7.32$\%}\\
+\midrule
+
 Wisconsin &
 \makecell{GraphSAGE\\L2, H128\\$80.20\pm4.66$\%} &
 \makecell{GraphSAGE\\L2, H128\\$80.78\pm4.51$\%} &
 \makecell{GraphSAGE\\L8, H128\\$66.67\pm7.22$\%} &
 \makecell{GraphSAGE\\L8, H128\\$64.12\pm7.28$\%}\\
+\midrule
+
 Amazon-Ratings &
 \makecell{GraphSAGE\\L4, H128\\$45.76\pm0.41$\%} &
 \makecell{GraphSAGE+PN\\L4, H128\\$50.10\pm0.41$\%} &
 \makecell{GAT\\L8, H128\\$42.96\pm0.22$\%} &
 \makecell{GraphSAGE+PN\\L8, H128\\$48.00\pm0.61$\%}\\
+
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 \end{landscape}
-
 
 \section{Selected Real-World Cases}
 \label{sec:selected-realworld}
