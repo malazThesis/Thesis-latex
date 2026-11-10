@@ -872,7 +872,7 @@ This limitation motivates the following study. Instead of continuing to compare 
 \begin{table}[p]
 \centering
 \caption{Validation-selected results from the broad real-world screening. Phase 1 considers depths 2 and 4. Phase 2 considers depths 8, 16, and 32. Each entry identifies the selected model, depth, hidden dimension, and test accuracy. The baseline and full searches were conducted using separate
-training runs. Consequently, identical model configurations may have different reported test accuracies. These differences should not be interpreted as isolated PairNorm effects. PN denotes PairNorm.}
+training runs. Consequently, identical model configurations may have different reported test accuracies. These differences should not be interpreted as isolated effects of PN, where PN denotes PairNorm. }
 \label{tab:broad-screening-results}
 \scriptsize
 
@@ -994,11 +994,11 @@ Amazon-Ratings &
 \section{Selected Real-World Cases}
 \label{sec:selected-realworld}
 
-The broad screening established that depth-related degradation and PairNorm effects vary substantially across datasets. However, the validation-selected comparisons do not consistently isolate the role of normalization because different architectures and hyperparameters may be selected. The next experiment therefore restricts attention to matched GraphSAGE comparisons on four datasets and examines both predictive performance and hidden-representation geometry.
+The broad screening in the previous section showed that depth-related degradation and PairNorm effects vary substantially across datasets. However, the validation-selected comparisons do not necessarily isolate the effect of normalization, as the selected configurations may differ in architecture and hyperparameters. The next experiment therefore focuses on matched GraphSAGE comparisons across four datasets and examines both predictive performance and hidden-representation geometry.
 
-The four selected datasets are Amazon-Ratings, Squirrel, Roman-Empire, and Actor. They were chosen because the preceding experiments indicated contrasting relationships between depth and normalization, including cases in which PairNorm appeared helpful and cases in which it did not. The selection is therefore designed to investigate heterogeneous mechanisms rather than to construct a random or representative statistical sample of all graph-learning tasks.
+The four selected datasets are Amazon-Ratings, Squirrel, Roman-Empire, and Actor. They were chosen because the preceding experiments indicated contrasting relationships between depth and normalization, including cases in which PairNorm appeared helpful and cases in which it did not. The datasets are therefore selected to explore different underlying mechanisms, rather than to form a random or representative sample of all possible graph-learning tasks.
 
-For each dataset, GraphSAGE and GraphSAGE+PairNorm are compared at depths $L=4$ and $L=8$, with a hidden dimension of 128. The design uses ten matched splits and a training budget of 800 epochs. The learning-rate candidates are $0.0003$, $0.001$, $0.003$, $0.005$, $0.01$, and $0.03$. The matching allows depth and normalization comparisons to be evaluated under the same learning rate and corresponding split.
+For each dataset, GraphSAGE and GraphSAGE+PairNorm are compared at depths $L=4$ and $L=8$, with a hidden dimension of 128. The design uses ten matched splits and a training budget of 800 epochs. The learning-rate candidates are $0.0003$, $0.001$, $0.003$, $0.005$, $0.01$ and $0.03$. The matching allows depth and normalization comparisons to be evaluated under the same learning rate and corresponding split.
 
 \begin{table}[htbp]
 \centering
@@ -1018,10 +1018,7 @@ Actor & GS / GS+PN & 4, 8 & 128 & 10\\
 
 \smallskip
 \parbox{\linewidth}{\footnotesize
-\textit{Note.} GS = GraphSAGE; PN = PairNorm. Each configuration
-uses 800 training epochs and the learning-rate grid described
-in the text.
-}
+\textit{Note.} GS = GraphSAGE; PN = PairNorm.}
 \end{table}
 
 \subsection{Depth Interaction}
@@ -1040,9 +1037,9 @@ Let $\operatorname{Acc}_{L4}$ and $\operatorname{Acc}_{L8}$ denote test accuracy
 \label{eq:depth-loss}
 \end{equation}
 
-A positive depth loss indicates that the deeper network performs worse. A negative value would mean that the eight-layer model achieves higher accuracy.
+A positive depth loss indicates that the deeper network performs worse, whereas a negative value would mean that the eight-layer model achieves higher accuracy.
 
-To quantify how PairNorm changes this relationship, the experiment uses a matched difference-in-differences comparison:
+The effect of PairNorm on this relationship is evaluated using a matched difference-in-differences (DiD) comparison, defined as follows:
 
 \begin{equation}
 \begin{split}
@@ -1057,17 +1054,27 @@ To quantify how PairNorm changes this relationship, the experiment uses a matche
 \label{eq:depth-did}
 \end{equation}
 
-Here, $GS$ denotes GraphSAGE without PairNorm, while $PN$ denotes GraphSAGE+PairNorm. Equivalently, the interaction is the depth loss of GraphSAGE minus the depth loss of GraphSAGE+PairNorm. Positive values indicate that PairNorm reduces the loss associated with increasing depth, whereas negative values indicate that the depth-related degradation becomes larger under PairNorm.
+Here, $GS$ denotes GraphSAGE without PairNorm, while $PN$ in this case denotes GraphSAGE+PairNorm. In other words, the interaction measures the depth-related performance loss of GraphSAGE minus that of GraphSAGE+PairNorm. Positive values indicate that PairNorm reduces the loss associated with increasing depth, whereas negative values indicate that the depth-related degradation becomes larger under PairNorm.
 
 Figure~\ref{fig:selected-depth} shows that the sign of this interaction changes across the four datasets. Amazon-Ratings and Squirrel exhibit positive interactions, while Roman-Empire and Actor exhibit negative interactions.
 
 For Amazon-Ratings, GraphSAGE loses 2.734 percentage points when depth increases from four to eight layers. The corresponding loss under PairNorm is 0.928 percentage points. Thus, PairNorm reduces depth-related degradation by 1.806 percentage points in the matched comparison. The difference is meaningful because the intervention reduces the depth penalty rather than merely changing the selected performance of one isolated deep model.
 
-Squirrel shows a larger favorable interaction. The GraphSAGE depth loss is 4.092 percentage points, while GraphSAGE+PairNorm loses only 0.893 percentage points. The resulting interaction is +3.199 percentage points. In this configuration, PairNorm therefore retains substantially more of the four-layer predictive performance when the network becomes deeper.
+Squirrel shows a larger favorable interaction. The GraphSAGE depth loss is 4.092 percentage points, while GraphSAGE+PairNorm loses only 0.893 percentage points. This corresponds to a positive interaction of 3.199 percentage points. In this configuration, PairNorm helps preserve a greater proportion of the predictive performance achieved by the four-layer model as network depth increases.
 
-The opposite occurs on Roman-Empire. The GraphSAGE depth loss is only 0.184 percentage points, whereas the PairNorm variant loses 2.243 percentage points. The difference-in-differences is consequently approximately -2.060 percentage points. In this matched setting, PairNorm increases rather than decreases the penalty associated with additional message-passing layers.
+The opposite occurs on Roman-Empire. The GraphSAGE depth loss is only 0.184 percentage points, whereas the PairNorm variant loses 2.243 percentage points. The negative interaction of approximately \mbox{\textminus2.060} percentage points suggests that PairNorm does not consistently mitigate depth-related performance degradation. In this particular matched comparison, its inclusion is associated with a larger accuracy loss as network depth increases.
 
-Actor provides another negative interaction. GraphSAGE loses 1.178 percentage points from four to eight layers, while GraphSAGE+PairNorm loses 3.132 percentage points. The resulting interaction is -1.954 percentage points. Thus, although PairNorm changes the hidden representations, it does not reduce depth-related degradation in this condition.
+Actor provides another negative interaction. GraphSAGE loses 1.178 percentage points from four to eight layers, while GraphSAGE+PairNorm loses 3.132 percentage points. The resulting interaction is \mbox{\textminus1.954} percentage points. Thus, although PairNorm changes the hidden representations, it again  does not reduce depth-related degradation in this condition.
+
+The matched interaction results are summarized in Table~\ref{tab:selected-results}. In addition to the interaction values, the table reports Holm-adjusted $p$-values and Cohen's $d_z$ effect sizes to assess the statistical evidence and the magnitude of the observed interactions.
+
+The $p$-values are used to test whether the mean depth interaction differs from zero. Since this test is performed separately for four datasets, the probability of obtaining at least one false-positive result increases. Holm's sequential multiple-testing correction addresses this problem by controlling the family-wise error rate across the four comparisons \cite{holm1979procedure}. A small adjusted $p$-value therefore provides evidence that the interaction differs from zero, even after accounting for multiple testing.
+
+However, statistical significance alone does not indicate how large an interaction is. Cohen's $d_z$ complements the $p$-values by dividing the mean paired interaction by the standard deviation of the paired interaction values \cite{lakens2013effectsizes}. A larger absolute value indicates that the mean interaction is larger relative to its variability. The sign indicates its direction. Positive values correspond to a more favorable depth-related accuracy change under PairNorm, while negative values indicate the opposite.
+
+For Amazon-Ratings, Squirrel, and Roman-Empire, the reported Holm-adjusted $p$-value is approximately 0.005859. For Actor, the corresponding value is 0.011719. The observed interactions are therefore distinguishable from zero under the reported paired testing procedure. However, these results do not establish that PairNorm has a consistent effect across datasets. The four datasets were deliberately selected based on interesting behavior observed in earlier experiments, rather than being randomly sampled from a broader set of graph-learning tasks. Therefore, the findings should be interpreted as exploratory evidence for the investigated configurations, without assuming that the same effects generalize to other datasets.
+
+The paired effect sizes further highlight the dataset-dependent differences in the depth interaction. Amazon-Ratings and Squirrel have positive $d_z$ values of approximately 2.316 and 2.977, respectively, indicating favorable interactions relative to the variability of the paired differences. Roman-Empire and Actor instead have negative values of approximately \mbox{\textminus2.001} and \mbox{\textminus1.291}, indicating unfavorable interactions. These results show that both the direction and the standardized magnitude of the depth interaction vary across datasets.
 
 \begin{figure}[htbp]
 \centering
@@ -1075,12 +1082,6 @@ Actor provides another negative interaction. GraphSAGE loses 1.178 percentage po
 \caption{Matched depth interaction for GraphSAGE and GraphSAGE+PairNorm on four real-world datasets. Positive values indicate that PairNorm reduces the test-accuracy loss from four to eight layers; negative values indicate increased degradation under PairNorm. All differences are expressed in percentage points.}
 \label{fig:selected-depth}
 \end{figure}
-
-The matched interaction results are summarized in Table~\ref{tab:selected-results}. The table also reports Holm-adjusted $p$-values and paired standardized effect sizes. The $p$-values account for the family of four selected-dataset comparisons using Holm's sequential multiple-testing correction \cite{holm1979procedure}. Cohen's $d_z$ standardizes the paired differences by their sample standard deviation \cite{lakens2013effectsizes}.
-
-For Amazon-Ratings, Squirrel, and Roman-Empire, the reported Holm-adjusted $p$-value is approximately 0.005859. For Actor, the corresponding value is 0.011719. The observed interactions are therefore distinguishable from zero under the reported paired testing procedure. However, the four datasets were selected because they exhibited interesting behavior in earlier experiments. The tests should consequently be interpreted as evidence within these selected conditions rather than as confirmatory evidence for a population-wide PairNorm effect.
-
-The paired effect sizes reinforce the contrast. Amazon-Ratings and Squirrel have positive $d_z$ values of approximately 2.316 and 2.977, respectively. Roman-Empire and Actor instead have negative values of approximately -2.001 and -1.291. Both the direction and magnitude of the interaction are therefore dataset-dependent.
 
 \begin{table}[htbp]
 \centering
@@ -1121,13 +1122,13 @@ The preceding results establish that PairNorm changes depth-related performance 
 
 Figure~\ref{fig:selected-representations} compares the normalized Dirichlet energy and effective-rank ratio of eight-layer GraphSAGE models with and without PairNorm. Both measurements are evaluated at epoch 800 under the matched learning-rate settings. Each bar represents the ratio of the PairNorm value to the corresponding GraphSAGE value. A ratio greater than one therefore indicates a larger diagnostic value under PairNorm.
 
-On Amazon-Ratings, PairNorm increases NDE by a factor of approximately 2.31 and the effective-rank ratio by a factor of approximately 3.63. These geometric changes accompany the positive depth interaction observed in the predictive results. The joint observation is consistent with PairNorm preserving representation diversity in a condition where deeper GraphSAGE otherwise suffers a larger accuracy loss.
+On Amazon-Ratings, PairNorm increases NDE by a factor of approximately 2.31 and the effective-rank ratio by a factor of approximately 3.63. These changes in representation geometry are observed alongside the positive depth interaction observed in the predictive results. Together, the findings suggest that PairNorm helps maintain representation diversity in a setting where deeper GraphSAGE models otherwise exhibit greater accuracy degradation.
 
-Squirrel displays a similar relationship. NDE increases by a factor of approximately 3.14, while the effective-rank ratio increases by a factor of approximately 2.30. At the same time, PairNorm reduces the depth loss by 3.199 percentage points. Thus, both datasets with favorable depth interactions also exhibit greater measured representation diversity under PairNorm.
+Squirrel displays a similar relationship. NDE increases by a factor of approximately 3.14, while the effective-rank ratio increases by a factor of approximately 2.30. At the same time, PairNorm reduces the depth loss by 3.199 percentage points. Thus, in both datasets where PairNorm is associated with a favorable depth interactions, the node representations also show greater diversity.
 
-However, this relationship does not generalize to all four datasets. Roman-Empire shows an NDE ratio of approximately 1.61 but an effective-rank ratio of approximately 0.99. While local representation variation increases under PairNorm, effective dimensionality remains almost unchanged. The predictive depth interaction is negative. This case demonstrates that a larger Dirichlet-energy diagnostic does not necessarily correspond to stronger predictive performance.
+However, this relationship does not generalize to all four datasets. Roman-Empire shows an NDE ratio of approximately 1.61 but an effective-rank ratio of approximately 0.99. While local representation variation increases under PairNorm, effective dimensionality remains almost unchanged. The predictive depth interaction is negative. This case demonstrates that a larger Dirichlet-energy diagnostic does not necessarily correspond to stronger predictive performance as mentioned before. 
 
-Actor provides an especially informative counterexample. PairNorm increases NDE by approximately 47\% and the effective-rank ratio by approximately 130\%. Nevertheless, the depth interaction is -1.954 percentage points. In other words, the eight-layer PairNorm model maintains greater measured representation diversity while suffering a larger relative decline in predictive accuracy.
+Actor provides an especially informative counterexample. PairNorm increases NDE by a factor of approximately 1.47 and the effective-rank ratio by a factor of approximately 2.30. Nevertheless, the depth interaction is \mbox{\textminus1.954} percentage points. In other words, the eight-layer PairNorm model maintains greater measured representation diversity while suffering a larger relative decline in predictive accuracy.
 
 \begin{figure}[htbp]
 \centering
@@ -1141,7 +1142,6 @@ This counterexample is important for interpreting oversmoothing. Increasing repr
 The selected-four results therefore support two conclusions. First, PairNorm can reduce depth-related degradation in some real-world settings, and the favorable cases can coincide with increased representation diversity. Second, maintaining greater NDE or effective rank is not sufficient to ensure stronger predictive performance. The evidence is consistent with oversmoothing being relevant in certain configurations, but it also indicates that the relationship between geometry and classification depends on additional dataset and task properties.
 
 Because the four datasets differ in many characteristics beyond homophily, these comparisons cannot identify which graph properties are responsible for the observed variation. The following controlled experiments address this limitation by changing the relationship between graph edges and labels within the same underlying dataset.
-% To be written later.
 
 
 % ============================================================
@@ -1168,7 +1168,7 @@ h\in\{0.1,0.5,0.9\}.
 
 A value of $h=0.1$ indicates that approximately 10\% of the undirected edges connect nodes with the same class label. At $h=0.9$, approximately 90\% connect nodes belonging to the same class. The intermediate setting $h=0.5$ provides a third condition between these two extremes.
 
-The graph-construction procedure uses degree-preserving double-edge swaps. A swap replaces two existing edges with two alternative connections between their endpoints, subject to validity constraints. This type of operation can change the relationships between neighboring nodes without changing the number of incident edges at each involved node. Degree-preserving graph randomization is a known structural-control principle \cite{maslov2002specificity}; the specific homophily-targeting procedure used here is an experimental construction of this thesis.
+The graph-construction procedure uses degree-preserving double-edge swaps. A swap replaces two existing edges with two alternative connections between their endpoints, subject to validity constraints. This type of operation can change the relationships between neighboring nodes without changing the number of incident edges at each involved node. Degree-preserving graph randomization is a known structural-control principle \cite{maslov2002specificity}, while the specific homophily-targeting procedure used here is an experimental construction for this thesis.
 
 The implemented procedure restricts swaps so that the graph remains a simple undirected graph and rejects changes that would violate the required connectivity condition. As a result, the experiments preserve the number of nodes, number of edges, and degree sequence while modifying the alignment of edges with class labels. Node features and labels remain unchanged.
 
@@ -1178,7 +1178,7 @@ For the low-label experiments, 5\% of nodes are assigned to the training set, 10
 
 The initial controlled exploration evaluates several network depths, including two, four, and eight message-passing layers. A subsequent factorial study concentrates on seven and eight layers to investigate the behavior near the observed deep-network degradation regimes more carefully.
 
-The refined factorial design uses GraphSAGE and GraphSAGE+PairNorm, 128 hidden dimensions, five graph seeds, and five initialization seeds. The graph seeds are $1,2,3,4,5$, and the initialization seeds are $11,29,47,65,83$. Each configuration is trained for 2400 epochs, and the evaluated mask is split 0.
+The refined factorial design uses GraphSAGE and GraphSAGE+PairNorm, 128 hidden dimensions, five graph seeds, and five initialization seeds. Each configuration is trained for 2400 epochs, and the evaluated mask is split 0.
 
 For two datasets, three homophily targets, two model variants, two depths, five graph seeds, and five initialization seeds, the design contains
 
@@ -1187,7 +1187,7 @@ For two datasets, three homophily targets, two model variants, two depths, five 
 \label{eq:homophily-run-count}
 \end{equation}
 
-experimental cells. The recorded factorial is complete, with 600 observed and no missing cells.
+experimental cells.
 
 \begin{table}[htbp]
 \centering
@@ -1228,7 +1228,7 @@ Roman-Empire exhibits a different pattern. Its response varies with homophily, a
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig09_controlled_homophily_overview.png}
-\caption{Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints. This overview is distinct from the refined seven/eight-layer factorial design.}
+\caption{Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints.}
 \label{fig:controlled-overview}
 \end{figure}
 
@@ -1236,11 +1236,11 @@ The refined eight-layer endpoint results provide a more detailed comparison and 
 
 For PubMed at $h=0.1$, GraphSAGE reaches only 39.94\% test accuracy, whereas GraphSAGE+PairNorm reaches 83.49\%. The improvement is 43.55 percentage points. This is one of the largest predictive differences observed in the real-world-derived oversmoothing experiments.
 
-The representation diagnostics reveal an equally pronounced contrast. GraphSAGE has normalized Dirichlet energy of approximately $5.20\times10^{-26}$ and an effective rank of 1.000. These values indicate an extremely compressed hidden representation: neighboring nodes have almost no measured squared representation difference relative to their overall magnitude, and the singular-value distribution is concentrated in approximately one effective direction.
+The representation diagnostics reveal an equally pronounced contrast. GraphSAGE has normalized Dirichlet energy of approximately $5.20\times10^{-26}$ and an effective rank of 1. These values indicate an extremely compressed hidden representation: neighboring nodes have almost no measured squared representation difference relative to their overall magnitude, and the singular-value distribution is concentrated in approximately one effective direction.
 
 Under PairNorm, NDE rises to approximately 2.652 and effective rank to 4.688. Thus, the normalized model retains substantially greater edgewise variation and effective dimensionality. The combination of a severe predictive deficit, highly compressed representations, and simultaneous recovery under PairNorm provides strong evidence consistent with an oversmoothing-related failure in this specific controlled condition.
 
-A similar outcome appears for PubMed at $h=0.5$. GraphSAGE again reaches 39.94\% accuracy, while GraphSAGE+PairNorm reaches 78.09\%, an improvement of 38.16 percentage points. GraphSAGE NDE is approximately $2.79\times10^{-20}$ and its effective rank is 1.000. PairNorm increases the respective values to 1.404 and 4.814. The close similarity of the two baseline accuracy values, together with the near-degenerate hidden representations, indicates that both conditions belong to a strongly degraded regime for the tested deep GraphSAGE configuration.
+A similar outcome appears for PubMed at $h=0.5$. GraphSAGE again reaches 39.94\% accuracy, while GraphSAGE+PairNorm reaches 78.09\%, an improvement of 38.16 percentage points. GraphSAGE NDE is approximately $2.79\times10^{-20}$ and its effective rank is 1. PairNorm increases the respective values to 1.404 and 4.814. The close similarity of the two baseline accuracy values, together with the near-degenerate hidden representations, indicates that both conditions belong to a strongly degraded regime for the tested deep GraphSAGE configuration.
 
 At $h=0.9$, PubMed behaves differently. Baseline GraphSAGE reaches 78.80\%, and the PairNorm variant reaches 88.56\%, corresponding to a smaller improvement of 9.76 percentage points. The baseline NDE of 0.134 and effective rank of 2.534 are no longer as close to complete collapse as in the two lower-homophily settings. PairNorm increases these measurements to 0.231 and 3.476. This contrast shows that the same dataset and architecture can exhibit substantially different representation and performance behavior after a controlled topology modification.
 
