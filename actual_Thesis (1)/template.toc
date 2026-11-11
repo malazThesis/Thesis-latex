@@ -29,8 +29,8 @@
 \contentsline {subsection}{\numberline {6.3}Temporal Representation Dynamics}{32}{}%
 \contentsline {section}{\numberline {7}Controlled cSBM Experiments}{34}{}%
 \contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{34}{}%
-\contentsline {subsection}{\numberline {7.2}Predictive Performance Across Controlled Conditions}{36}{}%
-\contentsline {subsection}{\numberline {7.3}Critical Depth and Representation Collapse}{36}{}%
+\contentsline {subsection}{\numberline {7.2}Predictive Performance Across Controlled Conditions}{35}{}%
+\contentsline {subsection}{\numberline {7.3}Critical Depth and Representation Collapse}{37}{}%
 \contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{38}{}%
 \contentsline {section}{\numberline {9}PairNorm Component Ablation}{40}{}%
 \contentsline {subsection}{\numberline {9.1}Ablation Results}{40}{}%

@@ -852,7 +852,7 @@ In contrast to Figure~\ref{fig:realworld-depth}, which examines differences betw
 The results differ across datasets and comparison protocols. For example, the large improvement of the selected full configuration on Amazon-Computers indicates that the expanded search finds a much stronger deep model, but part of this difference can arise from architecture selection. By contrast, matched comparisons are designed to hold the architecture and relevant hyperparameters fixed so that the remaining variation is more directly associated with normalization.
 
 
-The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\pm0.22\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\pm0.61\%$. This corresponds to a difference of approximately 5.04 percentage points between the selected configurations. In a separate matched GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.20 percentage points. However, the average matched difference across all evaluated configurations on Amazon-Ratings in the deeper phase is approximately 3.09 percentage points. This illustrates that the effect of PairNorm can vary considerably across model configurations.
+The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\pm0.22\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\pm0.61\%$. This corresponds to a difference of approximately 5.04 percentage points between the selected configurations. In a separate matched GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.21 percentage points. However, the average matched difference across all evaluated configurations on Amazon-Ratings in the deeper phase is approximately 3.09 percentage points. This illustrates that the effect of PairNorm can vary considerably across model configurations.
 
 The screening also contains cases in which adding PairNorm candidates provides little or no improvement. On Cora and CiteSeer, the selected configurations in each phase are unchanged between the baseline and full candidate sets. On Squirrel, the deeper full selection reaches $31.76\pm0.85\%$, compared with $31.99\pm1.65\%$ for the deeper baseline. The two selected configurations also differ in depth and hidden dimension. This result does not support a general claim that PairNorm improves deep-GNN performance.
 
@@ -1209,7 +1209,6 @@ Evaluated split & 0\\
 Training epochs & 2400\\
 Train / validation / test & 5\% / 10\% / 85\%\\
 Expected / observed cells & 600 / 600\\
-Missing cells & 0\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1236,26 +1235,26 @@ The refined eight-layer endpoint results provide a more detailed comparison and 
 
 For PubMed at $h=0.1$, GraphSAGE reaches only 39.94\% test accuracy, whereas GraphSAGE+PairNorm reaches 83.49\%. The improvement is 43.55 percentage points. This is one of the largest predictive differences observed in the real-world-derived oversmoothing experiments.
 
-The representation diagnostics reveal an equally pronounced contrast. GraphSAGE has normalized Dirichlet energy of approximately $5.20\times10^{-26}$ and an effective rank of 1. These values indicate an extremely compressed hidden representation: neighboring nodes have almost no measured squared representation difference relative to their overall magnitude, and the singular-value distribution is concentrated in approximately one effective direction.
+The representation diagnostics reveal an equally pronounced contrast. GraphSAGE has normalized Dirichlet energy of approximately $5.20\times10^{-26}$ and an effective rank of 1. These results suggest that the hidden representations are highly compressed. Neighboring nodes have almost no measured squared representation difference relative to their overall magnitude, while most of the variation is concentrated along a single effective direction.
 
-Under PairNorm, NDE rises to approximately 2.652 and effective rank to 4.688. Thus, the normalized model retains substantially greater edgewise variation and effective dimensionality. The combination of a severe predictive deficit, highly compressed representations, and simultaneous recovery under PairNorm provides strong evidence consistent with an oversmoothing-related failure in this specific controlled condition.
+Under PairNorm, NDE rises to approximately 2.652 and effective rank to 4.688. Thus, the normalized model retains substantially greater edgewise variation and effective dimensionality. The substantial decline in predictive performance, together with strongly compressed node representations and their improvement under PairNorm, provides strong evidence consistent with an oversmoothing-related failure in this specific controlled condition.
 
-A similar outcome appears for PubMed at $h=0.5$. GraphSAGE again reaches 39.94\% accuracy, while GraphSAGE+PairNorm reaches 78.09\%, an improvement of 38.16 percentage points. GraphSAGE NDE is approximately $2.79\times10^{-20}$ and its effective rank is 1. PairNorm increases the respective values to 1.404 and 4.814. The close similarity of the two baseline accuracy values, together with the near-degenerate hidden representations, indicates that both conditions belong to a strongly degraded regime for the tested deep GraphSAGE configuration.
+A similar outcome appears for PubMed at $h=0.5$. GraphSAGE again reaches 39.94\% accuracy, while GraphSAGE+PairNorm reaches 78.09\%, an improvement of 38.15 percentage points. GraphSAGE NDE is approximately $2.79\times10^{-20}$ and its effective rank is 1. PairNorm increases the respective values to 1.404 and 4.814. The identical baseline accuracies at $h=0.1$ and $h=0.5$, together with the almost collapsed node representations, suggest that the tested deep GraphSAGE configuration exhibits severe degradation under both homophily conditions.
 
-At $h=0.9$, PubMed behaves differently. Baseline GraphSAGE reaches 78.80\%, and the PairNorm variant reaches 88.56\%, corresponding to a smaller improvement of 9.76 percentage points. The baseline NDE of 0.134 and effective rank of 2.534 are no longer as close to complete collapse as in the two lower-homophily settings. PairNorm increases these measurements to 0.231 and 3.476. This contrast shows that the same dataset and architecture can exhibit substantially different representation and performance behavior after a controlled topology modification.
+ At $h=0.9$, PubMed behaves differently. Baseline GraphSAGE reaches 78.80\%, and the PairNorm variant reaches 88.56\%, corresponding to a smaller improvement of 9.76 percentage points. The baseline NDE of 0.134 and effective rank of 2.534 are no longer as close to complete collapse as in the two lower-homophily settings. PairNorm increases these measurements to 0.231 and 3.476. This contrast shows that the same dataset and architecture can exhibit substantially different representation and performance behavior after a controlled topology modification.
 
-The Roman-Empire results demonstrate that the phenomenon is not determined by the homophily target alone. At $h=0.1$, GraphSAGE reaches 51.89\% and PairNorm reaches 55.56\%, a modest improvement of 3.67 percentage points. Both models retain non-negligible NDE, with values of 1.211 and 1.685, respectively. Their effective ranks are 11.278 and 16.968. Unlike the corresponding PubMed condition, the Roman-Empire baseline does not exhibit the same near-zero energy and rank-one representation collapse.
+The Roman-Empire results demonstrate that the phenomenon is not determined by the homophily target alone. At $h=0.1$, GraphSAGE reaches 51.89\% and PairNorm reaches 55.56\%, a modest improvement of 3.67 percentage points. Both models exhibit substantial NDE values of 1.211 and 1.685, respectively, along with effective ranks of 11.278 and 16.968. In contrast to the corresponding PubMed setting, the Roman-Empire baseline does not exhibit the same near-zero energy and rank-one representation collapse.
 
-At $h=0.5$, Roman-Empire GraphSAGE reaches 71.82\%, compared with 78.68\% under PairNorm. The improvement of 6.85 percentage points accompanies an NDE increase from 0.284 to 0.726 and an effective-rank increase from 11.579 to 20.027. This indicates a favorable association between preserved representation diversity and predictive performance, although the relationship is much less extreme than in low-homophily PubMed.
+At $h=0.5$, Roman-Empire GraphSAGE reaches 71.82\%, compared with 78.68\% under PairNorm. The improvement of 6.86 percentage points accompanies an NDE increase from 0.284 to 0.726 and an effective-rank increase from 11.579 to 20.027. This indicates a favorable association between preserved representation diversity and predictive performance, although the relationship is much less extreme than in low-homophily PubMed.
 
-The clearest counterexample appears at Roman-Empire $h=0.9$. Baseline GraphSAGE reaches 98.55\% accuracy, while GraphSAGE+PairNorm reaches 98.13\%. PairNorm therefore produces a small negative difference of 0.42 percentage points. Nevertheless, NDE increases from 0.082 to 0.187, and effective rank increases from 9.969 to 17.178. The normalization substantially changes the measured representation geometry without producing a corresponding predictive benefit.
+The clearest counterexample appears at Roman-Empire $h=0.9$. Baseline GraphSAGE reaches 98.55\% accuracy, while GraphSAGE+PairNorm reaches 98.13\%. PairNorm therefore produces a small negative difference of 0.42 percentage points. Nevertheless, NDE increases from 0.082 to 0.187 and effective rank increases from 9.969 to 17.178. Normalization leads to substantial changes in representation geometry, but these changes are not accompanied by an improvement in predictive performance.
 
-This result demonstrates that greater representation diversity is not sufficient for improved classification. When the baseline already performs very strongly, additional geometric spread may not provide useful information for the task. It can also alter representations that the classifier already exploits effectively. The experiment does not establish which of these explanations dominates, but it rules out a simple monotonic relationship between representation diversity and accuracy.
+This result demonstrates that greater representation diversity is not sufficient for improved classification. When the baseline already performs very strongly, additional geometric spread may not provide useful information for the task. Normalization may also modify node representations that already contain information effectively used by the classifier. Although the experiment does not determine which explanation plays the greater role, the results indicate that greater representation diversity does not necessarily lead to higher predictive accuracy.
 
 \begin{landscape}
 \begin{table}[p]
 \centering
-\caption{Eight-layer endpoint results in the refined low-label controlled-homophily experiment. Accuracy is evaluated at the best-validation checkpoint; NDE and effective rank are measured at epoch 2400.}
+\caption{Eight-layer endpoint results in the refined low-label controlled-homophily experiment. Accuracy is evaluated at the best-validation checkpoint. NDE and effective rank are measured at epoch 2400.}
 \label{tab:controlled-results}
 \small
 \begin{tabular}{lrrrrrrrr}
@@ -1265,13 +1264,13 @@ GS NDE & PN NDE & GS rank & PN rank\\
 \midrule
 PubMed & 0.1 & 39.94\% & 83.49\% & +43.55 pp &
 $5.20\times10^{-26}$ & 2.652 & 1.000 & 4.688\\
-PubMed & 0.5 & 39.94\% & 78.09\% & +38.16 pp &
+PubMed & 0.5 & 39.94\% & 78.09\% & +38.15 pp &
 $2.79\times10^{-20}$ & 1.404 & 1.000 & 4.814\\
 PubMed & 0.9 & 78.80\% & 88.56\% & +9.76 pp &
 0.134 & 0.231 & 2.534 & 3.476\\
 Roman-Empire & 0.1 & 51.89\% & 55.56\% & +3.67 pp &
 1.211 & 1.685 & 11.278 & 16.968\\
-Roman-Empire & 0.5 & 71.82\% & 78.68\% & +6.85 pp &
+Roman-Empire & 0.5 & 71.82\% & 78.68\% & +6.86 pp &
 0.284 & 0.726 & 11.579 & 20.027\\
 Roman-Empire & 0.9 & 98.55\% & 98.13\% & -0.42 pp &
 0.082 & 0.187 & 9.969 & 17.178\\
@@ -1284,16 +1283,13 @@ Roman-Empire & 0.9 & 98.55\% & 98.13\% & -0.42 pp &
 acc. = test accuracy; pp = percentage points;
 $h$ = target raw edge homophily.
 PN effect is PN accuracy minus GS accuracy.
-The fixed-epoch metrics and checkpoint-selected accuracy are
-different measurements and should not be interpreted as a
-directly observed causal sequence.
 }
 \end{table}
 \end{landscape}
 
-The comparison between PubMed and Roman-Empire is important for the interpretation of homophily. Both datasets were rewired toward the same numerical targets, yet their predictive behavior and representation diagnostics differed substantially. Moreover, because the datasets have different numbers of classes and class distributions, the same raw edge-homophily value does not necessarily imply the same statistical relationship between graph connectivity and labels. A chance-adjusted interpretation is therefore needed when comparing the meaning of homophily across graph families.
+The comparison between PubMed and Roman-Empire is important for the interpretation of homophily. Both datasets were rewired toward the same numerical targets, yet their predictive behavior and representation diagnostics differed substantially. Moreover, because the datasets have different numbers of classes and class distributions, the same raw edge-homophily value does not necessarily indicate the same level of same-class connectivity relative to what would be expected by chance. Therefore, identical homophily targets do not necessarily imply the same tendency for nodes to connect to others with the same label across the two datasets.
 
-The controlled results support a conditional mechanism interpretation. Severe representation contraction and predictive degradation coincide in the difficult PubMed conditions, and PairNorm improves both. However, the Roman-Empire counterexample shows that substantial geometric changes do not necessarily yield higher accuracy. Homophily influences the setting in which a failure occurs, but it is not a sufficient explanation by itself.
+The controlled experiments suggest that the underlying mechanisms depend on the experimental conditions. In the challenging PubMed settings, substantial representation compression occurs alongside a decline in predictive performance, while PairNorm is associated with improvements in both. However, the Roman-Empire counterexample shows that substantial geometric changes do not necessarily yield higher accuracy. Homophily therefore influences the setting in which a failure occurs, but it is not a sufficient explanation by itself.
 
 \subsection{Temporal Representation Dynamics}
 \label{sec:temporal-dynamics}
@@ -1304,9 +1300,11 @@ Figure~\ref{fig:temporal-recovery} therefore tracks NDE and the effective-rank r
 
 For PubMed at $h=0.1$, the GraphSAGE baseline remains close to zero in NDE over most of the recorded training trajectory. Its effective-rank ratio is likewise concentrated near the low end of the scale. By contrast, GraphSAGE+PairNorm maintains substantially greater NDE throughout training and preserves a larger effective-rank ratio. The distinction between the models is therefore not limited to their final recorded values.
 
-This persistent contrast supports the interpretation that the deep PubMed baseline occupies a highly compressed representation regime. At the same time, the curves do not establish that gradient-based training alone creates the compression. Strongly reduced representation diversity can arise very early, and architectural propagation can produce compressed representations before substantial parameter optimization has occurred. The evidence therefore concerns the observed representation state and its persistence, not a proven training-induced causal origin.
+The consistent difference suggests that the deep PubMed baseline maintains highly compressed node representations. However, the curves do not show whether this compression is caused by the training process itself. Node representations may already become very similar early on, since repeated message passing can reduce their diversity even before the model parameters have been extensively optimized. The results therefore show that the compression occurs and persists, but they do not identify its precise cause.
 
 The Roman-Empire condition exhibits a different temporal pattern. Both models retain nonzero representation diversity, and PairNorm generally increases the measured NDE and effective-rank ratio. However, the baseline already reaches very high predictive accuracy, and the PairNorm model does not improve it. The temporal measurements therefore reinforce the endpoint counterexample: the geometry can change consistently throughout training without producing a useful gain in node classification.
+
+Taken together, the controlled-homophily and temporal analyses extend the endpoint findings and reinforce the conclusion that representation geometry alone cannot fully explain predictive performance. This motivates a further controlled investigation in which graph structure and node-feature information can be varied independently. A synthetic contextual stochastic block model is used for this purpose.
 
 \begin{figure}[htbp]
 \centering
@@ -1314,10 +1312,6 @@ The Roman-Empire condition exhibits a different temporal pattern. Both models re
 \caption{Temporal representation dynamics for controlled PubMed at $h=0.1$ and Roman-Empire at $h=0.9$, both at eight layers. The curves show normalized Dirichlet energy and effective-rank ratio across training epochs. Persistent representation compression and non-collapsed dynamics are compared without assuming that training itself is the sole cause of the observed geometry.}
 \label{fig:temporal-recovery}
 \end{figure}
-
-Taken together, the controlled-homophily and temporal results provide a more detailed picture than endpoint accuracy alone. PubMed demonstrates a regime in which the deep baseline exhibits persistent representation collapse and poor prediction, while PairNorm preserves geometric diversity and markedly improves accuracy. Roman-Empire demonstrates that the same normalization can alter representation geometry without improving an already successful baseline.
-
-These results motivate a further controlled investigation in which graph structure and node-feature information can be varied independently. A synthetic contextual stochastic block model is used for this purpose.
 
 
 \section{Controlled cSBM Experiments}
@@ -1332,9 +1326,9 @@ To investigate whether the observed behavior extends to a setting with more expl
 
 A stochastic block model generates graph connections according to a partition of the nodes into groups or communities. In a contextual stochastic block model, nodes additionally possess feature vectors related to the same underlying group structure. The combination permits experiments in which both connectivity and node attributes provide information about latent classes.
 
-Deshpande et al.\ introduce and analyze contextual stochastic block models that combine a graph with high-dimensional node covariates associated with latent communities \cite{deshpande2018csbm}. Their work provides the conceptual basis for the synthetic setting used here. However, the graph generator in this thesis is a controlled experimental variant and does not reproduce the original probabilistic model of Deshpande et al.\ exactly. The specific node count, edge-generation parameters, Gaussian feature construction, and experimental splits are choices of the present study.
+Deshpande et al.\ introduce and analyze contextual stochastic block models that combine a graph with high-dimensional node covariates associated with latent communities \cite{deshpande2018csbm}. Their work provides the conceptual basis for the synthetic setting used here. However, the graph generator in this thesis is a controlled experimental variant and does not reproduce the original probabilistic model of Deshpande et al.\ exactly. The specific node count, edge-generation parameters, Gaussian feature construction, and experimental splits are choices of this study.
 
-Each generated graph contains 2,000 nodes belonging to two balanced classes of 1,000 nodes each. Every node receives a 64-dimensional feature vector. The target average degree is 20, and the class-label edge-homophily targets are
+Each generated graph contains 2,000 nodes belonging to two balanced classes of 1,000 nodes each. Every node receives a 64-dimensional feature vector. The target average degree is 20, and the class-label edge-homophily targets are again 
 
 \begin{equation}
 h\in\{0.1,0.5,0.9\}.
