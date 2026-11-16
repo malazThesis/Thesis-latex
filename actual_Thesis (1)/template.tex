@@ -1176,9 +1176,9 @@ These constraints are useful because the experiment does not simply compare unre
 
 For the low-label experiments, 5\% of nodes are assigned to the training set, 10\% to validation, and 85\% to the test set. This setting is intentionally demanding because the models must learn from a relatively small number of labeled nodes.
 
-The initial controlled exploration evaluates several network depths, including two, four, and eight message-passing layers. A subsequent factorial study concentrates on seven and eight layers to investigate the behavior near the observed deep-network degradation regimes more carefully.
+The initial controlled exploration evaluates several network depths, including two, four, and eight message-passing layers, using five runs per experimental condition. A subsequent factorial study includes seven and eight layers to examine model behavior immediately around the depth at which pronounced degradation was observed.
 
-The refined factorial design uses GraphSAGE and GraphSAGE+PairNorm, 128 hidden dimensions, five graph seeds, and five initialization seeds. Each configuration is trained for 2400 epochs, and the evaluated mask is split 0.
+The refined factorial design uses GraphSAGE and GraphSAGE+PairNorm with 128 hidden dimensions. Unlike the initial exploration, it systematically combines five graph seeds with five model-initialization seeds, resulting in 25 runs per condition. This larger design allows the observed behavior to be examined across both different graph realizations and model initializations. Each configuration is trained for 2400 epochs, and split 0 is used for training, validation, and testing.
 
 For two datasets, three homophily targets, two model variants, two depths, five graph seeds, and five initialization seeds, the design contains
 
@@ -1189,7 +1189,7 @@ For two datasets, three homophily targets, two model variants, two depths, five 
 
 experimental cells.
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \caption{Refined controlled-homophily factorial design. The experiment varies graph topology, depth, and PairNorm while retaining the underlying node features and labels within each dataset.}
 \label{tab:controlled-design}
@@ -1224,14 +1224,18 @@ In PubMed, the low-homophily conditions show a pronounced separation between the
 
 Roman-Empire exhibits a different pattern. Its response varies with homophily, and PairNorm does not provide the same consistent recovery seen in the difficult PubMed conditions. At high homophily, the baseline can perform very strongly without normalization. This behavior illustrates that PairNorm's benefit cannot be predicted from increasing depth or decreasing homophily alone.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{figures/fig09_controlled_homophily_overview.png}
 \caption{Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints.}
 \label{fig:controlled-overview}
 \end{figure}
 
-The refined eight-layer endpoint results provide a more detailed comparison and are summarized in Table~\ref{tab:controlled-results}. The table reports test accuracy at the validation-selected checkpoint together with normalized Dirichlet energy and effective rank measured at epoch 2400. These two measurement times must be distinguished when interpreting the results.
+The subsequent factorial study examines the behavior around the observed deep-network degradation more closely by comparing seven- and eight-layer configurations. On PubMed, increasing depth from seven to eight layers reduces GraphSAGE test accuracy by 10.26, 17.68, and 5.82 percentage points at $h=0.1$, $h=0.5$, and $h=0.9$, respectively. In contrast, GraphSAGE+PairNorm remains nearly unchanged, with accuracy differences of at most 0.11 percentage points. This indicates that the additional layer substantially affects the GraphSAGE baseline on PubMed, while the PairNorm variant maintains relatively stable predictive performance.
+
+Roman-Empire shows considerably smaller differences between seven and eight layers. GraphSAGE accuracy decreases by approximately 1.42 and 1.49 percentage points at $h=0.1$ and $h=0.5$, respectively, while remaining nearly unchanged at $h=0.9$. The corresponding PairNorm differences are also relatively small, ranging from a decrease of 1.14 to an increase of 0.65 percentage points. These results further demonstrate that depth-related degradation depends on the dataset and graph condition. The following detailed endpoint analysis focuses on eight layers, where pronounced degradation was observed in the initial exploration.
+
+The eight-layer endpoint results from the initial controlled exploration are summarized in Table~\ref{tab:controlled-results}. Unlike the factorial comparison, which includes 25 runs per condition, these results are based on five runs per condition. The table reports test accuracy at the validation-selected checkpoint together with normalized Dirichlet energy and effective rank measured at epoch 2400. These two measurement times must be distinguished when interpreting the results.
 
 For PubMed at $h=0.1$, GraphSAGE reaches only 39.94\% test accuracy, whereas GraphSAGE+PairNorm reaches 83.49\%. The improvement is 43.55 percentage points. This is one of the largest predictive differences observed in the real-world-derived oversmoothing experiments.
 
@@ -1254,7 +1258,8 @@ This result demonstrates that greater representation diversity is not sufficient
 \begin{landscape}
 \begin{table}[p]
 \centering
-\caption{Eight-layer endpoint results in the refined low-label controlled-homophily experiment. Accuracy is evaluated at the best-validation checkpoint. NDE and effective rank are measured at epoch 2400.}
+\caption{Eight-layer endpoint results from the initial low-label controlled-homophily exploration, based on five
+runs per condition. Accuracy is evaluated at the best-validation checkpoint. NDE and effective rank are measured at epoch 2400.}
 \label{tab:controlled-results}
 \small
 \begin{tabular}{lrrrrrrrr}
@@ -1335,24 +1340,25 @@ h\in\{0.1,0.5,0.9\}.
 \label{eq:csbm-h}
 \end{equation}
 
-The features are generated from isotropic Gaussian noise together with a class-dependent shift along a randomly chosen unit direction. The separation between the class means is controlled by the feature-signal parameter,
+Node features are constructed by combining isotropic Gaussian noise with a class-specific shift along a randomly selected unit direction. The distance between the class means is determined by the feature-signal parameter,
 
 \begin{equation}
 \mathrm{FS}\in\{0.25,0.50\}.
 \label{eq:csbm-feature-signal}
 \end{equation}
 
-The feature-signal parameter therefore controls the magnitude of the class-related component in the generated features. Increasing it strengthens the class-mean separation under this construction, without changing the target graph homophily.
+The feature-signal parameter determines the strength of the class-dependent information in the generated node features. Higher values increase the separation between class means while leaving the target graph homophily unchanged.
 
-Because the classes are balanced, the expected same-class edge fraction under class-independent random mixing is approximately 0.5. Consequently, the intermediate homophily target of 0.5 corresponds to an approximately class-neutral connectivity regime, whereas $h=0.1$ represents a strongly heterophilous relationship and $h=0.9$ a strongly homophilous one. Both extremes can contain substantial class information in the connectivity pattern, although the direction of the relationship differs.
+The cSBM experiments use the same homophily targets as the controlled real-world graph experiments discussed in the previous section, namely $h=0.1$, $h=0.5$ and $h=0.9$. Because the cSBM classes are balanced, the expected same-class edge fraction under class-independent random mixing is approximately 0.5. The intermediate homophily target therefore represents a setting without an overall preference for connections between nodes of the same or different classes. In contrast, both extreme homophily settings can contain substantial class information in their connectivity patterns, although the direction of the relationship between connectivity and class labels differs.
 
 This distinction matters for the interpretation of the synthetic results. Low homophily is not equivalent to a lack of useful graph information. In a balanced two-class graph, a strong tendency to connect nodes from the opposite class can itself be informative for classification. The usefulness of that pattern depends on whether the architecture and optimization procedure can exploit it.
 
-The experiment uses 5\% training nodes, 10\% validation nodes, and 85\% test nodes. For the 2,000-node balanced graph, this corresponds to 100 training nodes, 200 validation nodes, and 1,700 test nodes. The splits are stratified so that the class proportions remain balanced. Ten possible stratified masks are generated, of which split 0 is evaluated.
+The experiment here again uses 5\% training nodes, 10\% validation nodes, and 85\% test nodes. For the 2,000-node balanced graph, this corresponds to 100 training nodes, 200 validation nodes, and 1,700 test nodes. The splits are stratified so that the class proportions remain balanced. Ten possible stratified masks are generated, of which split 0 is evaluated.
 
 The compared models are GraphSAGE and GraphSAGE+PairNorm, using a hidden dimension of 128. The principal controlled design evaluates depths of two, seven, and eight layers. Each configuration uses five coupled graph/training seeds, learning rate 0.01, weight decay 0.0005, dropout 0.5, and 200 training epochs.
 
-The complete primary design contains 180 runs, corresponding to three homophily targets, two feature-signal strengths, two model variants, three depths, and five seeds. Additional depth investigations are used later to examine the onset of failure more closely; these follow-up runs should not be confused with the 180-run primary factorial.
+The primary experimental design consists of 180 runs, covering three homophily targets, two feature-signal strengths, two model variants, three network depths, and five random seeds. Additional experiments with different depths are conducted to investigate more precisely when performance degradation begins. These follow-up runs should not be confused with the 180-run primary factorial.
+
 
 \begin{table}[htbp]
 \centering
@@ -1400,20 +1406,20 @@ Figure~\ref{fig:csbm-performance} compares eight-layer GraphSAGE with and withou
 
 At $h=0.1$, GraphSAGE performs close to 50\% accuracy for both feature-signal strengths. Because the synthetic task contains two balanced classes, this corresponds approximately to the accuracy of uninformed binary prediction. GraphSAGE+PairNorm, by contrast, reaches almost 100\% accuracy in the same conditions. The result therefore reproduces a particularly large normalization-associated performance difference in a controlled synthetic setting.
 
-This finding is noteworthy because the graph is strongly heterophilous. The result does not mean that heterophily itself causes the collapse. Rather, the connectivity contains a strong opposite-class relationship, and the PairNorm model appears able to exploit the available graph and feature information, whereas the tested deep baseline fails to do so.
+This result is particularly interesting given the strongly heterophilous graph structure. However, it does not imply that heterophily itself is responsible for the representation collapse. Instead, the graph contains a pronounced tendency for nodes of different classes to be connected. The results suggest that GraphSAGE with PairNorm can make use of this structural information together with the node features, while the evaluated deep baseline is unable to do so effectively.
 
-At $h=0.5$, the two models perform near 50\% for the tested eight-layer configurations. PairNorm therefore does not produce the dramatic improvement observed at $h=0.1$. This contrast is consistent with the fact that the graph connectivity is approximately class-neutral in the balanced binary setting, while the feature signal is relatively weak in the 64-dimensional Gaussian feature space. Preserving representation diversity cannot by itself create class-relevant information that is not effectively available to the predictor.
+At $h=0.5$, the two models perform near 50\% for the tested eight-layer configurations. PairNorm therefore does not produce the dramatic improvement observed at $h=0.1$. This contrast is consistent with the fact that the graph connectivity is approximately class-neutral in the balanced binary setting, while the feature signal is relatively weak in the 64-dimensional Gaussian feature space. Maintaining representation diversity alone cannot compensate for a lack of class-relevant information or guarantee that the model extracts such information effectively.
 
 At $h=0.9$, the result again depends on the feature signal. With feature signal 0.25, the baseline is less reliable and exhibits substantially greater variability than the PairNorm model. With feature signal 0.50, the baseline and PairNorm models both reach very high accuracy. Thus, normalization can become unnecessary for predictive recovery when the tested configuration already solves the task successfully.
 
-\begin{figure}[htbp]
+The synthetic experiments highlight two important findings. First, PairNorm can restore nearly all predictive performance in settings where deep GraphSAGE would otherwise achieve accuracy close to chance level. Second, its benefits depend on the experimental conditions. When the available information cannot be effectively used by the model, or when the baseline already achieves near-perfect accuracy, maintaining representation diversity does not necessarily lead to further improvements.
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{figures/fig11_csbm_controlled_summary.png}
-\caption{Test accuracy of eight-layer GraphSAGE with and without PairNorm in the controlled cSBM variants. The panels compare feature-signal strengths 0.25 and 0.50 across target homophily levels 0.1, 0.5, and 0.9. Means and standard deviations summarize five coupled graph/training seeds.}
+\caption{Test accuracy of eight-layer GraphSAGE with and without PairNorm in the controlled cSBM variants. The panels compare feature-signal strengths 0.25 and 0.50 across target homophily levels 0.1, 0.5, and 0.9. Means and standard deviations are computed from five runs with paired graph and training seeds.}
 \label{fig:csbm-performance}
 \end{figure}
-
-The synthetic results therefore identify two important conditions. First, PairNorm can recover almost all predictive performance in a regime where deep GraphSAGE otherwise performs near chance level. Second, PairNorm is not universally beneficial: when the available information is insufficient for the tested model, or when the baseline already performs almost perfectly, preserving geometric spread does not necessarily improve the prediction.
 
 \subsection{Critical Depth and Representation Collapse}
 \label{sec:csbm-critical-depth}

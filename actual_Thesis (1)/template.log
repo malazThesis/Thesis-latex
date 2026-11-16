@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  11 NOV 2026 14:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  16 NOV 2026 20:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -630,7 +630,9 @@ Package pdftex.def Info: figures/fig09_controlled_homophily_overview.png  used
 on input line 1229.
 (pdftex.def)             Requested size: 418.25368pt x 217.34529pt.
 
-Overfull \hbox (0.90594pt too wide) in paragraph at lines 1236--1237
+
+[29]
+Overfull \hbox (0.90594pt too wide) in paragraph at lines 1240--1241
 []\OT1/ptm/m/n/10 For PubMed at $\OML/cmm/m/it/10 h \OT1/cmr/m/n/10 = 0\OML/cmm
 /m/it/10 :\OT1/cmr/m/n/10 1$\OT1/ptm/m/n/10 , Graph-SAGE reaches only 39.94% te
 st ac-cu-racy, whereas Graph-SAGE+PairNorm
@@ -638,87 +640,89 @@ st ac-cu-racy, whereas Graph-SAGE+PairNorm
 
 
 
-[29 <./figures/fig09_controlled_homophily_overview.png>]
-
-[30]
+[30 <./figures/fig09_controlled_homophily_overview.png>]
 
 [31]
-<figures/fig10_temporal_recovery.png, id=144, 721.4955pt x 498.4221pt>
+
+[32]
+<figures/fig10_temporal_recovery.png, id=147, 721.4955pt x 498.4221pt>
 File: figures/fig10_temporal_recovery.png Graphic file (type png)
 <use figures/fig10_temporal_recovery.png>
 Package pdftex.def Info: figures/fig10_temporal_recovery.png  used on input lin
-e 1311.
+e 1316.
 (pdftex.def)             Requested size: 418.25368pt x 288.94052pt.
 
 
-[32
+[33
 
 
 ]
 
-[33 <./figures/fig10_temporal_recovery.png>]
-
-[34]
+[34 <./figures/fig10_temporal_recovery.png>]
 
 [35]
-<figures/fig11_csbm_controlled_summary.png, id=158, 700.5372pt x 291.489pt>
+
+[36]
+<figures/fig11_csbm_controlled_summary.png, id=162, 1040.688pt x 419.166pt>
 File: figures/fig11_csbm_controlled_summary.png Graphic file (type png)
 <use figures/fig11_csbm_controlled_summary.png>
 Package pdftex.def Info: figures/fig11_csbm_controlled_summary.png  used on inp
-ut line 1411.
-(pdftex.def)             Requested size: 418.25368pt x 174.03188pt.
+ut line 1419.
+(pdftex.def)             Requested size: 418.25368pt x 168.46292pt.
 
-
-[36 <./figures/fig11_csbm_controlled_summary.png>]
 
 [37]
 
-[38]
-<figures/fig12_pubmed_roman_lr_sensitivity.png, id=170, 716.50543pt x 297.33943
+[38 <./figures/fig11_csbm_controlled_summary.png>]
+
+[39]
+<figures/fig12_pubmed_roman_lr_sensitivity.png, id=173, 716.50543pt x 297.33943
 pt>
 File: figures/fig12_pubmed_roman_lr_sensitivity.png Graphic file (type png)
 <use figures/fig12_pubmed_roman_lr_sensitivity.png>
 Package pdftex.def Info: figures/fig12_pubmed_roman_lr_sensitivity.png  used on
- input line 1488.
+ input line 1494.
 (pdftex.def)             Requested size: 418.25368pt x 173.56854pt.
 
 
-[39 <./figures/fig12_pubmed_roman_lr_sensitivity.png>]
-
 [40]
-<figures/fig13_pairnorm_component_ablation.png, id=178, 854.2314pt x 1044.0606p
-t>
+
+[41 <./figures/fig12_pubmed_roman_lr_sensitivity.png>]
+
+[42]
+<figures/fig13_pairnorm_component_ablation.png, id=185, 946.737pt x 1163.547pt>
+
 File: figures/fig13_pairnorm_component_ablation.png Graphic file (type png)
 <use figures/fig13_pairnorm_component_ablation.png>
 Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.png  used on
- input line 1542.
-(pdftex.def)             Requested size: 418.25368pt x 511.1959pt.
+ input line 1548.
+(pdftex.def)             Requested size: 418.25368pt x 514.03952pt.
 
-
-[41]
-
-[42 <./figures/fig13_pairnorm_component_ablation.png>]
 
 [43]
-Overfull \hbox (1.42224pt too wide) in paragraph at lines 1614--1615
+
+[44 <./figures/fig13_pairnorm_component_ablation.png>]
+
+[45]
+Overfull \hbox (1.42224pt too wide) in paragraph at lines 1620--1621
 []\OT1/ptm/m/n/10 The three con-di-tions re-veal that the con-tri-bu-tion of Pa
 irNorm's cen-ter-ing and scal-ing op-er-a-tions is domain-
  []
 
 
 
-[44
+[46
 
 
 ]
 
-[45] (./template.bbl
+[47] (./template.bbl
 
-[46
+[48
 
 ])
 
-[47] (./template.aux)
+[49] (./template.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -753,10 +757,10 @@ texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-di
 st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
 ype1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/t
 imes/utmri8a.pfb>
-Output written on template.pdf (48 pages, 3334840 bytes).
+Output written on template.pdf (50 pages, 2577765 bytes).
 PDF statistics:
- 293 PDF objects out of 1000 (max. 8388607)
- 173 compressed objects within 2 object streams
+ 300 PDF objects out of 1000 (max. 8388607)
+ 178 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  71 words of extra memory for PDF output out of 10000 (max. 10000000)
 
