@@ -1224,7 +1224,7 @@ In PubMed, the low-homophily conditions show a pronounced separation between the
 
 Roman-Empire exhibits a different pattern. Its response varies with homophily, and PairNorm does not provide the same consistent recovery seen in the difficult PubMed conditions. At high homophily, the baseline can perform very strongly without normalization. This behavior illustrates that PairNorm's benefit cannot be predicted from increasing depth or decreasing homophily alone.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig09_controlled_homophily_overview.png}
 \caption{Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints.}
@@ -1233,7 +1233,9 @@ Roman-Empire exhibits a different pattern. Its response varies with homophily, a
 
 The subsequent factorial study examines the behavior around the observed deep-network degradation more closely by comparing seven- and eight-layer configurations. On PubMed, increasing depth from seven to eight layers reduces GraphSAGE test accuracy by 10.26, 17.68, and 5.82 percentage points at $h=0.1$, $h=0.5$, and $h=0.9$, respectively. In contrast, GraphSAGE+PairNorm remains nearly unchanged, with accuracy differences of at most 0.11 percentage points. This indicates that the additional layer substantially affects the GraphSAGE baseline on PubMed, while the PairNorm variant maintains relatively stable predictive performance.
 
-Roman-Empire shows considerably smaller differences between seven and eight layers. GraphSAGE accuracy decreases by approximately 1.42 and 1.49 percentage points at $h=0.1$ and $h=0.5$, respectively, while remaining nearly unchanged at $h=0.9$. The corresponding PairNorm differences are also relatively small, ranging from a decrease of 1.14 to an increase of 0.65 percentage points. These results further demonstrate that depth-related degradation depends on the dataset and graph condition. The following detailed endpoint analysis focuses on eight layers, where pronounced degradation was observed in the initial exploration.
+Roman-Empire shows considerably smaller differences between seven and eight layers. GraphSAGE accuracy decreases by approximately 1.42 and 1.49 percentage points at $h=0.1$ and $h=0.5$, respectively, while remaining nearly unchanged at $h=0.9$. The corresponding PairNorm differences are also relatively small, ranging from a decrease of 1.14 to an increase of 0.65 percentage points. These results further demonstrate that depth-related degradation depends on the dataset and graph condition.
+
+The following detailed endpoint analysis focuses on eight layers, where pronounced degradation was observed in the initial exploration.
 
 The eight-layer endpoint results from the initial controlled exploration are summarized in Table~\ref{tab:controlled-results}. Unlike the factorial comparison, which includes 25 runs per condition, these results are based on five runs per condition. The table reports test accuracy at the validation-selected checkpoint together with normalized Dirichlet energy and effective rank measured at epoch 2400. These two measurement times must be distinguished when interpreting the results.
 
@@ -1424,27 +1426,27 @@ The synthetic experiments highlight two important findings. First, PairNorm can 
 \subsection{Critical Depth and Representation Collapse}
 \label{sec:csbm-critical-depth}
 
-The large eight-layer performance contrast at $h=0.1$ raises a more specific question: whether the baseline degrades gradually as depth increases or whether there is a sharp transition between successful and unsuccessful configurations.
+The large performance difference at eight layers for $h=0.1$ raises the question of how the baseline model behaves as more layers are added. Specifically, it is unclear whether performance decreases gradually or whether there is a sharp transition between successful and unsuccessful configurations.
 
-Additional depth probes were therefore conducted around the critical regime. These results show a pronounced transition between seven and eight message-passing layers for the tested GraphSAGE configuration.
+To investigate this behavior more closely, additional experiments were conducted at network depths near the suspected transition point. The results reveal a substantial performance drop between seven and eight message-passing layers for the evaluated GraphSAGE configuration.
 
-For feature signal 0.50 at $h=0.1$, baseline GraphSAGE reaches approximately 99.81\% at six layers and 99.71\% at seven layers. Increasing depth to eight layers reduces accuracy to 50.00\%. The baseline remains at approximately 50\% for the additional nine- and ten-layer probes.
+For feature signal 0.50 at $h=0.1$, baseline GraphSAGE reaches approximately 99.81\% at six layers and 99.71\% at seven layers. However, increasing the network depth to eight layers causes accuracy to drop sharply to 50.00\%. Performance remains near 50\% in the additional experiments with nine and ten layers.
 
-This sequence is important because it does not support an alternating odd-even explanation of the results. The seven-layer model already performs very strongly, whereas the eight-, nine-, and ten-layer models fail. The dominant observation is therefore a sharp failure threshold between seven and eight layers, followed by persistent degradation at the evaluated greater depths.
+This sequence is important because it does not support an alternating odd-even explanation of the results. The seven-layer model already performs very strongly, whereas the eight-, nine-, and ten-layer models fail. The results instead indicate a sharp failure threshold between seven and eight layers, followed by persistently low accuracy at the greater depths examined.
 
 For feature signal 0.25, the eight-, nine-, and ten-layer baselines similarly reach approximately 50.13\%, 50.00\%, and 50.00\%. The PairNorm variants retain approximately 99.91\%, 99.64\%, and 99.72\%, respectively. With feature signal 0.50, the corresponding PairNorm accuracies remain near 99.9\%.
 
-Across these six deep conditions, all five baseline seeds in each condition exhibit predictive collapse, whereas none of the five corresponding PairNorm runs does. This consistency across matched repetitions indicates that the difference is not explained solely by an isolated unfavorable model initialization.
+Across these six deep conditions, all five baseline seeds in each condition exhibit predictive collapse, whereas none of the five corresponding PairNorm runs does. This consistent pattern across matched repetitions suggests that the observed difference cannot be attributed solely to an unfavorable model initialization.
 
-The representation diagnostics provide additional evidence. In the deep $h=0.1$ baseline conditions, the mean pairwise cosine distance of the final hidden representations approaches zero. This means that the recorded node representations become almost aligned in direction. The corresponding PairNorm configurations retain mean pairwise cosine distances close to 0.99, indicating that a substantial degree of angular diversity remains.
+The representation diagnostics provide additional evidence. In the deep baseline configurations at $h=0.1$, the mean pairwise cosine distance between final hidden node representations approaches zero, indicating that their directions become nearly identical. In contrast, the corresponding PairNorm configurations maintain mean pairwise cosine distances close to 0.99, suggesting that substantial angular diversity is preserved.
 
-These observations establish a strong association between three features of the experiment: the critical increase in depth, severe representation compression, and a collapse in predictive performance. PairNorm changes the representation geometry and prevents the predictive failure in the same controlled regime.
+These findings reveal a strong association between the critical increase in network depth, severe compression of node representations and a collapse in predictive performance.  Under the same controlled conditions, PairNorm preserves greater representation diversity and avoids the corresponding loss in classification accuracy.
 
-The evidence is therefore consistent with an oversmoothing-related mechanism contributing to the baseline failure. However, even this unusually clear intervention result should not be interpreted as proof that the measured representation collapse is the only causal pathway. PairNorm also modifies the transformations experienced by the hidden states during training, which can influence optimization and the propagation of useful signals.
+The evidence is therefore consistent with an oversmoothing-related mechanism contributing to the observed baseline failure. However, even this clear intervention result does not establish representation collapse as the sole causal explanation. PairNorm also alters how hidden representations are transformed during training, potentially affecting optimization and the propagation of task-relevant information.
 
-A further qualification concerns the effective-rank diagnostic. The effective rank does not follow every accuracy difference monotonically across the synthetic conditions. In particular, preserving a larger rank or pairwise distance is not always associated with stronger prediction. This reinforces the need to interpret multiple diagnostics together rather than treating one statistic as a universal indicator of successful information preservation.
+An additional limitation concerns the effective-rank diagnostic. Across the synthetic experiments, effective rank does not consistently track changes in predictive accuracy. In particular, higher effective rank or greater pairwise distances do not necessarily correspond to better classification performance. These findings highlight the importance of considering multiple representation diagnostics rather than relying on a single metric as a universal measure of information preservation.
 
-The cSBM results therefore provide one of the strongest controlled examples supporting an oversmoothing interpretation in this thesis, while also demonstrating its limitations. In the difficult heterophilous deep-network regime, predictive and geometric collapse occur together and PairNorm prevents both. In other graph-feature conditions, the same normalization does not necessarily produce a meaningful predictive advantage.
+The cSBM results therefore provide one of the strongest controlled examples supporting an oversmoothing interpretation in this thesis, while also demonstrating its limitations. In the challenging deep-network setting with strong heterophily, predictive and geometric collapse occur together and PairNorm prevents both. However, under different graph and feature conditions, PairNorm does not always improve classification accuracy.
 
 The remaining experiments examine whether these patterns are robust to changes in optimization settings and whether the different operations of PairNorm contribute equally to the observed outcomes.
 
@@ -1460,11 +1462,11 @@ The remaining experiments examine whether these patterns are robust to changes i
 \section{Learning-Rate Sensitivity}
 \label{sec:lr-sensitivity}
 
-The preceding controlled experiments identified configurations in which deeper GraphSAGE models exhibit large predictive losses accompanied by strongly compressed representations. However, an observed failure at a particular training configuration does not establish that the architecture cannot learn the task. Optimization settings may influence whether the model reaches a useful solution, and PairNorm may change these optimization dynamics in addition to modifying representation geometry.
+The previous controlled experiments revealed settings in which deeper GraphSAGE models suffer substantial losses in predictive accuracy alongside severe compression of their learned representations. However, poor performance under a specific training configuration does not necessarily imply that the architecture is incapable of learning the task. Optimization settings may influence whether the model reaches a useful solution, and PairNorm may change these optimization dynamics in addition to modifying representation geometry.
 
 The learning-rate sensitivity experiment investigates this competing explanation directly. It focuses on the controlled $h=0.1$ versions of PubMed and Roman-Empire, using eight-layer GraphSAGE with and without PairNorm and a hidden dimension of 128.
 
-The learning rate determines the step size used when updating the model parameters during optimization. If the learning rate is too small for the available training budget, optimization may progress too slowly. Conversely, an excessively large learning rate may prevent stable convergence or cause the model to move away from useful parameter regions. The appropriate value can depend on the architecture, normalization procedure, and properties of the training task.
+The learning rate determines the step size used when updating the model parameters during optimization. If it is too small relative to the available training budget, learning may proceed too slowly to reach a useful solution. In contrast, an excessively large learning rate can lead to unstable optimization or cause the model to move away from promising parameter configurations. The appropriate value may therefore depend on the architecture, normalization procedure, and properties of the training task.
 
 Four learning rates are evaluated:
 
@@ -1473,21 +1475,28 @@ Four learning rates are evaluated:
 \label{eq:lr-grid}
 \end{equation}
 
-For each dataset, model variant, and learning rate, five graph seeds are combined with five initialization seeds. This gives 25 individual training runs per dataset-model-learning-rate condition and 400 runs across the complete comparison. The initialization results are first averaged within each graph seed, followed by a summary across the five graph-level means. Learning-rate selection is performed using validation accuracy rather than test accuracy.
+For each dataset, model variant, and learning rate, five graph seeds are combined with five initialization seeds. This produces 25 training runs for each configuration and 400 runs in total. The results are first averaged across model initializations for each graph seed. The five graph-level averages are then used to summarize performance. Here, the learning-rate selection is performed using validation accuracy rather than test accuracy.
 
 Figure~\ref{fig:lr-sensitivity} compares the resulting test accuracies. The two datasets exhibit substantially different sensitivity patterns.
 
 For controlled PubMed at $h=0.1$, eight-layer GraphSAGE remains close to 40\% test accuracy throughout the tested learning-rate range. Increasing the learning rate from 0.001 to 0.03 does not produce a meaningful recovery of the baseline in this experiment. This is important because the severe predictive deficit persists across several optimization step sizes rather than appearing only at a single learning rate.
 
-GraphSAGE+PairNorm behaves differently on the same PubMed graphs. Its accuracy improves as the learning rate increases from the smallest evaluated value and reaches approximately the low-to-mid 80\% range at the larger learning rates. The resulting separation between baseline GraphSAGE and PairNorm remains large. PairNorm therefore improves the predictive outcome throughout the tested configurations, although the magnitude of the improvement depends on the learning rate.
+GraphSAGE+PairNorm behaves differently on the same PubMed graphs. Its accuracy improves as the learning rate increases from the smallest evaluated value and reaches approximately the low-to-mid 80\% range at the larger learning rates. The performance gap between the baseline and the PairNorm variant remains substantial. Thus, PairNorm consistently improves predictive performance across the evaluated learning rates, although the size of this improvement varies with the learning-rate setting.
 
-The checkpoint-selection behavior provides additional context. In several of the low-homophily PubMed baseline runs, the best validation checkpoint occurs at the first few training epochs, whereas the PairNorm models select substantially later checkpoints. This difference indicates that the two variants follow different training trajectories. It is consistent with PairNorm changing the optimization process as well as the representation geometry.
+The checkpoint-selection results provide further insight into the training behavior of the two models. In several low-homophily PubMed baseline runs, the highest validation accuracy is reached within the first few epochs, whereas the corresponding PairNorm models achieve their best validation performance substantially later in training. This difference indicates that the two variants follow different training trajectories. It is consistent with PairNorm changing the optimization process as well as the representation geometry.
 
-Nevertheless, the early selected baseline checkpoints do not by themselves establish whether optimization difficulty or oversmoothing is the dominant mechanism. The persistent near-degenerate representation measurements in the associated controlled experiments support a representation-collapse interpretation, while the checkpoint dynamics indicate that optimization and representation geometry cannot be treated as independent explanations without further intervention.
+Nevertheless, the early selection of baseline checkpoints does not establish whether optimization difficulties or oversmoothing primarily drive the observed performance degradation. The persistently near-degenerate representations observed in the corresponding controlled experiments support a representation-collapse interpretation. At the same time, the checkpoint-selection patterns suggest that optimization dynamics and representation geometry may be interconnected and cannot be considered independent explanations without further investigation.
 
 Roman-Empire presents a less stable pattern. Baseline GraphSAGE improves as the learning rate increases from 0.001 toward 0.01, but its performance falls again at 0.03. The PairNorm variant follows a different trend and achieves its strongest performance toward the higher end of the tested range. Thus, the relative ranking of the two models depends more strongly on the learning-rate choice than in PubMed.
 
-This contrast matters for interpreting depth-related performance degradation. A model that performs poorly under one learning rate but substantially better under another cannot be described as exhibiting an optimization-independent failure. In Roman-Empire, the tested optimization settings provide an important competing explanation for part of the observed performance variation.
+These findings are important for interpreting performance degradation in deep GNNs. If changing the learning rate substantially improves a model's accuracy, its poor performance cannot be attributed to oversmoothing alone. The Roman-Empire results show that learning-rate selection can also contribute to the observed performance differences and must therefore be considered when explaining depth-related degradation.
+
+The experiment therefore distinguishes two kinds of failure within the tested learning-rate grid. PubMed exhibits a robust baseline deficit that is not recovered by changing the learning rate within the evaluated range. Roman-Empire exhibits considerably stronger optimization sensitivity, so conclusions based on a single learning rate would be less reliable.
+
+These observations do not imply that PubMed GraphSAGE would fail under every possible optimizer, learning-rate schedule, initialization, or training procedure. The conclusion is restricted to the tested settings. However, the persistence of both predictive degradation and representation compression across the evaluated learning-rate range provides stronger evidence consistent with an oversmoothing-related mechanism than an isolated decline in accuracy alone.
+
+The next experiment examines PairNorm itself more closely. In particular, it investigates whether the two operations introduced in Section~2.5 have comparable effects or whether different components explain the successful interventions.
+
 
 \begin{figure}[htbp]
 \centering
@@ -1495,13 +1504,6 @@ This contrast matters for interpreting depth-related performance degradation. A 
 \caption{Learning-rate sensitivity of eight-layer GraphSAGE with and without PairNorm on controlled PubMed and Roman-Empire graphs at $h=0.1$. Results are summarized across five graph seeds after averaging five initialization seeds within each graph. Star markers identify learning rates selected exclusively by validation accuracy.}
 \label{fig:lr-sensitivity}
 \end{figure}
-
-The experiment therefore distinguishes two kinds of failure within the tested learning-rate grid. PubMed exhibits a robust baseline deficit that is not recovered by changing the learning rate within the evaluated range. Roman-Empire exhibits considerably stronger optimization sensitivity, so conclusions based on a single learning rate would be less reliable.
-
-These observations do not imply that PubMed GraphSAGE would fail under every possible optimizer, learning-rate schedule, initialization, or training procedure. The conclusion is restricted to the tested settings. However, within that range, the persistence of both predictive degradation and representation compression provides stronger evidence for an oversmoothing-related regime than would an isolated accuracy drop.
-
-The next experiment examines PairNorm itself more closely. In particular, it investigates whether the two operations introduced in Section~2.5 have comparable effects or whether different components explain the successful interventions.
-
 
 \section{PairNorm Component Ablation}
 \label{sec:pairnorm-ablation}
