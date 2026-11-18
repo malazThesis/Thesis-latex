@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  17 NOV 2026 18:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  18 NOV 2026 13:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -446,15 +446,15 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 4.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-
-[2
-
-])
+))
 \tf@toc=\write3
 \openout3 = `template.toc'.
 
 
+
+[2
+
+]
 
 [3]
 
@@ -710,12 +710,6 @@ Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.png  used on
 [44 <./figures/fig13_pairnorm_component_ablation.png>]
 
 [45]
-Overfull \hbox (1.42224pt too wide) in paragraph at lines 1622--1623
-[]\OT1/ptm/m/n/10 The three con-di-tions re-veal that the con-tri-bu-tion of Pa
-irNorm's cen-ter-ing and scal-ing op-er-a-tions is domain-
- []
-
-
 
 [46
 
@@ -735,10 +729,10 @@ L3 programming layer <2025-01-18>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 7058 strings out of 473190
- 122008 string characters out of 5715801
- 564847 words of memory out of 5000000
- 30172 multiletter control sequences out of 15000+600000
+ 7057 strings out of 473190
+ 121969 string characters out of 5715801
+ 564816 words of memory out of 5000000
+ 30171 multiletter control sequences out of 15000+600000
  589987 words of font info for 99 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  66i,16n,68p,1137b,370s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -763,7 +757,7 @@ texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-di
 st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
 ype1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/t
 imes/utmri8a.pfb>
-Output written on template.pdf (50 pages, 2578050 bytes).
+Output written on template.pdf (50 pages, 2577621 bytes).
 PDF statistics:
  300 PDF objects out of 1000 (max. 8388607)
  178 compressed objects within 2 object streams

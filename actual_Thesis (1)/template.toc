@@ -34,5 +34,4 @@
 \contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{39}{}%
 \contentsline {section}{\numberline {9}PairNorm Component Ablation}{41}{}%
 \contentsline {subsection}{\numberline {9.1}Ablation Results}{42}{}%
-\contentsline {subsection}{\numberline {9.2}Interpretation of the Components}{46}{}%
 \contentsline {section}{\numberline {10}Oversmoothing Synthesis}{46}{}%

@@ -1508,28 +1508,26 @@ The next experiment examines PairNorm itself more closely. In particular, it inv
 \section{PairNorm Component Ablation}
 \label{sec:pairnorm-ablation}
 
-PairNorm combines two operations: centering the node representations and rescaling their global spread. The original method applies these operations together \cite{zhao2020pairnorm}. The previous experiments showed that the complete normalization can produce large performance improvements in some conditions while providing little benefit in others.
+As introduced in Section~2.5, PairNorm combines two operations, centering node representations and rescaling their global spread, which are applied together in the original method \cite{zhao2020pairnorm}. The previous experiments showed that the complete normalization can produce large performance improvements in some conditions while providing little benefit in others. The following ablation study therefore examines these operations separately to determine how each contributes to the observed effects of PairNorm.
 
-To investigate whether centering and scaling contribute equally, the component-ablation study compares four configurations: an unnormalized GraphSAGE baseline, centering alone, scaling alone, and full PairNorm. The center-only and scale-only configurations are diagnostic variants introduced for this thesis; they are not presented as separate methods proposed in the original PairNorm publication.
+The study compares four configurations consisting of an unnormalized GraphSAGE baseline, centering alone, scaling alone, and full PairNorm. The center-only and scale-only configurations are diagnostic variants introduced specifically for this thesis and were not proposed as separate methods in the original PairNorm study.
 
 The ablation is evaluated in three contrasting conditions. The first is controlled PubMed at $h=0.1$, where the deep baseline exhibits severe predictive and representation collapse. The second is controlled Roman-Empire at $h=0.9$, where the baseline already performs very well and PairNorm changes representation geometry without improving accuracy. The third is the synthetic cSBM at $h=0.1$ with feature signal 0.50, where the deep baseline can collapse while PairNorm achieves nearly perfect classification.
 
-All three conditions use eight-layer GraphSAGE and a hidden dimension of 128. PubMed and Roman-Empire use learning rate 0.01, while the selected cSBM ablation uses learning rate 0.03. These values define the particular ablation conditions and should not be confused with the default learning rate used in the primary cSBM factorial.
+All three conditions use eight-layer GraphSAGE and a hidden dimension of 128. PubMed and Roman-Empire use learning rate 0.01, while the selected cSBM ablation uses learning rate 0.03. These values apply only to the ablation experiments and are different from the default learning rate used in the main cSBM experiment.
 
-Each condition contains five graph seeds and five initialization seeds. Figure~\ref{fig:pairnorm-ablation} first averages initialization results within each graph seed and then summarizes the five graph-level means. Table~\ref{tab:pairnorm-ablation} instead reports the mean and standard deviation across the 25 individual runs. The two presentations describe the same experiment records but use different aggregation levels.
+Each condition contains five graph seeds and five initialization seeds. Figure~\ref{fig:pairnorm-ablation} first averages initialization results within each graph seed and then summarizes the five graph-level means. Table~\ref{tab:pairnorm-ablation} instead reports the mean and standard deviation across the 25 individual runs. Both therefore use the same data but provide different statistical perspectives.
 
 \subsection{Ablation Results}
 \label{sec:pairnorm-ablation-results}
 
-The controlled PubMed condition shows that the scaling operation is particularly important in the observed successful intervention.
-
-The unnormalized baseline reaches 39.94\% test accuracy. Applying centering alone does not improve this result: the center-only variant also reaches 39.94\%. In contrast, scaling alone raises accuracy to $80.82\pm1.00\%$, while full PairNorm reaches $83.28\pm0.52\%$. Thus, most of the predictive recovery in this condition is already present when the scale operation is used without the complete normalization.
+The first ablation condition examines PubMed at $h=0.1$, where full PairNorm previously showed a substantial improvement over the deep GraphSAGE baseline. The unnormalized baseline reaches 39.94\% test accuracy. Applying centering alone does not improve this result, as the center-only variant also reaches 39.94\%. In contrast, scaling alone raises accuracy to $80.82\pm1.00\%$, while full PairNorm reaches $83.28\pm0.52\%$. These results indicate that the scaling operation is the main contributor to the observed performance improvement in this condition, as it already achieves most of the predictive recovery without the complete normalization.
 
 The representation diagnostics show a corresponding difference. Baseline GraphSAGE has NDE near zero, and centering alone produces an even smaller recorded value. Scaling alone raises NDE to approximately 1.967, while full PairNorm reaches approximately 2.689. Effective rank similarly increases to approximately 3.719 for scale-only and 4.539 for full PairNorm.
 
 These findings indicate that merely subtracting the global mean does not prevent the severe compression observed in the PubMed condition. The scale operation, in contrast, is associated with both greater representation diversity and a substantial accuracy improvement. The additional difference between scale-only and full PairNorm suggests that centering can still affect the final result when used together with scaling.
 
-A numerical qualification is necessary for the center-only effective-rank result. The stored value is reported as zero because of the diagnostic's handling of an almost degenerate representation. Under the mathematical effective-rank definition for a nonzero matrix, the value cannot be below one. The reported zero should therefore be understood as a numerical degeneracy indicator rather than a literal effective rank satisfying the nonzero-matrix definition.
+An important numerical clarification is required when interpreting the effective-rank result for the center-only configuration. The diagnostic reports a value of zero because the representation is nearly degenerate. However, under the mathematical definition of effective rank, any nonzero matrix must have an effective rank of at least one. Therefore, the reported zero indicates numerical degeneracy rather than an actual effective rank of zero.
 
 Roman-Empire at $h=0.9$ behaves differently. The baseline reaches $98.38\pm0.29\%$ accuracy, and all three normalization variants remain close to this value. Center-only reaches $98.23\pm0.37\%$, scale-only reaches $97.86\pm0.35\%$, and full PairNorm reaches $98.21\pm0.22\%$. None of these operations produces a useful improvement over the baseline in the tested condition.
 
@@ -1541,9 +1539,11 @@ The synthetic cSBM condition provides a third, distinct pattern. The unnormalize
 
 Unlike controlled PubMed, where centering alone fails, the synthetic cSBM task is almost perfectly recovered by either component individually. The result therefore does not support a universal explanation in which only scaling is responsible for successful normalization.
 
-The cSBM representation metrics also demonstrate that effective rank is not a sufficient proxy for predictive success. The baseline effective rank is approximately 2.389, while the center-only and scale-only variants have lower mean effective ranks of approximately 1.760 and 1.301, despite achieving almost perfect accuracy. Full PairNorm reaches an effective rank of approximately 1.910. Therefore, a model can achieve excellent classification performance without maximizing the measured effective dimensionality of its hidden representations.
+The cSBM representation diagnostics further show that effective rank alone is not a reliable indicator of predictive performance. The baseline effective rank is approximately 2.389, while the center-only and scale-only variants have lower mean effective ranks of approximately 1.760 and 1.301, despite achieving almost perfect accuracy. Full PairNorm reaches an effective rank of approximately 1.910. Therefore, a model can achieve excellent classification performance without maximizing the measured effective dimensionality of its hidden representations.
 
 In contrast, normalized Dirichlet energy increases substantially for all successful cSBM variants. However, this does not establish that the energy increase causes their predictive improvement. Both measurements respond to the intervention, and the normalization operations can change several properties of the model simultaneously.
+
+Taken together, the three ablation conditions show that the contributions of PairNorm's centering and scaling operations depend on the experimental setting. Scaling accounts for most of the performance recovery observed on PubMed, while either operation alone achieves near-perfect accuracy in the selected cSBM condition. In contrast, neither operation provides a meaningful improvement over the already strong Roman-Empire baseline. These findings indicate that no single normalization component consistently explains PairNorm's effectiveness and that changes in representation geometry do not necessarily translate into improved predictive performance.
 
 \begin{figure}[htbp]
 \centering
@@ -1615,18 +1615,6 @@ whereas this table summarizes individual runs.
 }
 \end{table}
 \end{landscape}
-
-\subsection{Interpretation of the Components}
-\label{sec:pairnorm-component-interpretation}
-
-The three conditions reveal that the contribution of PairNorm's centering and scaling operations is domain-dependent.
-
-In controlled PubMed at low homophily, scaling is the main successful component. Centering alone does not recover the predictive performance of the collapsed baseline. In the synthetic cSBM task, either centering or scaling alone is sufficient to obtain near-perfect accuracy in the tested condition. In high-homophily Roman-Empire, neither component produces a meaningful predictive advantage because the baseline already performs very well.
-
-These differences are incompatible with the idea that one fixed normalization operation is universally responsible for preventing deep-GNN failure. They also show that preserving a particular geometric statistic is not equivalent to preserving all task-relevant information.
-
-The component ablation strengthens the central conclusion of the preceding experiments. PairNorm can be highly effective under specific conditions, but its predictive effect depends on the relationship between normalization, model depth, graph structure, available information, and optimization. The successful interventions should therefore be interpreted as condition-specific evidence rather than as a general proof that representation spread alone determines GNN performance.
-
 
 \section{Oversmoothing Synthesis}
 \label{sec:oversmoothing-synthesis}
