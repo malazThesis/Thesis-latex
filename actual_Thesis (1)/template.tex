@@ -231,7 +231,7 @@ This recursive expansion motivates the notion of a \emph{receptive field}. For a
     \includegraphics[
         width=0.95\textwidth,
         keepaspectratio
-    ]{fig01_receptive_field.png}
+    ]{fig01_receptive_field.pdf}
 
     \caption{
         Receptive-field growth under repeated message passing.
@@ -279,7 +279,7 @@ This thesis follows that distinction throughout the empirical analysis. Network 
     \includegraphics[
         width=0.95\textwidth,
         keepaspectratio
-    ]{fig02_depth_vs_width.png}
+    ]{fig02_depth_vs_width.pdf}
 
 \caption{
     Conceptual distinction between depth and hidden dimension in a
@@ -346,7 +346,7 @@ that neighboring nodes often belong to different classes does not imply that the
     \includegraphics[
         width=0.95\textwidth,
         keepaspectratio
-    ]{fig03_homophily_heterophily.png}
+    ]{fig03_homophily_heterophily.pdf}
 
     \caption{
         Schematic comparison of class-homophilous and
@@ -426,7 +426,7 @@ Since repeated message passing can reduce important differences between node rep
     \includegraphics[
         width=0.95\textwidth,
         keepaspectratio
-    ]{fig04_oversmoothing.png}
+    ]{fig04_oversmoothing.pdf}
 
     \caption{
     Conceptual illustration of oversmoothing under repeated message
@@ -543,7 +543,7 @@ Finally, PairNorm is also reused later in the long-range information propagation
     \includegraphics[
         width=0.95\textwidth,
         keepaspectratio
-    ]{fig05_pairnorm.png}
+    ]{fig05_pairnorm.pdf}
 
    \caption{
     Conceptual effect of PairNorm on node-representation geometry.
@@ -833,7 +833,7 @@ Figure~\ref{fig:realworld-depth} highlights two main observations. First, the ab
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig06a_realworld_performance_depth.png}
+\includegraphics[width=\linewidth]{figures/fig06a_realworld_performance_depth.pdf}
 \caption{Broad real-world screening under validation-selected configurations. The left panel compares predictive performance across shallow and deeper phases, while the right panel summarizes the change between phases. Differences describe the selected configurations and do not isolate depth independently of all other hyperparameters.}
 \label{fig:realworld-depth}
 \end{figure}
@@ -850,7 +850,7 @@ The screening also contains cases in which adding PairNorm candidates provides l
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig06b_realworld_pairnorm_effects.png}
+\includegraphics[width=\linewidth]{figures/fig06b_realworld_pairnorm_effects.pdf}
 \caption{PairNorm comparisons in the broad real-world screening. The left panel compares the test accuracy of validation-selected baseline and full configurations, while the right panel summarizes accuracy differences between models with and without PairNorm under matched architecture, depth, and hidden dimension.}
 \label{fig:realworld-pairnorm}
 \end{figure}
@@ -1070,7 +1070,7 @@ The paired effect sizes further highlight the dataset-dependent differences in t
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\linewidth]{figures/fig07_selected4_depth_interaction.png}
+\includegraphics[width=0.92\linewidth]{figures/fig07_selected4_depth_interaction.pdf}
 \caption{Matched depth interaction for GraphSAGE and GraphSAGE+PairNorm on four real-world datasets. Positive values indicate that PairNorm reduces the test-accuracy loss from four to eight layers; negative values indicate increased degradation under PairNorm. All differences are expressed in percentage points.}
 \label{fig:selected-depth}
 \end{figure}
@@ -1124,7 +1124,7 @@ Actor provides an especially informative counterexample. PairNorm increases NDE 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\linewidth]{figures/fig08_selected4_representation_ratios.png}
+\includegraphics[width=0.92\linewidth]{figures/fig08_selected4_representation_ratios.pdf}
 \caption{PairNorm-to-GraphSAGE ratios of normalized Dirichlet energy and effective-rank ratio at eight layers and epoch 800. Values greater than one indicate increased measured representation diversity under PairNorm. The ratios do not imply a corresponding improvement in predictive accuracy.}
 \label{fig:selected-representations}
 \end{figure}
@@ -1218,7 +1218,7 @@ Roman-Empire exhibits a different pattern. Its response varies with homophily, a
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig09_controlled_homophily_overview.png}
+\includegraphics[width=\linewidth]{figures/fig09_controlled_homophily_overview.pdf}
 \caption{Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints.}
 \label{fig:controlled-overview}
 \end{figure}
@@ -1307,7 +1307,7 @@ Taken together, the controlled-homophily and temporal analyses extend the endpoi
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig10_temporal_recovery.png}
+\includegraphics[width=\linewidth]{figures/fig10_temporal_recovery.pdf}
 \caption{Temporal representation dynamics for controlled PubMed at $h=0.1$ and Roman-Empire at $h=0.9$, both at eight layers. The curves show normalized Dirichlet energy and effective-rank ratio across training epochs. Persistent representation compression and non-collapsed dynamics are compared without assuming that training itself is the sole cause of the observed geometry.}
 \label{fig:temporal-recovery}
 \end{figure}
@@ -1410,7 +1410,7 @@ The synthetic experiments highlight two important findings. First, PairNorm can 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{figures/fig11_csbm_controlled_summary.png}
+\includegraphics[width=\linewidth]{figures/fig11_csbm_controlled_summary.pdf}
 \caption{Test accuracy of eight-layer GraphSAGE with and without PairNorm in the controlled cSBM variants. The panels compare feature-signal strengths 0.25 and 0.50 across target homophily levels 0.1, 0.5, and 0.9. Means and standard deviations are computed from five runs with paired graph and training seeds.}
 \label{fig:csbm-performance}
 \end{figure}
@@ -1492,7 +1492,7 @@ The next experiment examines PairNorm itself more closely. In particular, it inv
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig12_pubmed_roman_lr_sensitivity.png}
+\includegraphics[width=\linewidth]{figures/fig12_pubmed_roman_lr_sensitivity.pdf}
 \caption{Learning-rate sensitivity of eight-layer GraphSAGE with and without PairNorm on controlled PubMed and Roman-Empire graphs at $h=0.1$. Results are summarized across five graph seeds after averaging five initialization seeds within each graph. Star markers identify learning rates selected exclusively by validation accuracy.}
 \label{fig:lr-sensitivity}
 \end{figure}
@@ -1539,7 +1539,7 @@ Taken together, the three ablation conditions show that the contributions of Pai
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig13_pairnorm_component_ablation.png}
+\includegraphics[width=\linewidth]{figures/fig13_pairnorm_component_ablation.pdf}
 \caption{PairNorm component ablations for controlled PubMed, Roman-Empire, and cSBM conditions. Each row compares predictive accuracy, normalized Dirichlet energy, and effective rank across baseline, center-only, scale-only, and full PairNorm variants. Results are first averaged over five initializations within each graph seed, with graph-level variability shown by the error bars.}
 \label{fig:pairnorm-ablation}
 \end{figure}
