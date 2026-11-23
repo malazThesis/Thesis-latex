@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  18 NOV 2026 14:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  23 NOV 2026 15:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -465,7 +465,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: figures/fig01_receptive_field.png Graphic file (type png)
 <use figures/fig01_receptive_field.png>
 Package pdftex.def Info: figures/fig01_receptive_field.png  used on input line 
-242.
+234.
 (pdftex.def)             Requested size: 397.3397pt x 154.47852pt.
 
 
@@ -474,7 +474,7 @@ Package pdftex.def Info: figures/fig01_receptive_field.png  used on input line
 File: figures/fig02_depth_vs_width.png Graphic file (type png)
 <use figures/fig02_depth_vs_width.png>
 Package pdftex.def Info: figures/fig02_depth_vs_width.png  used on input line 2
-90.
+82.
 (pdftex.def)             Requested size: 397.3397pt x 199.1196pt.
 
 
@@ -485,7 +485,7 @@ Package pdftex.def Info: figures/fig02_depth_vs_width.png  used on input line 2
 File: figures/fig03_homophily_heterophily.png Graphic file (type png)
 <use figures/fig03_homophily_heterophily.png>
 Package pdftex.def Info: figures/fig03_homophily_heterophily.png  used on input
- line 357.
+ line 349.
 (pdftex.def)             Requested size: 397.3397pt x 181.3345pt.
 
 
@@ -495,8 +495,8 @@ Package pdftex.def Info: figures/fig03_homophily_heterophily.png  used on input
 <figures/fig04_oversmoothing.png, id=54, 637.6623pt x 201.3924pt>
 File: figures/fig04_oversmoothing.png Graphic file (type png)
 <use figures/fig04_oversmoothing.png>
-Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 43
-7.
+Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 42
+9.
 (pdftex.def)             Requested size: 397.3397pt x 125.49194pt.
 
 
@@ -508,18 +508,18 @@ Package pdftex.def Info: figures/fig04_oversmoothing.png  used on input line 43
 <figures/fig05_pairnorm.png, id=66, 595.023pt x 215.8464pt>
 File: figures/fig05_pairnorm.png Graphic file (type png)
 <use figures/fig05_pairnorm.png>
-Package pdftex.def Info: figures/fig05_pairnorm.png  used on input line 554.
+Package pdftex.def Info: figures/fig05_pairnorm.png  used on input line 546.
 (pdftex.def)             Requested size: 397.3397pt x 144.13876pt.
 
 
 [13 <./figures/fig05_pairnorm.png>]
-Overfull \hbox (1.64194pt too wide) in paragraph at lines 589--590
+Overfull \hbox (1.64194pt too wide) in paragraph at lines 581--582
 []\OT1/ptm/m/n/10 The dataset col-lec-tion de-lib-er-ately in-cludes both rel-a
 -tively ho-mophilous and strongly het-erophilous graphs
  []
 
 
-Overfull \hbox (0.56227pt too wide) in paragraph at lines 654--655
+Overfull \hbox (0.56227pt too wide) in paragraph at lines 646--647
 []\OT1/ptm/m/n/10 Throughout the ex-per-i-ments, model train-ing, model se-lec-
 tion, and fi-nal per-for-mance eval-u-a-tion are treated
  []
@@ -542,7 +542,7 @@ pt>
 File: figures/fig06a_realworld_performance_depth.png Graphic file (type png)
 <use figures/fig06a_realworld_performance_depth.png>
 Package pdftex.def Info: figures/fig06a_realworld_performance_depth.png  used o
-n input line 844.
+n input line 836.
 (pdftex.def)             Requested size: 418.25368pt x 181.1887pt.
 
 
@@ -552,13 +552,13 @@ t>
 File: figures/fig06b_realworld_pairnorm_effects.png Graphic file (type png)
 <use figures/fig06b_realworld_pairnorm_effects.png>
 Package pdftex.def Info: figures/fig06b_realworld_pairnorm_effects.png  used on
- input line 861.
+ input line 853.
 (pdftex.def)             Requested size: 418.25368pt x 181.1887pt.
 
 
 [21 <./figures/fig06b_realworld_pairnorm_effects.png (PNG copy)>]
 
-LaTeX Warning: Float too large for page by 89.17885pt on input line 991.
+LaTeX Warning: Float too large for page by 89.17885pt on input line 983.
 
 
 
@@ -568,20 +568,20 @@ LaTeX Warning: Float too large for page by 89.17885pt on input line 991.
 
 
 ]
-Overfull \hbox (2.1574pt too wide) in paragraph at lines 1057--1058
+Overfull \hbox (2.1574pt too wide) in paragraph at lines 1049--1050
 []\OT1/ptm/m/n/10 Here, $\OML/cmm/m/it/10 GS$ \OT1/ptm/m/n/10 de-notes Graph-SA
 GE with-out PairNorm, while $\OML/cmm/m/it/10 PN$ \OT1/ptm/m/n/10 in this case 
 de-notes Graph-SAGE+PairNorm.
  []
 
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
-065.
+057.
 (/usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
 
 [24]
-Overfull \hbox (6.55176pt too wide) in paragraph at lines 1077--1078
+Overfull \hbox (6.55176pt too wide) in paragraph at lines 1069--1070
 []\OT1/ptm/m/n/10 The paired ef-fect sizes fur-ther high-light the dataset-depe
 ndent dif-fer-ences in the depth in-ter-ac-tion. Amazon-
  []
@@ -590,7 +590,7 @@ ndent dif-fer-ences in the depth in-ter-ac-tion. Amazon-
 File: figures/fig07_selected4_depth_interaction.png Graphic file (type png)
 <use figures/fig07_selected4_depth_interaction.png>
 Package pdftex.def Info: figures/fig07_selected4_depth_interaction.png  used on
- input line 1081.
+ input line 1073.
 (pdftex.def)             Requested size: 384.7926pt x 209.88861pt.
 
 
@@ -601,12 +601,12 @@ File: figures/fig08_selected4_representation_ratios.png Graphic file (type png)
 
 <use figures/fig08_selected4_representation_ratios.png>
 Package pdftex.def Info: figures/fig08_selected4_representation_ratios.png  use
-d on input line 1135.
+d on input line 1127.
 (pdftex.def)             Requested size: 384.7926pt x 209.88861pt.
 
 
 [26]
-Overfull \hbox (8.2127pt too wide) in paragraph at lines 1160--1161
+Overfull \hbox (8.2127pt too wide) in paragraph at lines 1152--1153
 []\OT1/ptm/m/n/10 The ex-per-i-ment uses PubMed and Roman-Empire as two con-tra
 st-ing graph-learning en-vi-ron-ments. PubMed
  []
@@ -614,7 +614,7 @@ st-ing graph-learning en-vi-ron-ments. PubMed
 
 
 [27 <./figures/fig08_selected4_representation_ratios.png>]
-Overfull \hbox (3.14229pt too wide) in paragraph at lines 1179--1180
+Overfull \hbox (3.14229pt too wide) in paragraph at lines 1171--1172
 []\OT1/ptm/m/n/10 The ini-tial con-trolled ex-plo-ration eval-u-ates sev-eral n
 et-work depths, in-clud-ing two, four, and eight message-
  []
@@ -627,12 +627,12 @@ t>
 File: figures/fig09_controlled_homophily_overview.png Graphic file (type png)
 <use figures/fig09_controlled_homophily_overview.png>
 Package pdftex.def Info: figures/fig09_controlled_homophily_overview.png  used 
-on input line 1229.
+on input line 1221.
 (pdftex.def)             Requested size: 418.25368pt x 217.34529pt.
 
 
 [29]
-Overfull \hbox (0.90594pt too wide) in paragraph at lines 1242--1243
+Overfull \hbox (0.90594pt too wide) in paragraph at lines 1234--1235
 []\OT1/ptm/m/n/10 For PubMed at $\OML/cmm/m/it/10 h \OT1/cmr/m/n/10 = 0\OML/cmm
 /m/it/10 :\OT1/cmr/m/n/10 1$\OT1/ptm/m/n/10 , Graph-SAGE reaches only 39.94% te
 st ac-cu-racy, whereas Graph-SAGE+PairNorm
@@ -649,7 +649,7 @@ st ac-cu-racy, whereas Graph-SAGE+PairNorm
 File: figures/fig10_temporal_recovery.png Graphic file (type png)
 <use figures/fig10_temporal_recovery.png>
 Package pdftex.def Info: figures/fig10_temporal_recovery.png  used on input lin
-e 1318.
+e 1310.
 (pdftex.def)             Requested size: 418.25368pt x 288.94052pt.
 
 
@@ -667,7 +667,7 @@ e 1318.
 File: figures/fig11_csbm_controlled_summary.png Graphic file (type png)
 <use figures/fig11_csbm_controlled_summary.png>
 Package pdftex.def Info: figures/fig11_csbm_controlled_summary.png  used on inp
-ut line 1421.
+ut line 1413.
 (pdftex.def)             Requested size: 418.25368pt x 168.46292pt.
 
 
@@ -676,7 +676,7 @@ ut line 1421.
 [38 <./figures/fig11_csbm_controlled_summary.png>]
 
 [39]
-Overfull \hbox (1.30234pt too wide) in paragraph at lines 1488--1489
+Overfull \hbox (1.30234pt too wide) in paragraph at lines 1480--1481
 \OT1/ptm/m/n/10 degenerate rep-re-sen-ta-tions ob-served in the cor-re-spond-in
 g con-trolled ex-per-i-ments sup-port a representation-
  []
@@ -689,7 +689,7 @@ pt>
 File: figures/fig12_pubmed_roman_lr_sensitivity.png Graphic file (type png)
 <use figures/fig12_pubmed_roman_lr_sensitivity.png>
 Package pdftex.def Info: figures/fig12_pubmed_roman_lr_sensitivity.png  used on
- input line 1503.
+ input line 1495.
 (pdftex.def)             Requested size: 418.25368pt x 173.56854pt.
 
 
@@ -701,7 +701,7 @@ Package pdftex.def Info: figures/fig12_pubmed_roman_lr_sensitivity.png  used on
 File: figures/fig13_pairnorm_component_ablation.png Graphic file (type png)
 <use figures/fig13_pairnorm_component_ablation.png>
 Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.png  used on
- input line 1550.
+ input line 1542.
 (pdftex.def)             Requested size: 418.25368pt x 514.03952pt.
 
 
@@ -757,7 +757,7 @@ texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-di
 st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
 ype1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/t
 imes/utmri8a.pfb>
-Output written on template.pdf (50 pages, 2577421 bytes).
+Output written on template.pdf (50 pages, 2577395 bytes).
 PDF statistics:
  300 PDF objects out of 1000 (max. 8388607)
  178 compressed objects within 2 object streams
