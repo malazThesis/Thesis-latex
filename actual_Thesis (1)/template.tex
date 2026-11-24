@@ -179,12 +179,9 @@
 \subsection{Message Passing and Receptive Fields}
 \label{sec:message-passing}
 
-A graph can be represented as $G=(V,E)$, where $V$ is the set of nodes and $E$ is the set of edges
-connecting pairs of nodes. In the graph-learning setting considered in this thesis, each node $v\in V$ also has an input feature vector $\mathbf{x}_v$. A graph neural network (GNN) uses these node features and the graph structure to create learned representations of the nodes. A widely used class of GNNs follows the \emph{message-passing} principle, in which information is exchanged between adjacent nodes over a sequence of neural-network layers \cite{gilmer2017mpnn}.
+A graph can be represented as $G=(V,E)$, where $V$ is the set of nodes and $E$ is the set of edges connecting pairs of nodes. The neighborhood of a node $v\in V$ is denoted by $\mathcal{N}(v)=\{u\in V\mid (u,v)\in E\}$. In the graph-learning setting considered in this thesis, each node $v\in V$ also has an input feature vector $\mathbf{x}_v$. A graph neural network (GNN) uses these node features and the graph structure to create learned representations of the nodes. A widely used class of GNNs follows the \emph{message-passing} principle, in which information is exchanged between adjacent nodes over a sequence of neural-network layers \cite{gilmer2017mpnn}.
 
-Let $\mathbf{h}_v^{(l)}$ denote the representation of node $v$ after
-layer $l$, where $\mathbf{h}_v^{(0)}=\mathbf{x}_v$. In a message-passing layer, node $v$ first receives information from the neighboring nodes in
-$\mathcal{N}(v)$. Messages generated from neighboring nodes are then combined using an aggregation operation. The result is then used to update the representation of node $v$. Following the message-passing framework of Gilmer et al.\ \cite{gilmer2017mpnn}, this process can be written in the form
+Let $\mathbf{h}_v^{(l)}$ denote the representation of node $v$ after layer $l$, where $\mathbf{h}_v^{(0)}=\mathbf{x}_v$. In a message-passing layer, node $v$ first receives information from the neighboring nodes in $\mathcal{N}(v)$. Messages generated from neighboring nodes are then combined using an aggregation operation. The result is then used to update the representation of node $v$. Following the message-passing framework of Gilmer et al.\ \cite{gilmer2017mpnn}, this process can be written in the form
 
 \begin{equation}
     \mathbf{m}_v^{(l+1)}
@@ -218,10 +215,33 @@ followed by
     \label{eq:message-update}
 \end{equation}
 
-Here, $M^{(l)}$ is the message function of layer $l$, $\operatorname{AGG}^{(l)}$ combines the messages arriving from the
-neighbors of $v$, and $U^{(l)}$ updates the representation of the target node. The optional vector $\mathbf{e}_{vu}$ represents features associated with the edge between nodes $v$ and $u$. Since the neighbors of a node do not have a fixed order, the aggregation should not depend on the order in which these neighbors are presented. Common examples are sum, mean or maximum aggregation. The way these functions are used may differ depending on the GNN architecture \cite{gilmer2017mpnn,hamilton2017graphsage}.
+Here, $M^{(l)}$ is the message function of layer $l$, $\operatorname{AGG}^{(l)}$ combines the messages arriving from the neighbors of $v$, and $U^{(l)}$ updates the representation of the target node. The optional vector $\mathbf{e}_{vu}$ represents features associated with the edge between nodes $v$ and $u$. Since the neighbors of a node do not have a fixed order, the aggregation should not depend on the order in which these neighbors are presented. Common examples are sum, mean or maximum aggregation. The way these functions are used may differ depending on the GNN architecture \cite{gilmer2017mpnn,hamilton2017graphsage}.
 
-One such GNN model is GraphSAGE, which is extensively used in the experiments of this thesis and provides a concrete example of this procedure. At each layer, GraphSAGE first aggregates information from the immediate neighborhood of a node. The aggregated information is then combined with the node's own representation to obtain an updated node representation \cite{hamilton2017graphsage}. Since the neighborhood representations used at one layer were themselves constructed in the preceding layer, information can propagate recursively through the graph. Thus, the first message-passing layer can incorporate information from direct neighbors. The second layer can additionally incorporate information from two edges away, and this process continues with increasing depth. 
+One such GNN model is GraphSAGE, which is extensively used in the experiments of this thesis and provides a concrete example of this procedure. At each layer, GraphSAGE first aggregates information from the immediate neighborhood of a node. The aggregated information is then combined with the node's own representation to obtain an updated node representation. Following Hamilton et al. \cite{hamilton2017graphsage}, this update can be expressed as
+
+\begin{equation}
+\begin{aligned}
+\mathbf{m}_v^{(l+1)}
+&= \operatorname{AGGREGATE}_{l}
+\left(
+\left\{\mathbf{h}_u^{(l)}
+\mid u \in \mathcal{N}(v)\right\}
+\right),\\
+\mathbf{h}_v^{(l+1)}
+&= \sigma\left(
+\mathbf{W}^{(l)}
+\left[
+\mathbf{h}_v^{(l)}
+\Vert \mathbf{m}_v^{(l+1)}
+\right]
+\right).
+\end{aligned}
+\label{eq:graphsage-update}
+\end{equation}
+
+Here, $\operatorname{AGGREGATE}_{l}$ denotes the neighborhood aggregation operation used by GraphSAGE, $\Vert$ denotes concatenation, $\mathbf{W}^{(l)}$ is a trainable weight matrix, and $\sigma$ is a nonlinear activation function.
+
+Since the neighborhood representations used at one layer were themselves constructed in the preceding layer, information can propagate recursively through the graph. Thus, the first message-passing layer can incorporate information from direct neighbors. The second layer can additionally incorporate information from nodes two edges away, and this process continues with increasing depth.
 
 This recursive expansion motivates the notion of a \emph{receptive field}. For a target node, the theoretical receptive field includes all nodes whose input information may influence its representation after a given number of message-passing layers. An $L$-layer network in which messages are passed between directly connected nodes can in principle incorporate information from nodes that are at most $L$ edges away from the target node. Therefore, adding more message-passing layers allows information to travel over a larger graph distance. Xu et al.\ describe the same principle through neighborhood aggregation. After $k$ iterations, the representation can use structural information rooted at the target node up to depth $k$ \cite{xu2018jk}. Figure~\ref{fig:receptive-field} illustrates this expansion for successive message-passing layers.
 
@@ -258,10 +278,9 @@ The previous section established that stacking message-passing layers increases 
 
 Using the notation from Section ~\ref{sec:message-passing}, let the representation of node $v$ at layer $l$ be $\mathbf{h}_v^{(l)}$. If the hidden representation contains $p$ components, then
 
-\begin{equation}
+\[
     \mathbf{h}_v^{(l)} \in \mathbb{R}^{p}.
-    \label{eq:hidden-dimension}
-\end{equation}
+\]
 
 Network depth $L$ and hidden dimension $p$ describe two different aspects of the network. Depth specifies how many successive message-passing steps are applied. In architectures based on local one-hop message passing, greater depth means information can propagate over larger distances, thereby expanding the theoretical receptive field. Hidden dimension, on the other hand, specifies the size of the vector used to store and transform a node’s intermediate representation. Therefore, increasing $p$ does not add another propagation step, which means it does not extend the receptive field \cite{loukas2020depthwidth}.
 
@@ -734,7 +753,7 @@ Following the entropy-based definition introduced by Roy and Vetterli \cite{roy2
 \label{eq:effective-rank}
 \end{equation}
 
-using the convention $0\log 0=0$.
+using the convention $0\log 0=0$. This convention is necessary because a singular value of zero leads to $w_k=0$, for which the logarithm is undefined. In this case, the term $w_k\log w_k$ is assigned the value zero to ensure that the expression remains well-defined, as its limit is zero when $w_k$ approaches zero.
 
 When one singular value dominates the spectrum of a representation matrix, its effective rank approaches one. In contrast, a higher effective rank indicates that variation is spread across multiple independent directions. Unlike the standard matrix rank, which only considers whether singular values are nonzero, the effective rank also takes their relative magnitudes into account. For zero matrices, a numerical convention is required because the normalized singular-value weights are undefined.
 
@@ -817,15 +836,15 @@ The results are summarized in Table~\ref{tab:broad-screening-results}, in which 
 
 The broad screening shows that increasing the permitted depth range does not affect all datasets in the same way. Several datasets exhibit substantial degradation when the selected configuration changes from the shallow to the deeper phase, whereas others maintain relatively stable results. These differences are illustrated in Figure~\ref{fig:realworld-depth}.
 
-One of the clearest examples of the differences between the shallow and deeper phases is Amazon-Computers. As described above, the configurations were selected based on their mean validation accuracy within each comparison category. For Amazon-Computers, the selected shallow baseline is a two-layer GCN with 128 hidden dimensions and a test accuracy of $83.71\pm0.79\%$. In the deeper phase, the selected baseline is an eight-layer GCN with 64 hidden dimensions and reaches only $56.63\pm9.74\%$. The difference between the phase means is approximately 27.08 percentage points. In addition to the large decrease in mean accuracy, the deeper baseline exhibits substantially greater variability. The result demonstrates that allowing greater depth does not necessarily improve predictive performance, even when the configuration is selected by validation accuracy.
+One of the clearest examples of the differences between the shallow and deeper phases is Amazon-Computers. As described above, the configurations were selected based on their mean validation accuracy within each comparison category. For Amazon-Computers, the selected shallow baseline is a two-layer GCN with 128 hidden dimensions and a test accuracy of $83.71\%$. In the deeper phase, the selected baseline is an eight-layer GCN with 64 hidden dimensions and reaches only $56.63\pm9.74\%$. The difference between the phase means is approximately 27.08 percentage points. In addition to the large decrease in mean accuracy, the deeper baseline exhibits substantially greater variability. The result demonstrates that allowing greater depth does not necessarily improve predictive performance, even when the configuration is selected by validation accuracy.
 
-The full model search produces a different result on the same dataset. In the deeper phase, GraphSAGE with PairNorm, eight layers, and 128 hidden dimensions reaches $82.37\pm1.47\%$. This is 25.74 percentage points above the selected deeper baseline, and it approaches the shallow performance level. Nevertheless, the selected deeper baseline is a GCN rather than GraphSAGE. Therefore, this comparison combines changes in architecture, hidden dimension, and normalization. It demonstrates the usefulness of including alternative deep configurations in the search, but it does not isolate a causal 25.74-percentage-point benefit from PairNorm.
+The full model search produces a different result on the same dataset. In the deeper phase, GraphSAGE with PairNorm, eight layers, and 128 hidden dimensions reaches $82.37\%$. This is 25.74 percentage points above the selected deeper baseline, and it approaches the shallow performance level. Nevertheless, the selected deeper baseline is a GCN rather than GraphSAGE. Therefore, this comparison combines changes in architecture, hidden dimension, and normalization. It demonstrates the usefulness of including alternative deep configurations in the search, but it does not isolate a causal 25.74-percentage-point benefit from PairNorm.
 
-Roman-Empire provides another pronounced depth-sensitive case. The selected shallow baseline, a four-layer GraphSAGE model, reaches $79.37\pm0.58\%$, whereas the selected deeper baseline, an eight-layer GraphSAGE model, reaches $68.06\pm0.67\%$. The decrease of approximately 11.31 percentage points occurs while the selected hidden dimension remains 128. Unlike the Amazon-Computers comparison, the model family is also unchanged, making this a more direct descriptive indication of depth-related degradation under the selected configurations. Allowing PairNorm in the deeper phase raises the selected accuracy to $71.62\pm0.78\%$, but the resulting performance remains noticeably below the shallow configuration.
+Roman-Empire provides another pronounced depth-sensitive case. The selected shallow baseline, a four-layer GraphSAGE model, reaches $79.37\%$, whereas the selected deeper baseline, an eight-layer GraphSAGE model, reaches $68.06\%$. The decrease of approximately 11.31 percentage points occurs while the selected hidden dimension remains 128. Unlike the Amazon-Computers comparison, the model family is also unchanged, making this a more direct descriptive indication of depth-related degradation under the selected configurations. Allowing PairNorm in the deeper phase raises the selected accuracy to $71.62\%$, but the resulting performance remains noticeably below the shallow configuration.
 
-Actor exhibits a similar contrast, although with substantially lower absolute accuracy. Its shallow baseline reaches $34.49\pm1.11\%$, while the selected deeper baseline reaches $26.40\pm1.25\%$. This corresponds to a decrease of 8.09 percentage points. The deeper full search instead selects an eight-layer GraphSAGE+PairNorm model, reaching $32.87\pm0.60\%$. Thus, the full search recovers much of the selected baseline's depth-related loss, but it does not exceed the shallow result.
+Actor exhibits a similar contrast, although with substantially lower absolute accuracy. Its shallow baseline reaches $34.49\%$, while the selected deeper baseline reaches $26.40\%$. This corresponds to a decrease of 8.09 percentage points. The deeper full search instead selects an eight-layer GraphSAGE+PairNorm model, reaching $32.87\%$. Thus, the full search recovers much of the selected baseline's depth-related loss, but it does not exceed the shallow result.
 
-Not every dataset follows this pattern. Coauthor-Physics retains comparatively stable performance, with selected baseline accuracy changing from $93.20\pm0.54\%$ in the shallow phase to $92.30\pm0.56\%$ in the deeper phase. The difference is approximately 0.90 percentage points. Similarly, PubMed changes from $77.20\%$ for the selected shallow baseline to $77.57\pm1.38\%$ for the selected deeper baseline, showing no corresponding depth-related deterioration in this screening comparison. These cases demonstrate why degradation cannot be regarded as an inevitable consequence of increasing the number of message-passing layers.
+Not every dataset follows this pattern. Coauthor-Physics retains comparatively stable performance, with selected baseline accuracy changing from $93.20\%$ in the shallow phase to $92.30\%$ in the deeper phase. The difference is approximately 0.90 percentage points. Similarly, PubMed changes from $77.20\%$ for the selected shallow baseline to $77.57\%$ for the selected deeper baseline, showing no corresponding depth-related deterioration in this screening comparison. These cases demonstrate why degradation cannot be regarded as an inevitable consequence of increasing the number of message-passing layers.
 
 The smaller WebKB datasets show further variability. Cornell changes from $71.08\pm5.56\%$ for the selected shallow baseline to $56.22\pm6.96\%$ for the deeper baseline. Texas decreases from $78.65\pm5.76\%$ to $65.68\pm7.21\%$, while Wisconsin decreases from $80.20\pm4.66\%$ to $66.67\pm7.22\%$. These substantial mean differences occur alongside relatively large standard deviations, emphasizing that individual dataset splits or random repetitions can influence the observed outcome.
 
@@ -844,9 +863,9 @@ In contrast to Figure~\ref{fig:realworld-depth}, which examines differences betw
 The results differ across datasets and comparison protocols. For example, the large improvement of the selected full configuration on Amazon-Computers indicates that the expanded search finds a much stronger deep model, but part of this difference can arise from architecture selection. By contrast, matched comparisons are designed to hold the architecture and relevant hyperparameters fixed so that the remaining variation is more directly associated with normalization.
 
 
-The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\pm0.22\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\pm0.61\%$. This corresponds to a difference of approximately 5.04 percentage points between the selected configurations. In a separate matched GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.21 percentage points. However, the average matched difference across all evaluated configurations on Amazon-Ratings in the deeper phase is approximately 3.09 percentage points. This illustrates that the effect of PairNorm can vary considerably across model configurations.
+The Amazon-Ratings results also illustrate the importance of keeping these comparisons separate. In the deeper validation-selected table, the baseline GAT reaches $42.96\%$, whereas the selected GraphSAGE+PairNorm configuration reaches $48.00\%$. This corresponds to a difference of approximately 5.04 percentage points between the selected configurations. In a separate matched GraphSAGE comparison at eight layers and 128 hidden dimensions, the archived runs yield approximately $36.79\%$ without PairNorm and $48.00\%$ with PairNorm, a difference of about 11.21 percentage points. However, the average matched difference across all evaluated configurations on Amazon-Ratings in the deeper phase is approximately 3.09 percentage points. This illustrates that the effect of PairNorm can vary considerably across model configurations.
 
-The screening also contains cases in which adding PairNorm candidates provides little or no improvement. On Cora and CiteSeer, the selected configurations in each phase are unchanged between the baseline and full candidate sets. On Squirrel, the deeper full selection reaches $31.76\pm0.85\%$, compared with $31.99\pm1.65\%$ for the deeper baseline. The two selected configurations also differ in depth and hidden dimension. This result does not support a general claim that PairNorm improves deep-GNN performance.
+The screening also contains cases in which adding PairNorm candidates provides little or no improvement. On Cora and CiteSeer, the selected configurations in each phase are unchanged between the baseline and full candidate sets. On Squirrel, the deeper full selection reaches $31.76\%$, compared with $31.99\%$ for the deeper baseline. The two selected configurations also differ in depth and hidden dimension. This result does not support a general claim that PairNorm improves deep-GNN performance.
 
 \begin{figure}[htbp]
 \centering
@@ -1153,10 +1172,9 @@ The experiment uses PubMed and Roman-Empire as two contrasting graph-learning en
 
 The controlled graphs target raw edge homophily values of
 
-\begin{equation}
+\[
 h\in\{0.1,0.5,0.9\}.
-\label{eq:controlled-homophily-levels}
-\end{equation}
+\]
 
 A value of $h=0.1$ indicates that approximately 10\% of the undirected edges connect nodes with the same class label. At $h=0.9$, approximately 90\% connect nodes belonging to the same class. The intermediate setting $h=0.5$ provides a third condition between these two extremes.
 
@@ -1174,10 +1192,9 @@ The refined factorial design uses GraphSAGE and GraphSAGE+PairNorm with 128 hidd
 
 For two datasets, three homophily targets, two model variants, two depths, five graph seeds, and five initialization seeds, the design contains
 
-\begin{equation}
+\[
 2\cdot3\cdot2\cdot2\cdot5\cdot5=600
-\label{eq:homophily-run-count}
-\end{equation}
+\]
 
 experimental cells.
 
@@ -1329,17 +1346,15 @@ Deshpande et al.\ introduce and analyze contextual stochastic block models that 
 
 Each generated graph contains 2,000 nodes belonging to two balanced classes of 1,000 nodes each. Every node receives a 64-dimensional feature vector. The target average degree is 20, and the class-label edge-homophily targets are again 
 
-\begin{equation}
+\[
 h\in\{0.1,0.5,0.9\}.
-\label{eq:csbm-h}
-\end{equation}
+\]
 
 Node features are constructed by combining isotropic Gaussian noise with a class-specific shift along a randomly selected unit direction. The distance between the class means is determined by the feature-signal parameter,
 
-\begin{equation}
+\[
 \mathrm{FS}\in\{0.25,0.50\}.
-\label{eq:csbm-feature-signal}
-\end{equation}
+\]
 
 The feature-signal parameter determines the strength of the class-dependent information in the generated node features. Higher values increase the separation between class means while leaving the target graph homophily unchanged.
 
@@ -1462,10 +1477,9 @@ The learning rate determines the step size used when updating the model paramete
 
 Four learning rates are evaluated:
 
-\begin{equation}
+\[
 \eta\in\{0.001,0.003,0.01,0.03\}.
-\label{eq:lr-grid}
-\end{equation}
+\]
 
 For each dataset, model variant, and learning rate, five graph seeds are combined with five initialization seeds. This produces 25 training runs for each configuration and 400 runs in total. The results are first averaged across model initializations for each graph seed. The five graph-level averages are then used to summarize performance. Here, the learning-rate selection is performed using validation accuracy rather than test accuracy.
 
@@ -1513,7 +1527,7 @@ Each condition contains five graph seeds and five initialization seeds. Figure~\
 \subsection{Ablation Results}
 \label{sec:pairnorm-ablation-results}
 
-The first ablation condition examines PubMed at $h=0.1$, where full PairNorm previously showed a substantial improvement over the deep GraphSAGE baseline. The unnormalized baseline reaches 39.94\% test accuracy. Applying centering alone does not improve this result, as the center-only variant also reaches 39.94\%. In contrast, scaling alone raises accuracy to $80.82\pm1.00\%$, while full PairNorm reaches $83.28\pm0.52\%$. These results indicate that the scaling operation is the main contributor to the observed performance improvement in this condition, as it already achieves most of the predictive recovery without the complete normalization.
+The first ablation condition examines PubMed at $h=0.1$, where full PairNorm previously showed a substantial improvement over the deep GraphSAGE baseline. The unnormalized baseline reaches 39.94\% test accuracy. Applying centering alone does not improve this result, as the center-only variant also reaches 39.94\%. In contrast, scaling alone raises accuracy to $80.82\%$, while full PairNorm reaches $83.28\%$. These results indicate that the scaling operation is the main contributor to the observed performance improvement in this condition, as it already achieves most of the predictive recovery without the complete normalization.
 
 The representation diagnostics show a corresponding difference. Baseline GraphSAGE has NDE near zero, and centering alone produces an even smaller recorded value. Scaling alone raises NDE to approximately 1.967, while full PairNorm reaches approximately 2.689. Effective rank similarly increases to approximately 3.719 for scale-only and 4.539 for full PairNorm.
 
@@ -1521,13 +1535,13 @@ These findings indicate that merely subtracting the global mean does not prevent
 
 An important numerical clarification is required when interpreting the effective-rank result for the center-only configuration. The diagnostic reports a value of zero because the representation is nearly degenerate. However, under the mathematical definition of effective rank, any nonzero matrix must have an effective rank of at least one. Therefore, the reported zero indicates numerical degeneracy rather than an actual effective rank of zero.
 
-Roman-Empire at $h=0.9$ behaves differently. The baseline reaches $98.38\pm0.29\%$ accuracy, and all three normalization variants remain close to this value. Center-only reaches $98.23\pm0.37\%$, scale-only reaches $97.86\pm0.35\%$, and full PairNorm reaches $98.21\pm0.22\%$. None of these operations produces a useful improvement over the baseline in the tested condition.
+Roman-Empire at $h=0.9$ behaves differently. The baseline reaches $98.38\%$ accuracy, and all three normalization variants remain close to this value. Center-only reaches $98.23\%$, scale-only reaches $97.86\%$, and full PairNorm reaches $98.21\%$. None of these operations produces a useful improvement over the baseline in the tested condition.
 
 The representation geometry nevertheless changes substantially. Effective rank decreases from approximately 9.895 to 1.894 under centering alone, while scaling alone increases it to 14.796 and full PairNorm to 16.413. NDE also changes across the variants, increasing from 0.073 for the baseline to 0.173 under full PairNorm. Thus, the normalization components can alter the measured geometry without improving classification accuracy.
 
 This result reinforces the earlier Roman-Empire counterexample. A model that already separates the relevant classes effectively does not necessarily benefit from additional normalization, even when that normalization substantially changes the global structure of its hidden representations.
 
-The synthetic cSBM condition provides a third, distinct pattern. The unnormalized baseline reaches $54.00\pm13.73\%$, reflecting a low mean accuracy and considerable variability. Centering alone raises accuracy to $99.87\pm0.20\%$. Scaling alone reaches $99.68\pm0.42\%$, while full PairNorm achieves $99.87\pm0.24\%$.
+The synthetic cSBM condition provides a third, distinct pattern. The unnormalized baseline reaches $54.00\pm13.73\%$, reflecting a low mean accuracy and considerable variability. Centering alone raises accuracy to $99.87\%$. Scaling alone reaches $99.68\%$, while full PairNorm achieves $99.87\%$.
 
 Unlike controlled PubMed, where centering alone fails, the synthetic cSBM task is almost perfectly recovered by either component individually. The result therefore does not support a universal explanation in which only scaling is responsible for successful normalization.
 

@@ -10,7 +10,6 @@
 \citation{gilmer2017mpnn}
 \citation{hamilton2017graphsage}
 \citation{hamilton2017graphsage}
-\citation{xu2018jk}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{4}{}\protected@file@percent }
 \newlabel{sec:introduction}{{1}{4}{}{section.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Motivation}{4}{}\protected@file@percent }
@@ -23,16 +22,17 @@
 \newlabel{sec:message-passing}{{2.1}{4}{}{subsection.2.1}{}}
 \newlabel{eq:message-aggregation}{{1}{4}{}{equation.1}{}}
 \newlabel{eq:message-update}{{2}{4}{}{equation.2}{}}
+\newlabel{eq:graphsage-update}{{3}{4}{}{equation.3}{}}
+\citation{xu2018jk}
 \citation{xu2018jk}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces  Receptive-field growth under repeated message passing. Each additional message-passing layer increases the maximum graph distance from which information can potentially reach the target node. }}{5}{}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:receptive-field}{{1}{5}{}{figure.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{5}{}\protected@file@percent }
-\newlabel{sec:depth-width}{{2.2}{5}{}{subsection.2.2}{}}
 \citation{loukas2020depthwidth}
 \citation{loukas2020depthwidth}
 \citation{digiovanni2023oversquashing}
-\newlabel{eq:hidden-dimension}{{3}{6}{}{equation.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{6}{}\protected@file@percent }
+\newlabel{sec:depth-width}{{2.2}{6}{}{subsection.2.2}{}}
 \citation{zhu2020heterophily}
 \citation{arnaiz2026demystifying}
 \citation{zhu2020heterophily}
@@ -163,8 +163,6 @@
 \newlabel{sec:controlled-homophily}{{6}{27}{}{section.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Controlled Graph Construction}{27}{}\protected@file@percent }
 \newlabel{sec:controlled-graph-construction}{{6.1}{27}{}{subsection.6.1}{}}
-\newlabel{eq:controlled-homophily-levels}{{18}{27}{}{equation.18}{}}
-\newlabel{eq:homophily-run-count}{{19}{28}{}{equation.19}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Refined controlled-homophily factorial design. The experiment varies graph topology, depth, and PairNorm while retaining the underlying node features and labels within each dataset.}}{29}{}\protected@file@percent }
 \newlabel{tab:controlled-design}{{5}{29}{}{table.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Endpoint Results}{29}{}\protected@file@percent }
@@ -182,8 +180,6 @@
 \newlabel{sec:csbm}{{7}{35}{}{section.7}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{35}{}\protected@file@percent }
 \newlabel{sec:csbm-construction}{{7.1}{35}{}{subsection.7.1}{}}
-\newlabel{eq:csbm-h}{{20}{35}{}{equation.20}{}}
-\newlabel{eq:csbm-feature-signal}{{21}{35}{}{equation.21}{}}
 \citation{deshpande2018csbm}
 \citation{deshpande2018csbm}
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Controlled synthetic cSBM experimental design. The graph and feature generator is a thesis-specific variant inspired by the joint graph-and-covariate setting of Deshpande et al.\ \cite  {deshpande2018csbm}.}}{36}{}\protected@file@percent }
@@ -196,7 +192,6 @@
 \newlabel{sec:csbm-critical-depth}{{7.3}{38}{}{subsection.7.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{39}{}\protected@file@percent }
 \newlabel{sec:lr-sensitivity}{{8}{39}{}{section.8}{}}
-\newlabel{eq:lr-grid}{{22}{39}{}{equation.22}{}}
 \citation{zhao2020pairnorm}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Learning-rate sensitivity of eight-layer GraphSAGE with and without PairNorm on controlled PubMed and Roman-Empire graphs at $h=0.1$. Results are summarized across five graph seeds after averaging five initialization seeds within each graph. Star markers identify learning rates selected exclusively by validation accuracy.}}{41}{}\protected@file@percent }
 \newlabel{fig:lr-sensitivity}{{13}{41}{}{figure.13}{}}

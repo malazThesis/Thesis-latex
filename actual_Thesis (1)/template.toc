@@ -5,7 +5,7 @@
 \contentsline {subsection}{\numberline {1.2}Research Questions}{4}{}%
 \contentsline {section}{\numberline {2}Background}{4}{}%
 \contentsline {subsection}{\numberline {2.1}Message Passing and Receptive Fields}{4}{}%
-\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{5}{}%
+\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{6}{}%
 \contentsline {subsection}{\numberline {2.3}Homophily and Heterophily}{7}{}%
 \contentsline {subsection}{\numberline {2.4}Oversmoothing}{9}{}%
 \contentsline {subsection}{\numberline {2.5}PairNorm}{11}{}%
