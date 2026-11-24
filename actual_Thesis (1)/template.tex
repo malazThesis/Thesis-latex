@@ -1647,7 +1647,351 @@ The next part of the thesis extends this mechanism-oriented approach to long-ran
 
 
 % To be written later.
+% ============================================================
+% 11 Oversquashing
+% ============================================================
 
+\section{Oversquashing}
+\label{sec:oversquashing}
+
+The preceding experiments investigated the relationship between the degradation of predictive performance and the increasing
+similarity of node representations in deep graph neural networks. However, maintaining distinguishable node representations does
+not necessarily ensure that information originating from distant nodes is effectively transmitted through the graph. This introduces
+another potential limitation of message-passing graph neural networks, commonly referred to as \emph{oversquashing}.
+
+\subsection{Long-Range Information Propagation}
+\label{sec:longrange-propagation}
+
+As introduced in Section~\ref{sec:message-passing}, increasing the number of message-passing layers allows information to propagate
+across larger distances within a graph. However, the presence of a node within the receptive field of another node does not
+necessarily imply that its information meaningfully contributes to the resulting representation.
+
+Let $s\in V$ denote a source node containing information relevant to the prediction of a target node $t\in V$. The shortest-path
+distance between these nodes is denoted by $d_G(s,t)$ and corresponds to the minimum number of edges that must be traversed
+to reach the target from the source. For directed graphs, only paths following the direction of the edges are considered.
+
+For a network consisting exclusively of local one-hop message-passing operations, information from the source can reach the target only if the number of message-passing layers satisfies
+
+\[
+    L\geq d_G(s,t).
+\]
+
+If this condition is not satisfied, the source lies outside the local receptive field of the target. This limitation is referred to as \emph{under-reaching} \cite{alon2021bottleneck}.
+
+Oversquashing describes a different problem. Even when a network contains enough message-passing layers for information to reach
+the target, the relevant information may become increasingly difficult to preserve and recover during the aggregation and update operations.
+
+Alon and Yahav \cite{alon2021bottleneck} describe oversquashing as a limitation that arises when information originating from
+an increasing number of nodes must be compressed into fixed-dimensional representations. Depending on the graph
+structure, the number of nodes within a receptive field can increase rapidly with message-passing depth, while the
+dimensionality of the individual node representations remains unchanged.
+
+Consequently, the network may struggle to preserve the individual contributions required for a particular prediction.
+
+However, the amount of information that must be preserved depends on the learning task. For example, if a prediction
+depends only on the sum or average of several input values, a relatively low-dimensional representation may be sufficient.
+In contrast, a task that requires recovering the individual value associated with a particular source node may require
+the network to preserve more detailed information about the contributing sources.
+
+The growth of the receptive field alone is therefore not sufficient to establish that oversquashing constitutes a relevant limitation for a given task
+\cite{kormann2026position}.
+
+\subsection{Structural and Computational Bottlenecks}
+\label{sec:oversquashing-bottlenecks}
+
+The structure of a graph determines the paths through which
+information can propagate during local message passing.
+
+Consider two regions of a graph that contain many nodes but
+are connected to each other through only a small number of
+edges. Information originating from one region must pass
+through these connecting edges before it can reach nodes
+in the other region.
+
+If many individual contributions must be transmitted through
+these connections, the corresponding intermediate node
+representations may need to preserve a large amount of
+information within a limited representation space.
+
+Such a structural restriction is commonly referred to as a
+\emph{topological bottleneck}.
+
+Topping et al.\ \cite{topping2022oversquashing} investigate
+the relationship between graph bottlenecks and the sensitivity
+of node representations. Their analysis establishes, under
+specific assumptions on the message-passing functions and
+local graph structure, that edges with sufficiently negative
+curvature can restrict the influence of non-adjacent node
+features. The authors consequently propose modifying graph
+connectivity to alleviate such restrictions.
+
+However, structural bottlenecks must be distinguished from
+the computational restrictions that arise through repeated
+message passing.
+
+Arnaiz-Rodriguez and Errica
+\cite{arnaiz2026demystifying} distinguish between topological
+and computational bottlenecks. While a topological bottleneck
+concerns the connectivity of the graph, a computational
+bottleneck concerns the number of contributions processed
+through the computation induced by successive message-passing
+operations.
+
+In their formulation, the computational bottleneck of a node
+is characterized by the size of the multiset of node
+occurrences in its message-passing computation tree. Unlike
+the receptive field, which counts distinct nodes, the
+computation tree may contain repeated occurrences of the
+same node.
+
+Consequently, computational bottlenecks can arise even in
+graphs without a clearly identifiable narrow structural cut.
+Similarly, a decrease in source-target sensitivity does not,
+by itself, establish the presence of a topological bottleneck.
+
+This distinction is particularly important when evaluating
+structural interventions. Adding edges may shorten distances
+between nodes and provide additional communication pathways,
+while simultaneously increasing the number of contributions
+processed by subsequent message-passing operations.
+
+Figure~\ref{fig:oversquashing-graph-structure} illustrates
+how different graph structures can provide different
+communication pathways between the same source and target
+nodes.
+
+In the ring structure, information must pass through several
+intermediate nodes before reaching the opposite side of the
+graph. The crossed-ring structure introduces additional
+connections between opposite nodes, including a direct
+connection between the illustrated source and target. In
+the clique, every pair of distinct nodes is directly
+connected.
+
+Although the additional connections facilitate structural
+access between distant nodes, they also reduce the
+source-target distance. Consequently, the crossed-ring
+and clique examples illustrate simultaneous changes in
+connectivity and communication distance rather than an
+isolated change in bottleneck width at a fixed distance.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]
+    {figures/fig14_oversquashing_graph_structure.pdf}
+    \caption{Conceptual illustration of different graph
+    structures and their available communication pathways
+    between a source and a target node. The crossed-ring
+    structure introduces connections between opposite nodes,
+    while the clique connects every pair of distinct nodes.
+    The illustration represents structural differences
+    rather than empirical results.}
+    \label{fig:oversquashing-graph-structure}
+\end{figure}
+
+\subsection{Sensitivity of Node Representations}
+\label{sec:oversquashing-sensitivity}
+
+One approach to investigating whether information originating
+from a source node influences a target representation is to
+examine how changes in the input features of the source affect
+the representation of the target.
+
+Using the notation introduced in
+Section~\ref{sec:message-passing}, the representation
+$\mathbf{h}_t^{(L)}$ of target node $t$ after $L$
+message-passing layers depends on the input features and the
+graph structure.
+
+Following the sensitivity-based formulation of
+Topping et al.\ \cite{topping2022oversquashing}, this
+dependence can be examined through the Jacobian
+
+\begin{equation}
+    J_{t,s}^{(L)}
+    =
+    \frac{\partial \mathbf{h}_t^{(L)}}
+         {\partial \mathbf{x}_s}.
+    \label{eq:oversquashing-jacobian}
+\end{equation}
+
+Here, $\mathbf{x}_s$ denotes the input feature vector of
+source node $s$.
+
+If the input feature vector contains $p_0$ components and
+the target representation contains $p$ components, the
+Jacobian has the dimensions
+
+\[
+    J_{t,s}^{(L)}
+    \in \mathbb{R}^{p\times p_0}.
+\]
+
+Each entry of the Jacobian describes the local response of
+one component of the target representation to a change in
+one component of the source feature vector.
+
+Small Jacobian magnitudes indicate that small modifications
+of the source features have little local influence on the
+target representation.
+
+Under bounded-derivative assumptions on the message and
+update functions, Topping et al.\
+\cite{topping2022oversquashing} derive a sensitivity bound
+that depends on powers of an augmented normalized adjacency
+matrix. Their analysis provides a mathematical connection
+between the graph structure and the influence of distant
+node features.
+
+Di Giovanni et al.\ \cite{digiovanni2023oversquashing}
+extend this perspective by examining the roles of network
+width, depth, and topology.
+
+Increasing the hidden dimension can mitigate sensitivity
+limitations under the assumptions of their analysis, although
+it can also increase the overall sensitivity of the network.
+
+Increasing the number of message-passing layers does not
+necessarily provide a corresponding improvement. Their
+analysis distinguishes regimes in which the graph topology
+restricts sensitivity from regimes in which increasing
+depth causes vanishing gradients to become dominant.
+
+The authors additionally establish a relationship between
+long-range sensitivity and graph-theoretic quantities such
+as commute time. The commute time between two nodes is the
+expected number of steps required by a random walk to travel
+from one node to the other and return.
+
+Unlike the shortest-path distance, commute time also
+reflects the availability of alternative communication
+routes and other properties of the surrounding graph
+structure.
+
+These theoretical results demonstrate why the existence
+of a communication path is not sufficient to guarantee
+effective information propagation.
+
+However, their assumptions must be considered when
+transferring the conclusions to different graph neural
+network architectures, normalization methods, or directed
+graph structures.
+
+Furthermore, sensitivity must be interpreted with respect
+to the learning task. A small derivative with respect to
+an irrelevant input feature does not necessarily indicate
+a limitation of the model. Similarly, a large derivative
+does not guarantee that the corresponding information is
+used correctly for prediction.
+
+This motivates the distinction between task-relevant
+source features and other input features in the following
+experimental analysis.
+
+\subsection{Distinction from Oversmoothing}
+\label{sec:oversquashing-vs-oversmoothing}
+
+Oversmoothing and oversquashing concern different aspects
+of the representations learned by graph neural networks.
+
+As introduced in
+Section~\ref{sec:oversmoothing-background}, oversmoothing
+concerns the increasing similarity of node representations
+under repeated message passing
+\cite{rusch2023oversmoothing}.
+
+Oversquashing, in contrast, concerns limitations in the
+preservation and transmission of information, particularly
+when the learning task requires information originating
+from distant nodes.
+
+A network may maintain distinguishable node representations
+while remaining insensitive to particular source features.
+Conversely, increasing representation similarity does
+not necessarily imply that the network is unable to
+transmit information required for the learning task.
+
+Both phenomena can also occur simultaneously. Repeated
+message passing may reduce representation diversity while
+weakening the influence of distant input features.
+
+Consequently, neither predictive degradation nor a decrease
+in representation diversity alone is sufficient to
+establish oversquashing as the responsible mechanism.
+
+This distinction motivates the inclusion of PairNorm in
+the following experiments.
+
+As described in Section~\ref{sec:pairnorm-background},
+PairNorm modifies intermediate node representations
+through centering and scaling.
+
+Unlike structural rewiring, PairNorm does not add graph
+edges or reduce shortest-path distances.
+
+However, because its normalization statistics are computed
+across nodes, the normalized representation of one node
+can depend on the representations of other nodes, including
+nodes outside its local message-passing receptive field.
+
+PairNorm therefore does not modify the graph topology, but
+it can modify the computational dependencies between nodes.
+
+For this reason, PairNorm is treated as a non-structural
+intervention rather than as an operation that necessarily
+preserves all locality properties of ordinary message
+passing.
+
+A recovery of long-range predictive performance under
+PairNorm does not, by itself, demonstrate that information
+is transmitted more effectively exclusively through the
+original graph edges.
+
+\subsection{Experimental Approach}
+\label{sec:oversquashing-experimental-approach}
+
+The practical relevance of oversquashing depends on whether
+the learning task requires the information whose transmission
+is restricted.
+
+Kormann et al.\ \cite{kormann2026position} question whether
+oversquashing constitutes a major practical limitation on
+commonly used graph-learning benchmarks. In particular,
+they argue that the distribution of task-relevant information
+may be sufficiently local or may permit a decomposition
+that reduces the need for jointly processing large receptive
+fields.
+
+Arnaiz-Rodriguez and Errica
+\cite{arnaiz2026demystifying} similarly emphasize the need
+to distinguish between structural properties, computational
+bottlenecks, sensitivity, and the requirements of the
+learning task.
+
+The empirical analysis in this thesis therefore consists
+of three complementary investigations.
+
+The first investigation uses a controlled synthetic
+benchmark in which the classification task explicitly
+depends on information originating from a designated
+source node. Source-target distance and structural
+bottleneck width are varied systematically.
+
+The second investigation examines the sensitivity of the
+target predictions to the relevant source features.
+Finite-difference interventions and Jacobian-based
+diagnostics are compared to investigate whether the model
+responds preferentially to the source containing the
+information required for the prediction.
+
+The third investigation examines targeted structural
+interventions on natural real-world graphs. The effects
+of strengthening a predefined bottleneck cut are compared
+with those of a degree-matched random intervention across
+different edge-addition budgets.
+
+Together, these investigations comprise 1,860 training
+runs and provide complementary evidence for answering RQ3.
 
 % ============================================================
 % Bibliography

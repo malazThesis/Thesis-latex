@@ -35,3 +35,9 @@
 \contentsline {section}{\numberline {9}PairNorm Component Ablation}{41}{}%
 \contentsline {subsection}{\numberline {9.1}Ablation Results}{42}{}%
 \contentsline {section}{\numberline {10}Oversmoothing Synthesis}{46}{}%
+\contentsline {section}{\numberline {11}Oversquashing}{47}{}%
+\contentsline {subsection}{\numberline {11.1}Long-Range Information Propagation}{47}{}%
+\contentsline {subsection}{\numberline {11.2}Structural and Computational Bottlenecks}{48}{}%
+\contentsline {subsection}{\numberline {11.3}Sensitivity of Node Representations}{49}{}%
+\contentsline {subsection}{\numberline {11.4}Distinction from Oversmoothing}{50}{}%
+\contentsline {subsection}{\numberline {11.5}Experimental Approach}{51}{}%

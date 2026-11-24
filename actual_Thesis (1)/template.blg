@@ -14,34 +14,34 @@ I'm skipping whatever remains of this entry
 Warning--can't use both volume and number fields in li2018oversmoothing
 You've used 25 entries,
             2541 wiz_defined-function locations,
-            685 strings with 8977 characters,
-and the built_in function-call counts, 11618 in all, are:
-= -- 1119
-> -- 646
+            686 strings with 9026 characters,
+and the built_in function-call counts, 11585 in all, are:
+= -- 1117
+> -- 641
 < -- 19
-+ -- 235
-- -- 231
-* -- 845
-:= -- 1880
++ -- 233
+- -- 229
+* -- 841
+:= -- 1872
 add.period$ -- 79
 call.type$ -- 25
-change.case$ -- 159
+change.case$ -- 158
 chr.to.int$ -- 25
 cite$ -- 26
 duplicate$ -- 478
 empty$ -- 837
-format.name$ -- 252
-if$ -- 2410
+format.name$ -- 250
+if$ -- 2405
 int.to.chr$ -- 1
 int.to.str$ -- 0
 missing$ -- 24
 newline$ -- 129
 num.names$ -- 75
-pop$ -- 205
+pop$ -- 204
 preamble$ -- 1
-purify$ -- 209
+purify$ -- 208
 quote$ -- 0
-skip$ -- 392
+skip$ -- 393
 stack$ -- 0
 substring$ -- 509
 swap$ -- 127
@@ -51,6 +51,6 @@ top$ -- 0
 type$ -- 200
 warning$ -- 1
 while$ -- 99
-width$ -- 31
+width$ -- 30
 write$ -- 327
 (There were 2 error messages)

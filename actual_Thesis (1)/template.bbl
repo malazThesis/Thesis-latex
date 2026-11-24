@@ -7,6 +7,12 @@ Adrian Arnaiz-Rodriguez and Federico Errica.
   Demystifying Common Beliefs in Graph Machine Learning.
 \newblock In {\em International Conference on Learning Representations}, 2026.
 
+\bibitem[AY21]{alon2021bottleneck}
+Uri Alon and Eran Yahav.
+\newblock On the Bottleneck of Graph Neural Networks and Its Practical
+  Implications.
+\newblock In {\em International Conference on Learning Representations}, 2021.
+
 \bibitem[DGGB{\etalchar{+}}23]{digiovanni2023oversquashing}
 Francesco Di~Giovanni, Lorenzo Giusti, Federico Barbero, Giulia Luise, Pietro
   Lio, and Michael~M. Bronstein.
@@ -45,11 +51,6 @@ William~L. Hamilton, Rex Ying, and Jure Leskovec.
 Niklas Kormann, Benjamin Doerr, and Johannes~F. Lutzeyer.
 \newblock Position: Don't be Afraid of Over-Smoothing And Over-Squashing.
 \newblock {\em arXiv preprint arXiv:2601.07419}, 2026.
-
-\bibitem[KW17]{kipf2017gcn}
-Thomas~N. Kipf and Max Welling.
-\newblock Semi-Supervised Classification with Graph Convolutional Networks.
-\newblock In {\em International Conference on Learning Representations}, 2017.
 
 \bibitem[Lak13]{lakens2013effectsizes}
 Dani{\"e}l Lakens.
@@ -116,11 +117,11 @@ Oleksandr Shchur, Maximilian Mumme, Aleksandar Bojchevski, and Stephan
 \newblock {\em Relational Representation Learning Workshop, NeurIPS 2018},
   2018.
 
-\bibitem[VCC{\etalchar{+}}18]{velickovic2018gat}
-Petar Veli{\v{c}}kovi{\'c}, Guillem Cucurull, Arantxa Casanova, Adriana Romero,
-  Pietro Li{\`o}, and Yoshua Bengio.
-\newblock Graph Attention Networks.
-\newblock In {\em International Conference on Learning Representations}, 2018.
+\bibitem[TDGC{\etalchar{+}}22]{topping2022oversquashing}
+Jake Topping, Francesco Di~Giovanni, Benjamin~Paul Chamberlain, Xiaowen Dong,
+  and Michael~M. Bronstein.
+\newblock Understanding Over-Squashing and Bottlenecks on Graphs via Curvature.
+\newblock In {\em International Conference on Learning Representations}, 2022.
 
 \bibitem[XLT{\etalchar{+}}18]{xu2018jk}
 Keyulu Xu, Chengtao Li, Yonglong Tian, Tomohiro Sonobe, Ken-ichi Kawarabayashi,

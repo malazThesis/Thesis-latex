@@ -1,0 +1,237 @@
+\relax 
+\providecommand \babel@aux [2]{\global \let \babel@toc \@gobbletwo }
+\@nameuse{bbl@beforestart}
+\catcode `"\active 
+\bibstyle{lni}
+\babel@aux{english}{}
+\babel@aux{english}{}
+\citation{gilmer2017mpnn}
+\citation{gilmer2017mpnn}
+\citation{gilmer2017mpnn}
+\citation{hamilton2017graphsage}
+\citation{hamilton2017graphsage}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{4}{}\protected@file@percent }
+\newlabel{sec:introduction}{{1}{4}{}{section.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Motivation}{4}{}\protected@file@percent }
+\newlabel{sec:motivation}{{1.1}{4}{}{subsection.1.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Research Questions}{4}{}\protected@file@percent }
+\newlabel{sec:research-questions}{{1.2}{4}{}{subsection.1.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background}{4}{}\protected@file@percent }
+\newlabel{sec:background}{{2}{4}{}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Message Passing and Receptive Fields}{4}{}\protected@file@percent }
+\newlabel{sec:message-passing}{{2.1}{4}{}{subsection.2.1}{}}
+\newlabel{eq:message-aggregation}{{1}{4}{}{equation.1}{}}
+\newlabel{eq:message-update}{{2}{4}{}{equation.2}{}}
+\newlabel{eq:graphsage-update}{{3}{4}{}{equation.3}{}}
+\citation{xu2018jk}
+\citation{xu2018jk}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces  Receptive-field growth under repeated message passing. Each additional message-passing layer increases the maximum graph distance from which information can potentially reach the target node. }}{5}{}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:receptive-field}{{1}{5}{}{figure.1}{}}
+\citation{loukas2020depthwidth}
+\citation{loukas2020depthwidth}
+\citation{digiovanni2023oversquashing}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Depth versus Hidden Dimension}{6}{}\protected@file@percent }
+\newlabel{sec:depth-width}{{2.2}{6}{}{subsection.2.2}{}}
+\citation{zhu2020heterophily}
+\citation{arnaiz2026demystifying}
+\citation{zhu2020heterophily}
+\citation{platonov2023critical}
+\citation{zhu2020heterophily}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces  Conceptual distinction between depth and hidden dimension in a message-passing graph neural network. Increasing depth adds successive propagation steps and expands the theoretical receptive field, whereas increasing the hidden dimension enlarges the intermediate node representation without adding another message-passing step. }}{7}{}\protected@file@percent }
+\newlabel{fig:depth-width}{{2}{7}{}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Homophily and Heterophily}{7}{}\protected@file@percent }
+\newlabel{sec:homophily-heterophily}{{2.3}{7}{}{subsection.2.3}{}}
+\newlabel{eq:edge-homophily}{{4}{7}{}{equation.4}{}}
+\citation{platonov2023critical}
+\citation{arnaiz2026demystifying}
+\citation{platonov2023critical}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces  Schematic comparison of class-homophilous and class-heterophilous graph structure. In the homophilous example, edges predominantly connect nodes of the same class, whereas the heterophilous example contains a larger proportion of edges between different classes. The schematic illustrates label--topology alignment and does not imply that one of the two settings is inherently easier to learn. }}{8}{}\protected@file@percent }
+\newlabel{fig:homophily-heterophily}{{3}{8}{}{figure.3}{}}
+\citation{arnaiz2026demystifying}
+\citation{li2018oversmoothing}
+\citation{rusch2023oversmoothing}
+\citation{li2018oversmoothing}
+\citation{rusch2023oversmoothing}
+\citation{rusch2023oversmoothing}
+\citation{oono2020oversmoothing}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Oversmoothing}{9}{}\protected@file@percent }
+\newlabel{sec:oversmoothing-background}{{2.4}{9}{}{subsection.2.4}{}}
+\newlabel{eq:dirichlet-energy}{{5}{9}{}{equation.5}{}}
+\citation{arnaiz2026demystifying}
+\citation{kormann2026position}
+\citation{arnaiz2026demystifying}
+\citation{kormann2026position}
+\citation{arnaiz2026demystifying}
+\citation{zhao2020pairnorm}
+\citation{zhao2020pairnorm}
+\citation{zhao2020pairnorm}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces  Conceptual illustration of oversmoothing under repeated message passing. Initially distinct node representations can become progressively more similar as neighborhood information is repeatedly aggregated. The schematic illustrates representation collapse and does not imply that all graph neural networks oversmooth at the same depth or rate. }}{11}{}\protected@file@percent }
+\newlabel{fig:oversmoothing-concept}{{4}{11}{}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}PairNorm}{11}{}\protected@file@percent }
+\newlabel{sec:pairnorm-background}{{2.5}{11}{}{subsection.2.5}{}}
+\newlabel{eq:pairnorm-tpsd}{{6}{11}{}{equation.6}{}}
+\newlabel{eq:pairnorm-center}{{7}{11}{}{equation.7}{}}
+\citation{zhao2020pairnorm}
+\citation{zhao2020pairnorm}
+\citation{zhao2020pairnorm}
+\citation{rusch2023oversmoothing}
+\newlabel{eq:pairnorm-scale}{{8}{12}{}{equation.8}{}}
+\newlabel{eq:pairnorm-tpsd-constant}{{9}{12}{}{equation.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces  Conceptual effect of PairNorm on node-representation geometry. After message passing has reduced the global spread of the representations, PairNorm recenters them and rescales the representation matrix to a fixed global pairwise-distance scale. The operation constrains the overall geometry and does not preserve each individual pairwise distance. }}{13}{}\protected@file@percent }
+\newlabel{fig:pairnorm-concept}{{5}{13}{}{figure.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Experimental Methodology}{13}{}\protected@file@percent }
+\newlabel{sec:experimental-methodology}{{3}{13}{}{section.3}{}}
+\citation{yang2016planetoid}
+\citation{yang2016planetoid}
+\citation{yang2016planetoid}
+\citation{platonov2023critical}
+\citation{shchur2018pitfalls}
+\citation{shchur2018pitfalls}
+\citation{shchur2018pitfalls}
+\citation{shchur2018pitfalls}
+\citation{pei2020geomgcn}
+\citation{pei2020geomgcn}
+\citation{rozemberczki2021multiscale}
+\citation{pei2020geomgcn}
+\citation{rozemberczki2021multiscale}
+\citation{pei2020geomgcn}
+\citation{pei2020geomgcn}
+\citation{pei2020geomgcn}
+\citation{platonov2023critical}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Real-World Datasets}{14}{}\protected@file@percent }
+\newlabel{sec:realworld-datasets}{{3.1}{14}{}{subsection.3.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Overview of the 15 real-world node-classification datasets. The source column identifies the benchmark reference for the employed dataset version.}}{14}{}\protected@file@percent }
+\newlabel{tab:dataset-overview}{{1}{14}{}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Evaluation Protocol}{14}{}\protected@file@percent }
+\newlabel{sec:evaluation-protocol}{{3.2}{14}{}{subsection.3.2}{}}
+\citation{zhao2020pairnorm}
+\newlabel{eq:test-accuracy}{{10}{15}{}{equation.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Oversmoothing Diagnostics}{15}{}\protected@file@percent }
+\newlabel{sec:oversmoothing-diagnostics}{{3.3}{15}{}{subsection.3.3}{}}
+\citation{rusch2023oversmoothing}
+\citation{arnaiz2026demystifying}
+\citation{zhang2026measuring}
+\citation{rusch2023oversmoothing}
+\citation{arnaiz2026demystifying}
+\citation{rusch2023oversmoothing}
+\citation{arnaiz2026demystifying}
+\@writefile{toc}{\contentsline {paragraph}{Normalized Dirichlet energy.}{16}{}\protected@file@percent }
+\newlabel{eq:nde}{{11}{16}{}{equation.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{Effective rank.}{16}{}\protected@file@percent }
+\citation{roy2007effective}
+\citation{zhang2026measuring}
+\citation{rusch2023oversmoothing}
+\newlabel{eq:singular-weight}{{12}{17}{}{equation.12}{}}
+\newlabel{eq:effective-rank}{{13}{17}{}{equation.13}{}}
+\newlabel{eq:effective-rank-ratio}{{14}{17}{}{equation.14}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cosine-distance diagnostics.}{17}{}\protected@file@percent }
+\newlabel{eq:cosine-distance}{{15}{17}{}{equation.15}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation of diagnostic evidence.}{18}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Broad Real-World Screening}{18}{}\protected@file@percent }
+\newlabel{sec:broad-screening}{{4}{18}{}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental Design}{18}{}\protected@file@percent }
+\newlabel{sec:broad-screening-design}{{4.1}{18}{}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Results}{19}{}\protected@file@percent }
+\newlabel{sec:broad-screening-results}{{4.2}{19}{}{subsection.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Broad real-world screening under validation-selected configurations. The left panel compares predictive performance across shallow and deeper phases, while the right panel summarizes the change between phases. Differences describe the selected configurations and do not isolate depth independently of all other hyperparameters.}}{20}{}\protected@file@percent }
+\newlabel{fig:realworld-depth}{{6}{20}{}{figure.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces PairNorm comparisons in the broad real-world screening. The left panel compares the test accuracy of validation-selected baseline and full configurations, while the right panel summarizes accuracy differences between models with and without PairNorm under matched architecture, depth, and hidden dimension.}}{21}{}\protected@file@percent }
+\newlabel{fig:realworld-pairnorm}{{7}{21}{}{figure.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Validation-selected results from the broad real-world screening. Phase 1 considers depths 2 and 4. Phase 2 considers depths 8, 16, and 32. Each entry identifies the selected model, depth, hidden dimension, and test accuracy. The baseline and full searches were conducted using separate training runs. Consequently, identical model configurations may have different reported test accuracies. These differences should not be interpreted as isolated effects of PN, where PN denotes PairNorm. }}{22}{}\protected@file@percent }
+\newlabel{tab:broad-screening-results}{{2}{22}{}{table.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Selected Real-World Cases}{23}{}\protected@file@percent }
+\newlabel{sec:selected-realworld}{{5}{23}{}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Design of the four selected real-world comparisons. All datasets use the same architecture pair, depth values, hidden dimension, number of matched splits, and training budget.}}{23}{}\protected@file@percent }
+\newlabel{tab:selected-design}{{3}{23}{}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Depth Interaction}{23}{}\protected@file@percent }
+\newlabel{sec:selected-depth-interaction}{{5.1}{23}{}{subsection.5.1}{}}
+\newlabel{eq:depth-loss}{{16}{23}{}{equation.16}{}}
+\citation{holm1979procedure}
+\citation{lakens2013effectsizes}
+\newlabel{eq:depth-did}{{17}{24}{}{equation.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Matched depth interaction for GraphSAGE and GraphSAGE+PairNorm on four real-world datasets. Positive values indicate that PairNorm reduces the test-accuracy loss from four to eight layers; negative values indicate increased degradation under PairNorm. All differences are expressed in percentage points.}}{25}{}\protected@file@percent }
+\newlabel{fig:selected-depth}{{8}{25}{}{figure.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Matched depth interactions and representation-diagnostic ratios for the four selected real-world datasets. Depth losses and DiD are expressed in percentage points. NDE and rank ratios compare PairNorm with GraphSAGE at eight layers.}}{25}{}\protected@file@percent }
+\newlabel{tab:selected-results}{{4}{25}{}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Representation Diagnostics}{26}{}\protected@file@percent }
+\newlabel{sec:selected-representations}{{5.2}{26}{}{subsection.5.2}{}}
+\citation{maslov2002specificity}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces PairNorm-to-GraphSAGE ratios of normalized Dirichlet energy and effective-rank ratio at eight layers and epoch 800. Values greater than one indicate increased measured representation diversity under PairNorm. The ratios do not imply a corresponding improvement in predictive accuracy.}}{27}{}\protected@file@percent }
+\newlabel{fig:selected-representations}{{9}{27}{}{figure.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Controlled Homophily}{27}{}\protected@file@percent }
+\newlabel{sec:controlled-homophily}{{6}{27}{}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Controlled Graph Construction}{27}{}\protected@file@percent }
+\newlabel{sec:controlled-graph-construction}{{6.1}{27}{}{subsection.6.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Refined controlled-homophily factorial design. The experiment varies graph topology, depth, and PairNorm while retaining the underlying node features and labels within each dataset.}}{29}{}\protected@file@percent }
+\newlabel{tab:controlled-design}{{5}{29}{}{table.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Endpoint Results}{29}{}\protected@file@percent }
+\newlabel{sec:controlled-endpoints}{{6.2}{29}{}{subsection.6.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Initial controlled-homophily depth exploration for PubMed-derived and Roman-Empire-derived graphs. The panels compare GraphSAGE with and without PairNorm at target raw edge-homophily levels of 0.1, 0.5, and 0.9. Predictive accuracy is measured at validation-selected checkpoints.}}{30}{}\protected@file@percent }
+\newlabel{fig:controlled-overview}{{10}{30}{}{figure.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Eight-layer endpoint results from the initial low-label controlled-homophily exploration, based on five runs per condition. Accuracy is evaluated at the best-validation checkpoint. NDE and effective rank are measured at epoch 2400.}}{32}{}\protected@file@percent }
+\newlabel{tab:controlled-results}{{6}{32}{}{table.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Temporal Representation Dynamics}{33}{}\protected@file@percent }
+\newlabel{sec:temporal-dynamics}{{6.3}{33}{}{subsection.6.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Temporal representation dynamics for controlled PubMed at $h=0.1$ and Roman-Empire at $h=0.9$, both at eight layers. The curves show normalized Dirichlet energy and effective-rank ratio across training epochs. Persistent representation compression and non-collapsed dynamics are compared without assuming that training itself is the sole cause of the observed geometry.}}{34}{}\protected@file@percent }
+\newlabel{fig:temporal-recovery}{{11}{34}{}{figure.11}{}}
+\citation{deshpande2018csbm}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Controlled cSBM Experiments}{35}{}\protected@file@percent }
+\newlabel{sec:csbm}{{7}{35}{}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Synthetic Graph and Feature Construction}{35}{}\protected@file@percent }
+\newlabel{sec:csbm-construction}{{7.1}{35}{}{subsection.7.1}{}}
+\citation{deshpande2018csbm}
+\citation{deshpande2018csbm}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Controlled synthetic cSBM experimental design. The graph and feature generator is a thesis-specific variant inspired by the joint graph-and-covariate setting of Deshpande et al.\ \cite  {deshpande2018csbm}.}}{36}{}\protected@file@percent }
+\newlabel{tab:csbm-design}{{7}{36}{}{table.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Predictive Performance Across Controlled Conditions}{37}{}\protected@file@percent }
+\newlabel{sec:csbm-performance}{{7.2}{37}{}{subsection.7.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Test accuracy of eight-layer GraphSAGE with and without PairNorm in the controlled cSBM variants. The panels compare feature-signal strengths 0.25 and 0.50 across target homophily levels 0.1, 0.5, and 0.9. Means and standard deviations are computed from five runs with paired graph and training seeds.}}{38}{}\protected@file@percent }
+\newlabel{fig:csbm-performance}{{12}{38}{}{figure.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Critical Depth and Representation Collapse}{38}{}\protected@file@percent }
+\newlabel{sec:csbm-critical-depth}{{7.3}{38}{}{subsection.7.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Learning-Rate Sensitivity}{39}{}\protected@file@percent }
+\newlabel{sec:lr-sensitivity}{{8}{39}{}{section.8}{}}
+\citation{zhao2020pairnorm}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Learning-rate sensitivity of eight-layer GraphSAGE with and without PairNorm on controlled PubMed and Roman-Empire graphs at $h=0.1$. Results are summarized across five graph seeds after averaging five initialization seeds within each graph. Star markers identify learning rates selected exclusively by validation accuracy.}}{41}{}\protected@file@percent }
+\newlabel{fig:lr-sensitivity}{{13}{41}{}{figure.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}PairNorm Component Ablation}{41}{}\protected@file@percent }
+\newlabel{sec:pairnorm-ablation}{{9}{41}{}{section.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Ablation Results}{42}{}\protected@file@percent }
+\newlabel{sec:pairnorm-ablation-results}{{9.1}{42}{}{subsection.9.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces PairNorm component ablations for controlled PubMed, Roman-Empire, and cSBM conditions. Each row compares predictive accuracy, normalized Dirichlet energy, and effective rank across baseline, center-only, scale-only, and full PairNorm variants. Results are first averaged over five initializations within each graph seed, with graph-level variability shown by the error bars.}}{44}{}\protected@file@percent }
+\newlabel{fig:pairnorm-ablation}{{14}{44}{}{figure.14}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces PairNorm component-ablation results. Values are mean $\pm $ standard deviation across 25 individual runs per condition and variant. Accuracy is reported at the validation-selected checkpoint, while representation diagnostics are measured at the fixed final epoch.}}{45}{}\protected@file@percent }
+\newlabel{tab:pairnorm-ablation}{{8}{45}{}{table.8}{}}
+\citation{rusch2023oversmoothing}
+\citation{kormann2026position}
+\citation{arnaiz2026demystifying}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Oversmoothing Synthesis}{46}{}\protected@file@percent }
+\newlabel{sec:oversmoothing-synthesis}{{10}{46}{}{section.10}{}}
+\bibdata{references}
+\bibcite{arnaiz2026demystifying}{ARE26}
+\bibcite{digiovanni2023oversquashing}{DGGB{$^{+}$}23}
+\bibcite{deshpande2018csbm}{DSMM18}
+\bibcite{gilmer2017mpnn}{GSR{$^{+}$}17}
+\bibcite{holm1979procedure}{Hol79}
+\bibcite{hamilton2017graphsage}{HYL17}
+\bibcite{kormann2026position}{KDL26}
+\bibcite{kipf2017gcn}{KW17}
+\bibcite{lakens2013effectsizes}{Lak13}
+\bibcite{li2018oversmoothing}{LHW18}
+\bibcite{loukas2020depthwidth}{Lou20}
+\bibcite{maslov2002specificity}{MS02}
+\bibcite{oono2020oversmoothing}{OS20}
+\bibcite{platonov2023critical}{PKD{$^{+}$}23}
+\bibcite{pei2020geomgcn}{PWC{$^{+}$}20}
+\bibcite{rozemberczki2021multiscale}{RAS21}
+\bibcite{rusch2023oversmoothing}{RBM23}
+\bibcite{roy2007effective}{RV07}
+\bibcite{shchur2018pitfalls}{SMBG18}
+\bibcite{velickovic2018gat}{VCC{$^{+}$}18}
+\bibcite{xu2018jk}{XLT{$^{+}$}18}
+\bibcite{yang2016planetoid}{YCS16}
+\bibcite{zhao2020pairnorm}{ZA20}
+\bibcite{zhang2026measuring}{ZDHT26}
+\bibcite{zhu2020heterophily}{ZYZ{$^{+}$}20}
+\gdef \@abspage@last{50}
