@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  24 NOV 2026 19:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.7.9)  25 NOV 2026 14:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -723,7 +723,7 @@ Package pdftex.def Info: figures/fig13_pairnorm_component_ablation.pdf  used on
 File: figures/fig14_oversquashing_graph_structure.pdf Graphic file (type pdf)
 <use figures/fig14_oversquashing_graph_structure.pdf>
 Package pdftex.def Info: figures/fig14_oversquashing_graph_structure.pdf  used 
-on input line 1781.
+on input line 1713.
 (pdftex.def)             Requested size: 418.25368pt x 153.96881pt.
 
 
@@ -731,15 +731,13 @@ on input line 1781.
 
 [50]
 
-[51]
+[51] (./template.bbl
 
-[52] (./template.bbl
-
-[53
+[52
 
 ])
 
-[54] (./template.aux)
+[53] (./template.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -775,10 +773,10 @@ mf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2025/texmf-dist/
 fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type
 1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/time
 s/utmri8a.pfb>
-Output written on template.pdf (55 pages, 643145 bytes).
+Output written on template.pdf (54 pages, 642149 bytes).
 PDF statistics:
- 541 PDF objects out of 1000 (max. 8388607)
- 301 compressed objects within 4 object streams
+ 536 PDF objects out of 1000 (max. 8388607)
+ 298 compressed objects within 3 object streams
  0 named destinations out of 1000 (max. 500000)
  76 words of extra memory for PDF output out of 10000 (max. 10000000)
 

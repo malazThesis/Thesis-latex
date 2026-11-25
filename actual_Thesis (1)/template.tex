@@ -1663,117 +1663,49 @@ another potential limitation of message-passing graph neural networks, commonly 
 \label{sec:longrange-propagation}
 
 As introduced in Section~\ref{sec:message-passing}, increasing the number of message-passing layers allows information to propagate
-across larger distances within a graph. However, the presence of a node within the receptive field of another node does not
-necessarily imply that its information meaningfully contributes to the resulting representation.
+across larger distances within a graph. However, being within another node's receptive field does not necessarily mean that a node's information makes a meaningful contribution to the resulting representation.
 
-Let $s\in V$ denote a source node containing information relevant to the prediction of a target node $t\in V$. The shortest-path
-distance between these nodes is denoted by $d_G(s,t)$ and corresponds to the minimum number of edges that must be traversed
-to reach the target from the source. For directed graphs, only paths following the direction of the edges are considered.
-
-For a network consisting exclusively of local one-hop message-passing operations, information from the source can reach the target only if the number of message-passing layers satisfies
-
-\[
-    L\geq d_G(s,t).
-\]
-
-If this condition is not satisfied, the source lies outside the local receptive field of the target. This limitation is referred to as \emph{under-reaching} \cite{alon2021bottleneck}.
+Let $s\in V$ denote a source node and $t\in V$ a target node. The shortest-path distance between these nodes is denoted by $d_G(s,t)$. For information from a source node to reach a target node through local message passing, the network must have at least $d_G(s,t)$ message-passing layers. If the network has fewer layers, then the source lies outside the receptive field of the target. This limitation is referred to as \emph{under-reaching} \cite{alon2021bottleneck}.
 
 Oversquashing describes a different problem. Even when a network contains enough message-passing layers for information to reach
-the target, the relevant information may become increasingly difficult to preserve and recover during the aggregation and update operations.
+the target, the relevant information may become increasingly difficult to preserve and recover during the aggregation and update operations. This distinction between oversquashing and under-reaching is particularly important for the subsequent experiments.
 
 Alon and Yahav \cite{alon2021bottleneck} describe oversquashing as a limitation that arises when information originating from
-an increasing number of nodes must be compressed into fixed-dimensional representations. Depending on the graph
-structure, the number of nodes within a receptive field can increase rapidly with message-passing depth, while the
-dimensionality of the individual node representations remains unchanged.
+an increasing number of nodes must be compressed into fixed-dimensional representations. Depending on the graph structure, the number of nodes within a receptive field can increase rapidly with message-passing depth, while the dimensionality of the individual node representations remains the same. As a result, the network may struggle to retain the individual contributions of different nodes that are relevant to a particular prediction.
 
-Consequently, the network may struggle to preserve the individual contributions required for a particular prediction.
+However, the amount of information that must be preserved depends on the learning task. For example, if a prediction depends only on the sum or average of several input values, a relatively low-dimensional representation may be sufficient. In contrast, if a task requires the value of a particular source node to be recovered, the network may need to preserve more detailed information about that node.
 
-However, the amount of information that must be preserved depends on the learning task. For example, if a prediction
-depends only on the sum or average of several input values, a relatively low-dimensional representation may be sufficient.
-In contrast, a task that requires recovering the individual value associated with a particular source node may require
-the network to preserve more detailed information about the contributing sources.
-
-The growth of the receptive field alone is therefore not sufficient to establish that oversquashing constitutes a relevant limitation for a given task
+The growth of the receptive field alone is therefore not sufficient to establish that oversquashing poses a significant limitation for a given task
 \cite{kormann2026position}.
 
 \subsection{Structural and Computational Bottlenecks}
 \label{sec:oversquashing-bottlenecks}
 
-The structure of a graph determines the paths through which
-information can propagate during local message passing.
+The structure of a graph determines the paths through which information can propagate during local message passing.
 
-Consider two regions of a graph that contain many nodes but
-are connected to each other through only a small number of
-edges. Information originating from one region must pass
-through these connecting edges before it can reach nodes
-in the other region.
+Consider two regions of a graph that contain many nodes but are connected to each other through only a small number of
+edges. Information originating from one region must pass through these connecting edges before it can reach nodes in the other region.
 
-If many individual contributions must be transmitted through
-these connections, the corresponding intermediate node
-representations may need to preserve a large amount of
-information within a limited representation space.
+If information from many individual nodes must pass through these connections, the intermediate representations may have to store a large amount of information despite their limited dimensionality. This type of structural constraint is commonly referred to as a \emph{topological bottleneck}.
 
-Such a structural restriction is commonly referred to as a
-\emph{topological bottleneck}.
+Topping et al.\ \cite{topping2022oversquashing} investigate the relationship between graph bottlenecks and the sensitivity of node representations. Their analysis establishes, under specific assumptions on the message-passing functions and local graph structure, that edges with sufficiently negative curvature can restrict the influence of non-adjacent node features. The authors therefore propose modifying the graph structure to mitigate these limitations.
 
-Topping et al.\ \cite{topping2022oversquashing} investigate
-the relationship between graph bottlenecks and the sensitivity
-of node representations. Their analysis establishes, under
-specific assumptions on the message-passing functions and
-local graph structure, that edges with sufficiently negative
-curvature can restrict the influence of non-adjacent node
-features. The authors consequently propose modifying graph
-connectivity to alleviate such restrictions.
+However, structural bottlenecks must be distinguished from the computational limitations associated with repeated message passing.
 
-However, structural bottlenecks must be distinguished from
-the computational restrictions that arise through repeated
-message passing.
+Arnaiz-Rodriguez and Errica \cite{arnaiz2026demystifying} distinguish between topological
+and computational bottlenecks. While a topological bottleneck concerns the connectivity of the graph, a computational bottleneck concerns the amount of information that must be processed during repeated message passing.
 
-Arnaiz-Rodriguez and Errica
-\cite{arnaiz2026demystifying} distinguish between topological
-and computational bottlenecks. While a topological bottleneck
-concerns the connectivity of the graph, a computational
-bottleneck concerns the number of contributions processed
-through the computation induced by successive message-passing
-operations.
+In their formulation, the authors characterize a node's computational bottleneck by counting the node occurrences in its message-passing computation tree. Unlike the receptive field, which counts only distinct nodes, the computation tree can include the same node multiple times.
 
-In their formulation, the computational bottleneck of a node
-is characterized by the size of the multiset of node
-occurrences in its message-passing computation tree. Unlike
-the receptive field, which counts distinct nodes, the
-computation tree may contain repeated occurrences of the
-same node.
+Consequently, computational bottlenecks may occur even in graphs that lack an obvious narrow structural cut. Likewise, reduced sensitivity between source and target nodes does not necessarily indicate that a topological bottleneck exists.
 
-Consequently, computational bottlenecks can arise even in
-graphs without a clearly identifiable narrow structural cut.
-Similarly, a decrease in source-target sensitivity does not,
-by itself, establish the presence of a topological bottleneck.
+This difference is especially important when modifying the graph structure. Adding new edges can bring nodes closer together and provide more paths for information to travel through the graph. However, it can also increase the amount of information that must be processed in later message-passing layers.
 
-This distinction is particularly important when evaluating
-structural interventions. Adding edges may shorten distances
-between nodes and provide additional communication pathways,
-while simultaneously increasing the number of contributions
-processed by subsequent message-passing operations.
+Figure~\ref{fig:oversquashing-graph-structure} illustrates how different graph structures can provide different communication pathways between the same source and target nodes. In the ring structure, information must pass through several intermediate nodes before reaching the opposite side of the
+graph. The crossed-ring structure introduces additional connections between opposite nodes, including a direct
+connection between the illustrated source and target. In the clique, every pair of distinct nodes is directly connected.
 
-Figure~\ref{fig:oversquashing-graph-structure} illustrates
-how different graph structures can provide different
-communication pathways between the same source and target
-nodes.
-
-In the ring structure, information must pass through several
-intermediate nodes before reaching the opposite side of the
-graph. The crossed-ring structure introduces additional
-connections between opposite nodes, including a direct
-connection between the illustrated source and target. In
-the clique, every pair of distinct nodes is directly
-connected.
-
-Although the additional connections facilitate structural
-access between distant nodes, they also reduce the
-source-target distance. Consequently, the crossed-ring
-and clique examples illustrate simultaneous changes in
-connectivity and communication distance rather than an
-isolated change in bottleneck width at a fixed distance.
+Although the additional edges improve connectivity between distant nodes, they also shorten the distance between source and target. The crossed-ring and clique examples therefore illustrate simultaneous changes in graph connectivity and communication distance, rather than an isolated increase in bottleneck width while keeping the distance fixed.
 
 \begin{figure}[htbp]
     \centering
